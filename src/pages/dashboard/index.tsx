@@ -44,7 +44,7 @@ export default function Index() {
 
             <div className='w-full h-full'>
                 {/* <HomeTab /> */}
-                {activeItem === "Home" ? <HomeTab invoices={getInvoices} /> : null}
+                {activeItem === "Home" ? <HomeTab Invoices={getInvoices} /> : null}
                 {activeItem === "Invoices" ? <InvoiceTab Invoices={getInvoices} /> : null}
             </div>
             <ToastContainer />
