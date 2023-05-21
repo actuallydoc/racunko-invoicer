@@ -20,7 +20,6 @@ export default function HomeTab({ Invoices }: HomeTabProps) {
                 }
                 )
             })
-            console.log(total)
             setRevenue(total)
         }
         if (Invoices) {

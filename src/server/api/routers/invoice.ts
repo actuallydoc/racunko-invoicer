@@ -1,4 +1,4 @@
-import { string, z } from "zod";
+import { z } from "zod";
 
 import {
     createTRPCRouter,
@@ -27,7 +27,6 @@ export const invoiceRouter = createTRPCRouter({
     createInvoice: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
         const createdInvoice = await ctx.prisma.invoice.create({
             data: {
-
                 user: {
                     connect: {
                         id: input.id,
@@ -51,7 +50,6 @@ export const invoiceRouter = createTRPCRouter({
             include: { services: true }
 
         })
-        console.log(createdInvoice);
         return createdInvoice;
     }),
     updateInvoice: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {

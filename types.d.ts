@@ -42,25 +42,39 @@ export interface Company {
     address: string;
     phone: string;
     email: string;
-    userId: User;
+    userId: string;
     vat: string;
     services: Service[];
     invoices: Invoice[];
+    partners: Partner[];
+    website: string;
+    city: string;
+    zip: string;
+    country: string;
 }
 export interface Partner {
     id: string;
     name: string;
+    userId: string;
     address: string;
+    city: string;
+    zip: string;
+    country: string;
     phone: string;
-    email: string;
+    email: string | null;
+    website: string | null;
     vat: string | null;
-    userId: User;
-    services: Service[];
+    services: Service[]?;
+    invoices: Invoice[]?;
+    companies: Company[]?;
+
 }
 export interface Service {
     id: string;
     name: string;
     price: number;
+    description: string;
+    user_id: string;
 }
 
 enum Status {

@@ -66,6 +66,9 @@ model User {
     accounts      Account[]
     sessions      Session[]
     invoices      Invoice[]
+    services      Service[]
+    companies     Company[]
+    partners      Partner[]
 }
 
 model Invoice {
@@ -89,15 +92,18 @@ model Invoice {
 }
 
 model Service {
-    id        String   @id @default(cuid())
-    name      String
-    price     Float
-    invoiceId String
-    invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-    Company   Company? @relation(fields: [companyId], references: [id])
-    companyId String?
-    Partner   Partner? @relation(fields: [partnerId], references: [id])
-    partnerId String?
+    id          String   @id @default(cuid())
+    name        String
+    price       Float
+    description String?
+    invoiceId   String?
+    invoice     Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+    Company     Company? @relation(fields: [companyId], references: [id])
+    companyId   String?
+    Partner     Partner? @relation(fields: [partnerId], references: [id])
+    partnerId   String?
+    User        User?    @relation(fields: [userId], references: [id])
+    userId      String?
 }
 
 model Company {
@@ -116,6 +122,8 @@ model Company {
     invoices  Invoice[]
     services  Service[]
     partners  Partner[]
+    User      User?     @relation(fields: [userId], references: [id])
+    userId    String?
 }
 
 model Partner {
@@ -129,9 +137,11 @@ model Partner {
     country   String
     phone     String
     email     String
-    website   String
+    website   String?
     vat       String?
     invoices  Invoice[]
     services  Service[]
     companies Company[]
+    User      User?     @relation(fields: [userId], references: [id])
+    userId    String?
 }
