@@ -1,0 +1,27 @@
+.group61 {
+    height: 67px;
+    width: 180px;
+}
+
+.navbar {
+    border-radius: 80px;
+    height: 67px;
+    width: 180px;
+    background-color: #0f570a;
+    border: 1px solid rgba(255, 255, 255, 0.10000000149011612);
+}
+
+.frame {
+    height: 16px;
+    width: 16px;
+    background-color: #ffffff;
+}
+
+.text1 {
+    text-align: left;
+    vertical-align: top;
+    font-size: 21px;
+    font-family: Roboto Mono;
+    line-height: auto;
+    color: #f4e8c1;
+}
