@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
     previewFeatures = ["jsonProtocol"]
 }
 
@@ -48,6 +48,15 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+// Here it starts after the next auth Stuff
 model User {
     id            String    @id @default(cuid())
     name          String?
@@ -56,12 +65,68 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    invoices      Invoice[]
 }
 
-model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+model Invoice {
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    userId    String
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    //Can be empty default is []
+    services  Service[]
+    //Can be empty default is []
+    Company   Company?  @relation(fields: [companyId], references: [id])
+    companyId String?
+    Partner   Partner?  @relation(fields: [partnerId], references: [id])
+    partnerId String?
+}
 
-    @@unique([identifier, token])
+model Service {
+    id        String   @id @default(cuid())
+    name      String
+    price     Float
+    invoiceId String
+    invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+    Company   Company? @relation(fields: [companyId], references: [id])
+    companyId String?
+    Partner   Partner? @relation(fields: [partnerId], references: [id])
+    partnerId String?
+}
+
+model Company {
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    name      String
+    address   String
+    city      String
+    zip       String
+    country   String
+    phone     String
+    email     String
+    website   String
+    vat       String
+    invoices  Invoice[]
+    services  Service[]
+    partners  Partner[]
+}
+
+model Partner {
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    name      String
+    address   String
+    city      String
+    zip       String
+    country   String
+    phone     String
+    email     String
+    website   String
+    vat       String?
+    invoices  Invoice[]
+    services  Service[]
+    companies Company[]
 }

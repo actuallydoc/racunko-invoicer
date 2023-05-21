@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 
 import {
   createTRPCRouter,
@@ -23,3 +23,4 @@ export const exampleRouter = createTRPCRouter({
     return "you can now see this secret message!";
   }),
 });
+

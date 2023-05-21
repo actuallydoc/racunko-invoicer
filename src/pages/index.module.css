@@ -1,10 +1,10 @@
-.main {
+/* .main {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-image: linear-gradient(to bottom, #2e026d, #15162c);
+  background-image: #F2FDF1;
 }
 
 .container {
@@ -15,6 +15,14 @@
   justify-content: center;
   gap: 3rem;
   padding: 4rem 1rem;
+} */
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 }
 
 @media (min-width: 640px) {
