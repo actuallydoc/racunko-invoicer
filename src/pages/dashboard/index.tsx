@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { api } from '@/utils/api'
 import InvoiceTab from '@/components/Dashboard/InvoiceTab/InvoiceTab'
+import { Invoice } from 'types'
 const Items = [
     "Home",
     "Invoices",
@@ -23,7 +24,6 @@ export default function Index() {
     const [activeItem, setActiveItem] = useState<string>(Items[0] as string);
     const { data: sessionData } = useSession({ required: true })
     const { data: getInvoices } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
-
 
     useEffect(() => {
         console.log(sessionData)

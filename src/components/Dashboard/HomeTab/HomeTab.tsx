@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import LineChart from './Charts/LineChart'
 import VerticalBarChart from './Charts/VerticalBarChart'
-import type { Invoice } from 'types'
+import type { Invoice, Service } from 'types'
 
-export default function HomeTab({ invoices }: { invoices: Invoice[] }) {
+interface HomeTabProps {
+    Invoices: (Invoice & { services: Service[]; })[] | undefined;
+}
+
+export default function HomeTab({ Invoices }: HomeTabProps) {
     const [revenue, setRevenue] = useState<number>(0)
 
     useEffect(() => {
 
         const calculateRevenue = () => {
             let total = 0
-            invoices.map((invoice) => {
+            Invoices?.map((invoice) => {
                 invoice.services.map((service) => {
                     total += service.price
                 }
@@ -19,11 +23,11 @@ export default function HomeTab({ invoices }: { invoices: Invoice[] }) {
             console.log(total)
             setRevenue(total)
         }
-        if (invoices) {
+        if (Invoices) {
             calculateRevenue()
         }
 
-    }, [invoices,])
+    }, [Invoices])
 
     return (
         <div className='flex-col space-y-5 ml-10 mt-[10%]'>
@@ -37,7 +41,7 @@ export default function HomeTab({ invoices }: { invoices: Invoice[] }) {
                                     <p>Total Invoices</p>
                                 </div>
                                 <div className='text-2xl font-mono'>
-                                    <p>{invoices?.length}</p>
+                                    <p>{Invoices?.length}</p>
                                 </div>
                                 <div>
                                     <div className='text-2xl font-mono'>

@@ -1,10 +1,13 @@
 import React from 'react'
 import Table from './Table/Table'
-import type { Invoice } from 'types'
+import type { Invoice, Service } from 'types'
 import "flatpickr/dist/themes/material_green.css";
 import { IoIosCreate } from 'react-icons/io';
 import Flatpickr from "react-flatpickr";
-export default function InvoiceTab({ Invoices }: { Invoices: Invoice[] }) {
+interface InvoiceTabProps {
+    Invoices: (Invoice & { services: Service[]; })[] | undefined;
+}
+export default function InvoiceTab({ Invoices }: InvoiceTabProps) {
     const [fromDate, setFromDate] = React.useState<Date | null>(new Date());
     const [toDate, setToDate] = React.useState<Date | null>(new Date());
     return (
