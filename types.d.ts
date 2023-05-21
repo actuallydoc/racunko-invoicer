@@ -63,6 +63,14 @@ export interface Service {
     price: number;
 }
 
+enum Status {
+    PAID = "PAID",
+    UNPAID = "UNPAID",
+    PARTIALLY_PAID = "PARTIALLY_PAID",
+    OVERDUE = "OVERDUE",
+    VOID = "VOID",
+    REFUNDED = "REFUNDED",
+}
 
 export interface Invoice {
     id: string;
@@ -70,5 +78,12 @@ export interface Invoice {
     updatedAt: Date;
     createdAt: Date;
     userId: User;
+    invoiceNumber: number;
+    dueDate: Date;
+    invoiceDate: Date;
+    invoiceServiceDate: Date;
     services: Service[];
+    company: Company;
+    partner: Partner;
+    status: Status;
 }

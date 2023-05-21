@@ -1,5 +1,6 @@
 import React from 'react'
 import Login from '../Buttons/Login/Login';
+// import { useRouter } from 'next/router';
 
 
 
@@ -10,6 +11,10 @@ const NavTabs = [
 
 
 export default function Navbar() {
+    // const { push } = useRouter();
+    const loginCb = () => {
+        window.open('/api/auth/signin', '_self');
+    }
     return (
         <div>
             <div className='flex'>
@@ -39,7 +44,8 @@ export default function Navbar() {
                     )}
                 </div>
                 <div className='ml-48 text-white mr-64'>
-                    <Login />
+                    <Login loginBtnCb={loginCb} />
+
                 </div>
 
             </div>

@@ -69,18 +69,23 @@ model User {
 }
 
 model Invoice {
-    id        String    @id @default(cuid())
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    userId    String
-    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id                 String    @id @default(cuid())
+    createdAt          DateTime  @default(now())
+    updatedAt          DateTime  @updatedAt
+    userId             String
+    user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     //Can be empty default is []
-    services  Service[]
+    services           Service[]
+    invoiceNumber      String
+    invoiceDate        DateTime
+    dueDate            DateTime
+    invoiceServiceDate DateTime
+    status             String
     //Can be empty default is []
-    Company   Company?  @relation(fields: [companyId], references: [id])
-    companyId String?
-    Partner   Partner?  @relation(fields: [partnerId], references: [id])
-    partnerId String?
+    Company            Company?  @relation(fields: [companyId], references: [id])
+    companyId          String?
+    Partner            Partner?  @relation(fields: [partnerId], references: [id])
+    partnerId          String?
 }
 
 model Service {
