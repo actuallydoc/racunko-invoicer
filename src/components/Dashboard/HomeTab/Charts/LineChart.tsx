@@ -57,7 +57,7 @@ export const data = {
 };
 export default function LineChart() {
     return (
-        <div className="box-border w-80 h-60 bg-white rounded-3xl p-4 border-4 ...">
+        <div className="box-border w-[450px] h-60 bg-white rounded-3xl p-4 border-4 ...">
             <Line options={options} data={data} />
         </div>
     )

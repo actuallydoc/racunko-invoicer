@@ -33,7 +33,7 @@ export const options = {
     },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', "November", "December"];
 
 export const data = {
     labels,
@@ -48,8 +48,11 @@ export const data = {
 };
 export default function VerticalBarChart() {
     return (
-        <div className="box-border w-1/4 h-[250px] bg-white rounded-3xl p-4 border-4 ...">
-            <Bar options={options} data={data} />
+        <div className="box-border w-96 h-full bg-white rounded-3xl p-4 border-4 ...">
+            <div className=''>
+                <Bar options={options} data={data} />
+            </div>
+
         </div>
     )
 }

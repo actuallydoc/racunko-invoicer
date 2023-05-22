@@ -44,7 +44,6 @@ export default function Index() {
     const createService = api.service.createService.useMutation();
     const updateService = api.service.updateService.useMutation();
     const deleteService = api.service.deleteService.useMutation();
-
     const handleCreateCustomer = (formState: Partner) => {
         console.log(formState);
         createCustomer.mutate({
@@ -59,7 +58,6 @@ export default function Index() {
             website: formState.website as string,
             vat: formState.vat,
         })
-
     };
     const handleUpdateCustomer = (formState: Partner) => {
         console.log(formState);
@@ -69,7 +67,6 @@ export default function Index() {
             name: formState.name,
             email: formState.email as string,
             phone: formState.phone,
-
             address: formState.address,
             city: formState.city,
             zip: formState.zip,
@@ -77,7 +74,6 @@ export default function Index() {
             website: formState.website as string,
             vat: formState.vat,
         })
-
     };
     const handleDeleteCustomer = (formState: Partner) => {
 
