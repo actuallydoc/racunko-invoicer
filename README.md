@@ -2,10 +2,10 @@
 
 ## Description
 
+#### The app is currently in development and it is not working yet. I will update this README when the app is finished.
+#### The design is not final and it will be changed in the future(since its really ugly).
 
-
-## Features
-
+### __Data Management Features__
 - [x] Filter by name (only for now)
 - [x] Authentication
 - [x] Create, Read, Update, Delete invoices
@@ -23,10 +23,21 @@
 - [ ] Create, Read, Update, Delete invoice reminders
 - [ ] Create, Read, Update, Delete invoice recurring
 - [ ] Scrollable table for all tables
-### PDF Document Generation (This will be implemented in the future after the base app is finished)
-- [ ] Generate PDF document from invoice
-- []
 
+### Tab Navigation Features
+- [x] Home(The page is done but the statistic data is made with package Faker and charts and layout look really ugly)
+- [x] Invoices
+- [x] Customers
+- [x] Services
+- [x] Companies
+
+### __PDF Document Generation (This will be implemented in the future after the base app is finished)__
+- [ ] Generate PDF document from invoice
+- [ ] Export to different formats (PDF, HTML, CSV, JSON, XML)
+- [ ] Send PDF document to client via email or other method's
+
+### __Invoice Templates (This will be implemented in the future after the base app is finished)__
+- [ ] Create, Read, Update, Delete invoice templates
 
 ## Technologies
 - Next.js
@@ -36,6 +47,7 @@
 - Prisma
 - PostgreSQL
 - NextAuth.js
+- TRPC
 
 
 ![alt text](https://i.imgur.com/CcK1Bk9.png "Title")
