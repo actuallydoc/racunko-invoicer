@@ -2,11 +2,15 @@ import React, { useEffect } from 'react'
 import type { Invoice, Company, Partner } from 'types'
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
+import { custom } from 'zod';
 export default function InvoiceCreateModal({ customers, companies, invoiceState, invoiceData, setShowModal, handleCreateInvoice }: { invoiceData: Invoice | undefined, customers: Partner[] | undefined, companies: Company[] | undefined, invoiceState: React.Dispatch<React.SetStateAction<Invoice>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateInvoice: () => void }) {
 
-    const [fromDate, setFromDate] = React.useState<Date | null>(new Date());
-    const [toDate, setToDate] = React.useState<Date | null>(new Date());
+    const [invoiceDate, setInvoiceDate] = React.useState<Date | null>(new Date());
+    const [dueDate, setDueDate] = React.useState<Date | null>(new Date());
+    const [serviceDate, setServiceDate] = React.useState<Date | null>(new Date());
 
+    const [selectedCustomer, setSelectedCustomer] = React.useState<Partner | undefined>(undefined);
+    const [selectedCompany, setSelectedCompany] = React.useState<Company | undefined>(undefined);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         invoiceState((prevState) => ({
             ...prevState,
@@ -20,41 +24,72 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
 
         }))
 
-        console.log(e.target.id + ' ' + e.target.value)
     }
+    const handleDueDate = (e: Date) => {
+        invoiceState((prevState) => ({
+            ...prevState,
+            dueDate: e,
+        }))
+    }
+    const handleInvoiceDate = (e: Date) => {
+        invoiceState((prevState) => ({
+            ...prevState,
+            invoiceDate: e,
+        }))
+    }
+    const handleServiceDate = (e: Date) => {
+        invoiceState((prevState) => ({
+            ...prevState,
+            serviceDate: e,
+        }))
+    }
+
     const handleCustomerDropDown = (e: React.FormEvent<HTMLSelectElement>) => {
-        console.log("HANDLE CUSTOMER BRO")
-        if (customers && e.currentTarget.value) {
-            const filtered = customers.filter((customer) => {
-                return customer.name === e.currentTarget.value
-            })
-            invoiceState((prevState) => ({
-                ...prevState,
-                partner: {
-                    ...filtered[0]
-                }
-
-            }))
+        setSelectedCustomer(customers?.filter((customer) => {
+            return customer.name === e.currentTarget.value
         }
-
+        )
+        [0])
     }
     const handleCompanyDropDown = (e: React.FormEvent<HTMLSelectElement>) => {
-        console.log("HANDLE COMPANY BRO")
-        if (companies && e.currentTarget.value) {
-            const filtered = companies.filter((company) => {
-                return company.name === e.currentTarget.value
-            })
-            invoiceState((prevState) => ({
-                ...prevState,
-                company: {
-                    ...filtered[0]
-                }
-
-            }))
+        setSelectedCompany(companies?.filter((company) => {
+            return company.name === e.currentTarget.value
         }
+        )[0])
+
     }
 
-
+    useEffect(() => {
+        invoiceState((prevState) => ({
+            ...prevState,
+            partner: {
+                ...prevState.partner,
+                id: selectedCustomer?.id,
+                city: selectedCustomer?.city,
+                country: selectedCustomer?.country,
+                vat: selectedCustomer?.vat,
+                website: selectedCustomer?.website,
+                zip: selectedCustomer?.zip,
+                name: selectedCustomer?.name,
+                email: selectedCustomer?.email,
+                phone: selectedCustomer?.phone,
+                address: selectedCustomer?.address,
+            },
+            company: {
+                ...prevState.company,
+                id: selectedCompany?.id,
+                name: selectedCompany?.name,
+                email: selectedCompany?.email,
+                phone: selectedCompany?.phone,
+                address: selectedCompany?.address,
+                city: selectedCompany?.city,
+                country: selectedCompany?.country,
+                zip: selectedCompany?.zip,
+                website: selectedCompany?.website,
+                vat: selectedCompany?.vat,
+            }
+        }))
+    }, [selectedCompany, selectedCustomer, invoiceState])
 
     return (
         <div className=" bg-gray-100">
@@ -76,9 +111,10 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                     </div>
                                     <div className='border-4  rounded-lg'>
                                         <Flatpickr
-                                            value={fromDate?.toString()}
+                                            id='invoiceDate'
+                                            value={invoiceDate?.toString()}
                                             onChange={([date]) => {
-                                                setFromDate(date as Date);
+                                                handleInvoiceDate(date as Date);
                                             }}
                                         />
                                     </div>
@@ -93,9 +129,10 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                     </div>
                                     <div className='border-4  rounded-lg'>
                                         <Flatpickr
-                                            value={fromDate?.toString()}
+                                            id='serviceDate'
+                                            value={serviceDate?.toString()}
                                             onChange={([date]) => {
-                                                setFromDate(date as Date);
+                                                handleServiceDate(date as Date);
                                             }}
                                         />
                                     </div>
@@ -109,9 +146,10 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                     </div>
                                     <div className='border-4  rounded-lg'>
                                         <Flatpickr
-                                            value={fromDate?.toString()}
+                                            id='dueDate'
+                                            value={dueDate?.toString()}
                                             onChange={([date]) => {
-                                                setFromDate(date as Date);
+                                                handleDueDate(date as Date);
                                             }}
                                         />
                                     </div>
@@ -129,7 +167,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                         id="invoiceNumber"
                                         type="name"
                                         placeholder="Invoice Number"
-                                        value={invoiceData?.company?.name}
+                                        value={invoiceData?.invoiceNumber}
                                     />
                                 </div>
                             </div>
@@ -138,10 +176,10 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                 <div className='flex space-x-8 bg-b'>
                                     <div className='flex-col'>
                                         <div>
-                                            <select onChange={(e) => {
-
-                                                handleCompanyDropDown(e);
-                                            }} className="w-full border-2 border-gray-300 rounded-lg p-2">
+                                            <select
+                                                onChange={handleCompanyDropDown}
+                                                value={selectedCompany?.name}
+                                                className="w-full border-2 border-gray-300 rounded-lg p-2">
                                                 {companies?.length > 0 ? companies?.map((company) => (
                                                     <option key={company.id} value={company.name}>{company.name}</option>
                                                 )) : <option value=''>No Companies </option>}
@@ -159,7 +197,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Companyname"
                                                 type="name"
                                                 placeholder="Company name"
-                                                value={invoiceData?.company?.name}
+                                                value={selectedCompany?.name}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -167,7 +205,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 Company Address
                                             </label>
                                             <input
-                                                value={invoiceData?.company?.address}
+                                                value={selectedCompany?.address}
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyaddress"
@@ -185,7 +223,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Companyzip"
                                                 type="text"
                                                 placeholder="Company Zip"
-                                                value={invoiceData?.company?.zip}
+                                                value={selectedCompany?.zip}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -198,7 +236,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Companycity"
                                                 type="text"
                                                 placeholder="Company City"
-                                                value={invoiceData?.company?.city}
+                                                value={selectedCompany?.city}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -211,7 +249,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Companycountry"
                                                 type="text"
                                                 placeholder="Company Country"
-                                                value={invoiceData?.company?.country}
+                                                value={selectedCompany?.country}
                                             />
                                         </div>
                                     </div>
@@ -226,7 +264,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Companyphone"
                                                 type="text"
                                                 placeholder="Company Phone"
-                                                value={invoiceData?.company?.phone}
+                                                value={selectedCompany?.phone}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -239,7 +277,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Companyemail"
                                                 type="text"
                                                 placeholder="Company Email"
-                                                value={invoiceData?.company?.email}
+                                                value={selectedCompany?.email}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -252,7 +290,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Companywebsite"
                                                 type="text"
                                                 placeholder="Company Website"
-                                                value={invoiceData?.company?.website}
+                                                value={selectedCompany?.website}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -265,7 +303,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Companyvat"
                                                 type="text"
                                                 placeholder="Company Vat"
-                                                value={invoiceData?.company?.vat}
+                                                value={selectedCompany?.vat}
                                             />
                                         </div>
                                     </div>
@@ -273,9 +311,9 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                 <div className='flex'>
                                     <div className='flex-col'>
                                         <div>
-                                            <select onChange={(e) => {
-                                                handleCustomerDropDown(e);
-                                            }} className="w-full border-2 border-gray-300 rounded-lg p-2">
+                                            <select onChange={handleCustomerDropDown}
+                                                value={selectedCustomer?.name}
+                                                className="w-full border-2 border-gray-300 rounded-lg p-2">
                                                 {customers?.length > 0 ? customers?.map((customer) => (
                                                     <option key={customer.id} value={customer.name}>{customer.name}</option>
                                                 )) : <option value=''>No Customer&apos;s </option>}
@@ -293,7 +331,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="name"
                                                 type="Customername"
                                                 placeholder="Customer name"
-                                                value={invoiceData?.partner?.name}
+                                                value={selectedCustomer?.name}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -306,7 +344,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customeraddress"
                                                 type="text"
                                                 placeholder="Customer Address"
-                                                value={invoiceData?.partner?.address}
+                                                value={selectedCustomer?.address}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -319,7 +357,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customerzip"
                                                 type="text"
                                                 placeholder="Customer Zip"
-                                                value={invoiceData?.partner?.zip}
+                                                value={selectedCustomer?.zip}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -332,7 +370,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customercity"
                                                 type="text"
                                                 placeholder="Customer City"
-                                                value={invoiceData?.partner?.city}
+                                                value={selectedCustomer?.city}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -345,7 +383,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customercountry"
                                                 type="text"
                                                 placeholder="Customer Country"
-                                                value={invoiceData?.partner?.country}
+                                                value={selectedCustomer?.country}
                                             />
                                         </div>
                                     </div>
@@ -360,7 +398,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customerphone"
                                                 type="text"
                                                 placeholder="Customer Phone"
-                                                value={invoiceData?.partner?.phone}
+                                                value={selectedCustomer?.phone}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -373,7 +411,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customeremail"
                                                 type="text"
                                                 placeholder="Customer Email"
-                                                value={invoiceData?.partner?.email}
+                                                value={selectedCustomer?.email}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -386,7 +424,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customerwebsite"
                                                 type="text"
                                                 placeholder="Customer Website"
-                                                value={invoiceData?.partner?.website}
+                                                value={selectedCustomer?.website}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -399,7 +437,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customervat"
                                                 type="text"
                                                 placeholder="Customer Vat"
-                                                value={invoiceData?.partner?.vat}
+                                                value={selectedCustomer?.vat}
                                             />
                                         </div>
                                     </div>

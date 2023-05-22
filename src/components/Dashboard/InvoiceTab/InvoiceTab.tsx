@@ -29,10 +29,9 @@ export default function InvoiceTab({ Invoices, createInvoice, handleCreateInvoic
         setCreateShowModal(false);
         handleCreateInvoice(invoiceState);
         setInvoiceState({} as Invoice);
-
     };
     useEffect(() => {
-        console.log(invoiceState);
+        console.log(invoiceState)
     }, [invoiceState])
 
     return (

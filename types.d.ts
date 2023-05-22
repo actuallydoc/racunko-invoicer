@@ -30,10 +30,10 @@ export interface User {
     image: string;
     accounts: Account[];
     sessions: Session[];
-    invoices: Invoice[];
-    companies: Company[];
-    partners: Partner[];
-    services: Service[];
+    invoices: Invoice[]?;
+    companies: Company[]?;
+    partners: Partner[]?;
+    services: Service[]?;
 }
 
 export interface Company {
@@ -44,9 +44,9 @@ export interface Company {
     email: string;
     userId: string;
     vat: string;
-    services: Service[];
-    invoices: Invoice[];
-    partners: Partner[];
+    services: Service[]?;
+    invoices: Invoice[]?;
+    partners: Partner[]?;
     website: string;
     city: string;
     zip: string;
