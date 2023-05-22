@@ -35,7 +35,7 @@ export default function CustomersTab({ Services, handleCreateServiceCb, handleUp
     const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const filtered = Services.filter((service) => {
-            return service.name.toLowerCase().includes(value.toLowerCase());
+            return service?.name.toLowerCase().includes(value.toLowerCase());
         });
         setFilteredServices(filtered);
         console.log(filtered);

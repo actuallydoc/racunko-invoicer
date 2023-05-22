@@ -70,11 +70,11 @@ export interface Partner {
 
 }
 export interface Service {
-    id: string;
-    name: string;
-    price: number;
-    description: string;
-    user_id: string;
+    id: string | undefined;
+    name: string | null;
+    price: number | null;
+    description: string | null;
+    user_id: string | undefined?;
 }
 
 enum Status {

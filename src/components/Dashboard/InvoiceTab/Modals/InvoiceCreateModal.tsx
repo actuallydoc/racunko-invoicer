@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
-import type { Invoice, Company, Partner } from 'types'
+import type { Invoice, Company, Partner, Service } from 'types'
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
 import { custom } from 'zod';
-export default function InvoiceCreateModal({ customers, companies, invoiceState, invoiceData, setShowModal, handleCreateInvoice }: { invoiceData: Invoice | undefined, customers: Partner[] | undefined, companies: Company[] | undefined, invoiceState: React.Dispatch<React.SetStateAction<Invoice>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateInvoice: () => void }) {
+import ServiceItem from './ServiceItem';
+export default function InvoiceCreateModal({ customers, services, companies, invoiceState, invoiceData, setShowModal, handleCreateInvoice }: { invoiceData: Invoice, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<Invoice>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateInvoice: () => void, services: Service[] }) {
 
-    const [invoiceDate, setInvoiceDate] = React.useState<Date | null>(new Date());
-    const [dueDate, setDueDate] = React.useState<Date | null>(new Date());
-    const [serviceDate, setServiceDate] = React.useState<Date | null>(new Date());
+    const [invoiceDate] = React.useState<Date | null>(new Date());
+    const [dueDate] = React.useState<Date | null>(new Date());
+    const [serviceDate] = React.useState<Date | null>(new Date());
 
     const [selectedCustomer, setSelectedCustomer] = React.useState<Partner | undefined>(undefined);
     const [selectedCompany, setSelectedCompany] = React.useState<Company | undefined>(undefined);
@@ -23,7 +24,6 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
             },
 
         }))
-
     }
     const handleDueDate = (e: Date) => {
         invoiceState((prevState) => ({
@@ -43,7 +43,14 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
             serviceDate: e,
         }))
     }
-
+    const handleDeleteService = (id: string) => {
+        invoiceState((prevState) => ({
+            ...prevState,
+            services: prevState.services.filter((service) => {
+                return service.id !== id
+            })
+        }))
+    }
     const handleCustomerDropDown = (e: React.FormEvent<HTMLSelectElement>) => {
         setSelectedCustomer(customers?.filter((customer) => {
             return customer.name === e.currentTarget.value
@@ -62,32 +69,6 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
     useEffect(() => {
         invoiceState((prevState) => ({
             ...prevState,
-            partner: {
-                ...prevState.partner,
-                id: selectedCustomer?.id,
-                city: selectedCustomer?.city,
-                country: selectedCustomer?.country,
-                vat: selectedCustomer?.vat,
-                website: selectedCustomer?.website,
-                zip: selectedCustomer?.zip,
-                name: selectedCustomer?.name,
-                email: selectedCustomer?.email,
-                phone: selectedCustomer?.phone,
-                address: selectedCustomer?.address,
-            },
-            company: {
-                ...prevState.company,
-                id: selectedCompany?.id,
-                name: selectedCompany?.name,
-                email: selectedCompany?.email,
-                phone: selectedCompany?.phone,
-                address: selectedCompany?.address,
-                city: selectedCompany?.city,
-                country: selectedCompany?.country,
-                zip: selectedCompany?.zip,
-                website: selectedCompany?.website,
-                vat: selectedCompany?.vat,
-            }
         }))
     }, [selectedCompany, selectedCustomer, invoiceState])
 
@@ -176,15 +157,19 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                 <div className='flex space-x-8 bg-b'>
                                     <div className='flex-col'>
                                         <div>
-                                            <select
-                                                onChange={handleCompanyDropDown}
-                                                value={selectedCompany?.name}
-                                                className="w-full border-2 border-gray-300 rounded-lg p-2">
-                                                {companies?.length > 0 ? companies?.map((company) => (
-                                                    <option key={company.id} value={company.name}>{company.name}</option>
-                                                )) : <option value=''>No Companies </option>}
+                                            {companies && (
+                                                <select
+                                                    onChange={handleCompanyDropDown}
+                                                    value={selectedCompany?.name}
+                                                    className="w-full border-2 border-gray-300 rounded-lg p-2">
+                                                    {companies?.length > 0 ? companies?.map((company) => (
+                                                        <option key={company.id} value={company.name}>{company.name}</option>
+                                                    )) : <option value=''>No Companies </option>}
 
-                                            </select>
+                                                </select>
+                                            )
+                                            }
+
                                         </div>
                                         <div className='mb-6'>
 
@@ -311,14 +296,16 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                 <div className='flex'>
                                     <div className='flex-col'>
                                         <div>
-                                            <select onChange={handleCustomerDropDown}
-                                                value={selectedCustomer?.name}
-                                                className="w-full border-2 border-gray-300 rounded-lg p-2">
-                                                {customers?.length > 0 ? customers?.map((customer) => (
-                                                    <option key={customer.id} value={customer.name}>{customer.name}</option>
-                                                )) : <option value=''>No Customer&apos;s </option>}
+                                            {customers && (
+                                                <select onChange={handleCustomerDropDown}
+                                                    value={selectedCustomer?.name}
+                                                    className="w-full border-2 border-gray-300 rounded-lg p-2">
+                                                    {customers?.length > 0 ? customers?.map((customer) => (
+                                                        <option key={customer.id} value={customer.name}>{customer.name}</option>
+                                                    )) : <option value=''>No Customer&apos;s </option>}
 
-                                            </select>
+                                                </select>
+                                            )}
                                         </div>
                                         <div className='mb-6'>
 
@@ -411,7 +398,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customeremail"
                                                 type="text"
                                                 placeholder="Customer Email"
-                                                value={selectedCustomer?.email}
+                                                value={selectedCustomer?.email as string}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -424,7 +411,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customerwebsite"
                                                 type="text"
                                                 placeholder="Customer Website"
-                                                value={selectedCustomer?.website}
+                                                value={selectedCustomer?.website as string}
                                             />
                                         </div>
                                         <div className="mb-6">
@@ -437,11 +424,21 @@ export default function InvoiceCreateModal({ customers, companies, invoiceState,
                                                 id="Customervat"
                                                 type="text"
                                                 placeholder="Customer Vat"
-                                                value={selectedCustomer?.vat}
+                                                value={selectedCustomer?.vat as string}
                                             />
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div>
+                                {services?.map((service, index) => (
+                                    <div key={index} className="flex items-center justify-between">
+                                        <div className="mb-6">
+
+                                            <ServiceItem service={service} deleteCallBack={handleDeleteService} />
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                             <div className="flex items-center justify-between">
                                 <button

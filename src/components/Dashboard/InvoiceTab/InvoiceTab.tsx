@@ -11,8 +11,9 @@ interface InvoiceTabProps {
     handleCreateInvoice: (invoice: Invoice) => void;
     Companies: Company[] | undefined;
     Customers: Partner[] | undefined;
+    Services: Service[] | undefined;
 }
-export default function InvoiceTab({ Invoices, createInvoice, handleCreateInvoice, Companies, Customers }: InvoiceTabProps) {
+export default function InvoiceTab({ Invoices, Services, createInvoice, handleCreateInvoice, Companies, Customers }: InvoiceTabProps) {
     const [fromDate, setFromDate] = React.useState<Date | null>(new Date());
     const [toDate, setToDate] = React.useState<Date | null>(new Date());
     //!TODO FILTER
@@ -38,7 +39,7 @@ export default function InvoiceTab({ Invoices, createInvoice, handleCreateInvoic
         <div className="min-h-screen flex items-center ml-10">
             {showCreateModal && (
                 <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
-                    <InvoiceCreateModal invoiceData={invoiceState} companies={Companies} customers={Customers} handleCreateInvoice={handleCreateInvoiceCb} invoiceState={setInvoiceState} setShowModal={setCreateShowModal} />
+                    <InvoiceCreateModal services={Services} invoiceData={invoiceState} companies={Companies} customers={Customers} handleCreateInvoice={handleCreateInvoiceCb} invoiceState={setInvoiceState} setShowModal={setCreateShowModal} />
                 </div>
             )}
 

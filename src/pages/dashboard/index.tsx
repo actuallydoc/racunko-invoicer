@@ -121,23 +121,23 @@ export default function Index() {
         console.log(formState);
         createService.mutate({
             userId: sessionData?.user?.id?.toString() as string,
-            description: formState.description,
-            price: formState.price,
-            name: formState.name,
+            description: formState.description as string,
+            price: formState.price as number,
+            name: formState.name as string,
         })
     }
     const handleUpdateService = (formState: Service) => {
         console.log(formState);
         updateService.mutate({
-            id: formState.id,
-            description: formState.description,
-            price: formState.price,
-            name: formState.name,
+            id: formState.id as string,
+            description: formState.description as string,
+            price: formState.price as number,
+            name: formState.name as string,
         })
     }
     const handleDeleteService = (formState: Service) => {
         deleteService.mutate({
-            id: formState.id,
+            id: formState.id as string,
         })
     }
     const handleCreateInvoice = (formState: Invoice) => {
@@ -158,7 +158,7 @@ export default function Index() {
             <div className='w-full h-full'>
                 {/* <HomeTab /> */}
                 {activeItem === "Home" ? <HomeTab Invoices={getInvoices} /> : null}
-                {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies} Customers={getCustomers} createInvoice={handleCreateInvoice} handleCreateInvoice={handleCreateInvoice} Invoices={getInvoices} /> : null}
+                {activeItem === "Invoices" ? <InvoiceTab Services={getServices} Companies={getCompanies} Customers={getCustomers} createInvoice={handleCreateInvoice} handleCreateInvoice={handleCreateInvoice} Invoices={getInvoices} /> : null}
                 {activeItem === "Customers" ? <CustomersTab handleDeleteCustomerCb={handleDeleteCustomer} handleUpdateCustomerCb={handleUpdateCustomer} Customers={getCustomers} handleCreateCustomerCb={handleCreateCustomer} /> : null}
                 {activeItem === "Companies" ? <CompaniesTab handleCreateCompanyCb={handleCreateCompany} handleDeleteCompanyCb={handleDeleteCompany} handleUpdateCompanyCb={handleUpdateCompany} Companies={getCompanies} /> : null}
                 {activeItem === "Services" ? <ServicesTab Services={getServices} handleDeleteServiceCb={handleDeleteService} handleUpdateServiceCb={handleUpdateService} handleCreateServiceCb={handleCreateService} /> : null}
