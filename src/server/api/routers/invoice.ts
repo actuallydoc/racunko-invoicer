@@ -1,9 +1,10 @@
-import { z } from "zod";
+import { string, z } from "zod";
 
 import {
     createTRPCRouter,
     protectedProcedure,
 } from "@/server/api/trpc";
+import type { Service } from "types";
 
 
 
@@ -14,84 +15,47 @@ export const invoiceRouter = createTRPCRouter({
                 id: input.id,
             },
             include: {
-                invoices: {
-                    include: {
-                        services: true,
-                    }
-                }
+                invoices: true,
             },
         })
         if (!user) throw new Error("User not found");
-        return user?.invoices;
-    }),
-    createInvoice: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-        const createdInvoice = await ctx.prisma.invoice.create({
-            data: {
-                user: {
-                    connect: {
-                        id: input.id,
-                    },
-                },
-                services: {
-                    create: [
-                        {
-                            name: "Service 1",
-                            price: 10,
-                        },
-                        {
-                            name: "Service 2",
-                            price: 20,
-                        }
-                    ]
-
-                },
-
-            },
-            include: { services: true }
-
-        })
-        return createdInvoice;
-    }),
-    updateInvoice: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-        const updatedInvoice = await ctx.prisma.invoice.update({
-            where: {
-                id: input.id,
-            },
-            data: {
-                services: {
-                    create: [
-                        {
-                            name: "Service 1",
-                            price: 10,
-                        },
-                        {
-                            name: "Service 2",
-                            price: 20,
-                        }
-                    ]
-
-                },
-            },
-            include: { services: true }
-        })
-        return updatedInvoice;
-    }),
-    deleteInvoice: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-        const deletedInvoice = await ctx.prisma.invoice.delete({
-            where: {
-                id: input.id,
-            },
-        })
-        return deletedInvoice;
-    }
-    ),
-    deleteAllInvoices: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
-        const deletedInvoice = await ctx.prisma.invoice.deleteMany({
+        const invoices = await ctx.prisma.invoice.findMany({
             where: {
                 userId: input.id,
             },
+            include: {
+                Company: true,
+                Partner: true,
+            },
         })
-        return deletedInvoice;
-    }
-    ),
+        return invoices;
+    }),
+    createInvoice: protectedProcedure.input(z.object({ id: z.string(), invoiceNumber: z.string(), partnerId: z.string(), companyId: z.string(), services: z.string(), invoiceDate: z.date(), invoiceServiceDate: z.date(), dueDate: z.date(), })).mutation(async ({ ctx, input }) => {
+        const serviceJson: Service[] = JSON.parse(input.services) as Service[];
+        serviceJson.forEach((service) => {
+            if (!service.name) {
+                throw new Error("Service name is required");
+            }
+            if (!service.price) {
+                throw new Error("Service price is required");
+            }
+        })
+        //If the fields are not empty, create the invoice
+        //Put the string in the services field
+        console.log(serviceJson);
+        const createdInvoice = await ctx.prisma.invoice.create({
+            data: {
+                userId: input.id,
+                services: input.services,
+                dueDate: input.dueDate,
+                invoiceDate: input.invoiceDate,
+                invoiceNumber: input.invoiceNumber,
+                invoiceServiceDate: input.invoiceServiceDate,
+                partnerId: input.partnerId,
+                companyId: input.companyId,
+                status: "Draft",
+            },
+        })
+        return createdInvoice;
+    }),
 });

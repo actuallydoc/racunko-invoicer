@@ -5,7 +5,7 @@ import CompanyEditModal from './Modals/CompanyEditModal';
 import { IoIosCreate } from 'react-icons/io';
 import Table from './Table/Table';
 
-export default function CustomersTab({ Companies, handleCreateCompanyCb, handleUpdateCompanyCb, handleDeleteCompanyCb }: { Companies: Company[], handleCreateCompanyCb: (formState: Company) => void, handleUpdateCompanyCb: (formState: Company) => void, handleDeleteCompanyCb: (formState: Company) => void }) {
+export default function CustomersTab({ Companies, handleCreateCompanyCb, handleUpdateCompanyCb, handleDeleteCompanyCb }: { Companies: Company[] | undefined, handleCreateCompanyCb: (formState: Company) => void, handleUpdateCompanyCb: (formState: Company) => void, handleDeleteCompanyCb: (formState: Company) => void }) {
     //!TODO SCROLLABLE TABLE
     // const [filteredCustomers, setFđđilteredCustomers] = React.useState<Partner[]>([]);
 
@@ -37,14 +37,14 @@ export default function CustomersTab({ Companies, handleCreateCompanyCb, handleU
 
     const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        const filtered = Companies.filter((customer) => {
+        const filtered = Companies?.filter((customer) => {
             return customer.name.toLowerCase().includes(value.toLowerCase());
         });
-        setFilteredCompanies(filtered);
+        setFilteredCompanies(filtered as Company[]);
         console.log(filtered);
     };
     useEffect(() => {
-        setFilteredCompanies(Companies);
+        setFilteredCompanies(Companies as Company[]);
     }, [Companies]);
 
     return (

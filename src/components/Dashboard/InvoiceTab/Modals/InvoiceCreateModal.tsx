@@ -1,29 +1,42 @@
 import React, { useEffect } from 'react'
-import type { Invoice, Company, Partner, Service } from 'types'
+import type { InvoiceObject, Company, Partner, Service } from 'types'
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
-import { custom } from 'zod';
 import ServiceItem from './ServiceItem';
-export default function InvoiceCreateModal({ customers, services, companies, invoiceState, invoiceData, setShowModal, handleCreateInvoice }: { invoiceData: Invoice, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<Invoice>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateInvoice: () => void, services: Service[] }) {
-
+export default function InvoiceCreateModal({ customers, services, companies, invoiceState, invoiceData, setShowModal, handleCreateInvoice }: { invoiceData: InvoiceObject, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<InvoiceObject>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateInvoice: () => void, services: Service[] }) {
     const [invoiceDate] = React.useState<Date | null>(new Date());
     const [dueDate] = React.useState<Date | null>(new Date());
     const [serviceDate] = React.useState<Date | null>(new Date());
-
     const [selectedCustomer, setSelectedCustomer] = React.useState<Partner | undefined>(undefined);
+    const [emptyServices, setEmptyServices] = React.useState<Service[]>([]);
     const [selectedCompany, setSelectedCompany] = React.useState<Company | undefined>(undefined);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         invoiceState((prevState) => ({
             ...prevState,
             [e.target.id]: e.target.value,
-            company: {
+            Company: {
                 ...prevState.company,
             },
-            partner: {
+            Partner: {
                 ...prevState.partner,
             },
 
         }))
+    }
+    const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => {
+        invoiceState((prevState) => ({
+            ...prevState,
+            services: prevState.services.map((service) => {
+                if (service.id === id) {
+                    return {
+                        ...service,
+                        [e.target.name]: e.target.value,
+                    }
+                }
+                return service
+            })
+        }))
+
     }
     const handleDueDate = (e: Date) => {
         invoiceState((prevState) => ({
@@ -43,14 +56,19 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
             serviceDate: e,
         }))
     }
-    const handleDeleteService = (id: string) => {
-        invoiceState((prevState) => ({
+    const handleAddService = () => {
+        setEmptyServices((prevState) => ([
             ...prevState,
-            services: prevState.services.filter((service) => {
-                return service.id !== id
-            })
-        }))
+            {
+                id: Math.random().toString(),
+                name: null,
+                price: null,
+                description: null,
+            }
+        ]))
     }
+    //!WARNING Services are premade services that a user can add to the invoice
+
     const handleCustomerDropDown = (e: React.FormEvent<HTMLSelectElement>) => {
         setSelectedCustomer(customers?.filter((customer) => {
             return customer.name === e.currentTarget.value
@@ -65,12 +83,25 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
         )[0])
 
     }
+    const handleDeleteService = (id: string) => {
+        setEmptyServices((prevState) => (prevState.filter((service) => service.id !== id)))
+    }
+    const handleCloseModal = () => {
+        setShowModal(false)
 
+    }
     useEffect(() => {
         invoiceState((prevState) => ({
             ...prevState,
+            Partner: selectedCustomer as Partner,
+            Company: selectedCompany as Company,
+            services: emptyServices,
+            invoiceDate: invoiceDate as Date,
+            dueDate: dueDate as Date,
+            invoiceServiceDate: serviceDate as Date,
+
         }))
-    }, [selectedCompany, selectedCustomer, invoiceState])
+    }, [selectedCustomer, selectedCompany, services, emptyServices, invoiceState, invoiceDate, dueDate, serviceDate])
 
     return (
         <div className=" bg-gray-100">
@@ -79,7 +110,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                     <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <div className="mb-4">
                             <div className='pb-5'>
-                                <button onClick={() => setShowModal(false)} className="text-3xl font-bold text-gray-500 hover:text-gray-400">&times;</button>
+                                <button onClick={handleCloseModal} className="text-3xl font-bold text-gray-500 hover:text-gray-400">&times;</button>
                             </div>
 
                             <div className='flex pb-10 space-x-5'>
@@ -95,6 +126,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                             id='invoiceDate'
                                             value={invoiceDate?.toString()}
                                             onChange={([date]) => {
+
                                                 handleInvoiceDate(date as Date);
                                             }}
                                         />
@@ -162,6 +194,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                                     onChange={handleCompanyDropDown}
                                                     value={selectedCompany?.name}
                                                     className="w-full border-2 border-gray-300 rounded-lg p-2">
+                                                    <option disabled selected value={"123"}> -- select an option -- </option>
                                                     {companies?.length > 0 ? companies?.map((company) => (
                                                         <option key={company.id} value={company.name}>{company.name}</option>
                                                     )) : <option value=''>No Companies </option>}
@@ -169,7 +202,6 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                                 </select>
                                             )
                                             }
-
                                         </div>
                                         <div className='mb-6'>
 
@@ -300,6 +332,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                                 <select onChange={handleCustomerDropDown}
                                                     value={selectedCustomer?.name}
                                                     className="w-full border-2 border-gray-300 rounded-lg p-2">
+                                                    <option disabled selected value={"123"}> -- select an option -- </option>
                                                     {customers?.length > 0 ? customers?.map((customer) => (
                                                         <option key={customer.id} value={customer.name}>{customer.name}</option>
                                                     )) : <option value=''>No Customer&apos;s </option>}
@@ -430,15 +463,31 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                     </div>
                                 </div>
                             </div>
-                            <div>
-                                {services?.map((service, index) => (
-                                    <div key={index} className="flex items-center justify-between">
-                                        <div className="mb-6">
-
-                                            <ServiceItem service={service} deleteCallBack={handleDeleteService} />
+                            <div className='pb-10'>
+                                <div>
+                                    {emptyServices?.map((service, index) => (
+                                        <div key={index} className="flex items-center justify-between">
+                                            <div className="mb-6">
+                                                <ServiceItem handleServiceChange={handleServiceChange} service={service} deleteCallBack={handleDeleteService} />
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
+
+                                <div>
+                                    <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                        onClick={handleAddService}
+                                        type="button"
+                                    >
+                                        Add Service
+                                    </button>
+                                </div>
+
+
+
+                            </div>
+                            <div>
+
                             </div>
                             <div className="flex items-center justify-between">
                                 <button

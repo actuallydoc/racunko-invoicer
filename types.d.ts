@@ -74,7 +74,6 @@ export interface Service {
     name: string | null;
     price: number | null;
     description: string | null;
-    user_id: string | undefined?;
 }
 
 enum Status {
@@ -86,18 +85,48 @@ enum Status {
     REFUNDED = "REFUNDED",
 }
 
-export interface Invoice {
+export interface InvoiceJSON {
     id: string;
-    number: number;
     updatedAt: Date;
     createdAt: Date;
     userId: User;
-    invoiceNumber: number;
+    invoiceNumber: string;
     dueDate: Date;
     invoiceDate: Date;
     invoiceServiceDate: Date;
-    services: Service[];
-    company: Company;
-    partner: Partner;
+    services: string;
+    Company: Company;
+    Partner: Partner;
+    status: Status;
+}
+
+export interface InvoiceForm {
+    id: string;
+    updatedAt: Date;
+    createdAt: Date;
+    userId: User;
+    invoiceNumber: string;
+    dueDate: Date;
+    invoiceDate: Date;
+    invoiceServiceDate: Date;
+    services: string;
+    status: Status;
+    companyId: string;
+    partnerId: string;
+}
+
+
+export interface InvoiceObject {
+    id: string;
+    updatedAt: Date;
+    createdAt: Date;
+    userId: User;
+    invoiceNumber: string;
+    dueDate: Date;
+    invoiceDate: Date;
+    invoiceServiceDate: Date;
+    services: string;
+    Company: Company;
+    Partner: Partner;
     status: Status;
 }

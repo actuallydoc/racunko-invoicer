@@ -9,59 +9,10 @@ export const serviceRouter = createTRPCRouter({
             where: {
                 id: input.id,
             },
-            include: {
-                services: true,
-            },
         })
         if (!user) throw new Error("User not found");
-        return user?.services;
+        console.log(user);
+        return user?.services as string;
     }
     ),
-    createService: protectedProcedure.input(z.object({
-        userId: z.string(),
-        name: z.string(),
-        description: z.string(),
-        price: z.number(),
-    })).mutation(async ({ ctx, input }) => {
-        const service = await ctx.prisma.service.create({
-            data: {
-                userId: input.userId,
-                name: input.name,
-                description: input.description,
-                price: input.price,
-            }
-        });
-        return service;
-    }
-    ),
-    updateService: protectedProcedure.input(z.object({
-        id: z.string(),
-        name: z.string(),
-        description: z.string(),
-        price: z.number(),
-    })).mutation(async ({ ctx, input }) => {
-        const service = await ctx.prisma.service.update({
-            where: {
-                id: input.id
-            },
-            data: {
-                name: input.name,
-                description: input.description,
-                price: input.price,
-            }
-        });
-        return service;
-    }
-    ),
-    deleteService: protectedProcedure.input(z.object({
-        id: z.string(),
-    })).mutation(async ({ ctx, input }) => {
-        const service = await ctx.prisma.service.delete({
-            where: {
-                id: input.id
-            },
-        });
-        return service;
-    }
-    ),
-})
+});

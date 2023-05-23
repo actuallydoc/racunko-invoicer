@@ -5,7 +5,7 @@ import Table from './Table/Table';
 import type { Partner } from 'types';
 import CustomerEditModal from './Modals/CustomerEditModal';
 
-export default function CustomersTab({ Customers, handleCreateCustomerCb, handleUpdateCustomerCb, handleDeleteCustomerCb }: { Customers: Partner[], handleCreateCustomerCb: (formState: Partner) => void, handleUpdateCustomerCb: (formState: Partner) => void, handleDeleteCustomerCb: (formState: Partner) => void }) {
+export default function CustomersTab({ Customers, handleCreateCustomerCb, handleUpdateCustomerCb, handleDeleteCustomerCb }: { Customers: Partner[] | undefined, handleCreateCustomerCb: (formState: Partner) => void, handleUpdateCustomerCb: (formState: Partner) => void, handleDeleteCustomerCb: (formState: Partner) => void }) {
     //!TODO SCROLLABLE TABLE
     const [showCreateModal, setCreateShowModal] = useState(false);
     const [showUpdateModal, setUpdateShowModal] = useState(false);

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import type { Invoice } from 'types'
 import TableItem from './TableItem'
 import TableHeader from './TableHeader'
@@ -7,6 +7,7 @@ import TableHeader from './TableHeader'
 
 
 export default function Table({ Invoices }: { Invoices: Invoice[] | undefined }) {
+
     return (
         <table className="min-w-full">
             <thead>

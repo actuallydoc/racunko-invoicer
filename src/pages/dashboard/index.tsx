@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { api } from '@/utils/api'
 import InvoiceTab from '@/components/Dashboard/InvoiceTab/InvoiceTab'
-import type { Company, Invoice, Partner, Service } from 'types'
+import type { Company, InvoiceObject, InvoiceJSON, Partner, Service, InvoiceForm } from 'types'
 import CustomersTab from '@/components/Dashboard/CustomersTab/CustomersTab'
 import CompaniesTab from '@/components/Dashboard/CompaniesTab/CompaniesTab'
 import ServicesTab from '@/components/Dashboard/ServicesTab/ServicesTab'
@@ -30,20 +30,37 @@ export default function Index() {
     const { data: getInvoices } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
     const { data: getCustomers } = api.partner.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
     const { data: getCompanies } = api.company.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
-    const { data: getServices } = api.service.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
+    // const { data: getServices } = api.service.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
+    const [invoices, setInvoices] = useState<InvoiceObject[] | undefined>(undefined)
+
+    const getServices: Service[] = [
+        {
+            id: "1",
+            name: "Service 1",
+            price: 100,
+            description: "Description 1",
+        },
+        {
+            id: "2",
+            name: "Service 2",
+            price: 200,
+            description: "Description 2",
+        },
+    ]
     //Customer/Partner
     const createCustomer = api.partner.createPartner.useMutation();
     const updateCustomer = api.partner.updatePartner.useMutation();
     const deleteCustomer = api.partner.deletePartner.useMutation();
-
     //Company
     const createCompany = api.company.createCompany.useMutation();
     const updateCompany = api.company.updateCompany.useMutation();
     const deleteCompany = api.company.deleteCompany.useMutation();
+    //Invoice
+    const createInvoice = api.invoice.createInvoice.useMutation();
     //Service
-    const createService = api.service.createService.useMutation();
-    const updateService = api.service.updateService.useMutation();
-    const deleteService = api.service.deleteService.useMutation();
+    // const createService = api.service.createService.useMutation();
+    // const updateService = api.service.updateService.useMutation();
+    // const deleteService = api.service.deleteService.useMutation();
     const handleCreateCustomer = (formState: Partner) => {
         console.log(formState);
         createCustomer.mutate({
@@ -119,35 +136,44 @@ export default function Index() {
     }
     const handleCreateService = (formState: Service) => {
         console.log(formState);
-        createService.mutate({
-            userId: sessionData?.user?.id?.toString() as string,
-            description: formState.description as string,
-            price: formState.price as number,
-            name: formState.name as string,
-        })
+
     }
     const handleUpdateService = (formState: Service) => {
         console.log(formState);
-        updateService.mutate({
-            id: formState.id as string,
-            description: formState.description as string,
-            price: formState.price as number,
-            name: formState.name as string,
-        })
+
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleDeleteService = (formState: Service) => {
-        deleteService.mutate({
-            id: formState.id as string,
-        })
+        // deleteService.mutate({
+        //     id: formState.id as string,
+        // })
     }
-    const handleCreateInvoice = (formState: Invoice) => {
+    const handleCreateInvoice = (formState: InvoiceObject) => {
         console.log(formState);
+        createInvoice.mutate({
+            companyId: formState.Company.id,
+            dueDate: formState.dueDate,
+            invoiceDate: formState.invoiceDate,
+            invoiceNumber: formState.invoiceNumber,
+            partnerId: formState.Partner.id,
+            invoiceServiceDate: formState.invoiceServiceDate,
+            services: JSON.stringify(formState.services),
+            id: sessionData?.user?.id?.toString() as string,
+        })
     }
     useEffect(() => {
-        if (sessionData?.user?.name?.toString() as string) {
-            toast.success(`Welcome ${sessionData?.user?.name?.toString() as string}`);
+        if (getInvoices && getInvoices.length > 0) {
+            //Convert the services string to a json object
+            const invoices = getInvoices.map((invoice) => {
+                return {
+                    ...invoice,
+                    services: JSON.parse(invoice.services as string) as Service[],
+                }
+            }, [])
+            setInvoices(invoices as unknown as InvoiceObject[])
         }
-    }, [sessionData])
+    }, [getInvoices])
+
     return (
         <div className='flex bg-[#90C28B]'>
             <div>
@@ -157,10 +183,10 @@ export default function Index() {
             </div>
             <div className='w-full h-full'>
                 {/* <HomeTab /> */}
-                {activeItem === "Home" ? <HomeTab Invoices={getInvoices} /> : null}
-                {activeItem === "Invoices" ? <InvoiceTab Services={getServices} Companies={getCompanies} Customers={getCustomers} createInvoice={handleCreateInvoice} handleCreateInvoice={handleCreateInvoice} Invoices={getInvoices} /> : null}
-                {activeItem === "Customers" ? <CustomersTab handleDeleteCustomerCb={handleDeleteCustomer} handleUpdateCustomerCb={handleUpdateCustomer} Customers={getCustomers} handleCreateCustomerCb={handleCreateCustomer} /> : null}
-                {activeItem === "Companies" ? <CompaniesTab handleCreateCompanyCb={handleCreateCompany} handleDeleteCompanyCb={handleDeleteCompany} handleUpdateCompanyCb={handleUpdateCompany} Companies={getCompanies} /> : null}
+                {activeItem === "Home" ? <HomeTab Invoices={getInvoices as InvoiceObject[] | undefined} /> : null}
+                {activeItem === "Invoices" ? <InvoiceTab Services={getServices} Companies={getCompanies as Company[] | undefined} Customers={getCustomers as Partner[] | undefined} handleCreateInvoice={handleCreateInvoice} Invoices={invoices as InvoiceObject | undefined} /> : null}
+                {activeItem === "Customers" ? <CustomersTab handleDeleteCustomerCb={handleDeleteCustomer} handleUpdateCustomerCb={handleUpdateCustomer} Customers={getCustomers as Partner[] | undefined} handleCreateCustomerCb={handleCreateCustomer} /> : null}
+                {activeItem === "Companies" ? <CompaniesTab handleCreateCompanyCb={handleCreateCompany} handleDeleteCompanyCb={handleDeleteCompany} handleUpdateCompanyCb={handleUpdateCompany} Companies={getCompanies as Company[] | undefined} /> : null}
                 {activeItem === "Services" ? <ServicesTab Services={getServices} handleDeleteServiceCb={handleDeleteService} handleUpdateServiceCb={handleUpdateService} handleCreateServiceCb={handleCreateService} /> : null}
             </div>
             <ToastContainer />

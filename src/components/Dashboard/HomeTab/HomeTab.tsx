@@ -11,18 +11,17 @@ export default function HomeTab({ Invoices }: HomeTabProps) {
     const [revenue, setRevenue] = useState<number>(0)
     const [currentMonth, setCurrentMonth] = useState<string>('')
     useEffect(() => {
-
         const calculateRevenue = () => {
             let total = 0
             Invoices?.map((invoice) => {
-                invoice.services.map((service) => {
+                const jsonServices = JSON.parse(invoice.services) as Service[]
+                jsonServices.map((service) => {
                     total += service.price
-                }
-                )
+                })
             })
             setRevenue(total)
         }
-        if (Invoices) {
+        if (Invoices?.length > 0) {
             calculateRevenue()
         }
 

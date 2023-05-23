@@ -66,45 +66,45 @@ model User {
     accounts      Account[]
     sessions      Session[]
     invoices      Invoice[]
-    services      Service[]
+    services      String?
     companies     Company[]
     partners      Partner[]
 }
 
 model Invoice {
-    id                 String    @id @default(cuid())
-    createdAt          DateTime  @default(now())
-    updatedAt          DateTime  @updatedAt
+    id                 String   @id @default(cuid())
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
     userId             String
-    user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     //Can be empty default is []
-    services           Service[]
+    services           String?
     invoiceNumber      String
     invoiceDate        DateTime
     dueDate            DateTime
     invoiceServiceDate DateTime
     status             String
     //Can be empty default is []
-    Company            Company?  @relation(fields: [companyId], references: [id])
-    companyId          String?
-    Partner            Partner?  @relation(fields: [partnerId], references: [id])
-    partnerId          String?
+    Company            Company  @relation(fields: [companyId], references: [id])
+    companyId          String
+    Partner            Partner  @relation(fields: [partnerId], references: [id])
+    partnerId          String
 }
 
-model Service {
-    id          String   @id @default(cuid())
-    name        String
-    price       Float
-    description String?
-    invoiceId   String?
-    invoice     Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-    Company     Company? @relation(fields: [companyId], references: [id])
-    companyId   String?
-    Partner     Partner? @relation(fields: [partnerId], references: [id])
-    partnerId   String?
-    User        User?    @relation(fields: [userId], references: [id])
-    userId      String?
-}
+// model Service {
+//     id          String   @id @default(cuid())
+//     name        String
+//     price       Float
+//     description String?
+//     invoiceId   String?
+//     invoice     Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+//     Company     Company? @relation(fields: [companyId], references: [id])
+//     companyId   String?
+//     Partner     Partner? @relation(fields: [partnerId], references: [id])
+//     partnerId   String?
+//     User        User?    @relation(fields: [userId], references: [id])
+//     userId      String?
+// }
 
 model Company {
     id        String    @id @default(cuid())
@@ -120,7 +120,7 @@ model Company {
     website   String
     vat       String
     invoices  Invoice[]
-    services  Service[]
+    services  String?
     partners  Partner[]
     User      User?     @relation(fields: [userId], references: [id])
     userId    String?
@@ -140,7 +140,7 @@ model Partner {
     website   String?
     vat       String?
     invoices  Invoice[]
-    services  Service[]
+    services  String?
     companies Company[]
     User      User?     @relation(fields: [userId], references: [id])
     userId    String?
