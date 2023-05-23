@@ -3,6 +3,7 @@ import type { InvoiceObject, Company, Partner, Service } from 'types'
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
 import ServiceItem from './ServiceItem';
+import ServiceAddModal from './ServiceAddModal';
 export default function InvoiceCreateModal({ customers, services, companies, invoiceState, invoiceData, setShowModal, handleCreateInvoice }: { invoiceData: InvoiceObject, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<InvoiceObject>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateInvoice: () => void, services: Service[] }) {
     const [invoiceDate] = React.useState<Date | null>(new Date());
     const [dueDate] = React.useState<Date | null>(new Date());
@@ -10,6 +11,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
     const [selectedCustomer, setSelectedCustomer] = React.useState<Partner | undefined>(undefined);
     const [emptyServices, setEmptyServices] = React.useState<Service[]>([]);
     const [selectedCompany, setSelectedCompany] = React.useState<Company | undefined>(undefined);
+    const [addService, setAddService] = React.useState(false);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         invoiceState((prevState) => ({
             ...prevState,
@@ -57,15 +59,16 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
         }))
     }
     const handleAddService = () => {
-        setEmptyServices((prevState) => ([
-            ...prevState,
-            {
-                id: Math.random().toString(),
-                name: null,
-                price: null,
-                description: null,
-            }
-        ]))
+        setAddService(true)
+        // setEmptyServices((prevState) => ([
+        //     ...prevState,
+        //     {
+        //         id: Math.random().toString(),
+        //         name: null,
+        //         price: null,
+        //         description: null,
+        //     }
+        // ]))
     }
     //!WARNING Services are premade services that a user can add to the invoice
 
@@ -88,8 +91,8 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
     }
     const handleCloseModal = () => {
         setShowModal(false)
-
     }
+
     useEffect(() => {
         invoiceState((prevState) => ({
             ...prevState,
@@ -102,11 +105,12 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
 
         }))
     }, [selectedCustomer, selectedCompany, services, emptyServices, invoiceState, invoiceDate, dueDate, serviceDate])
-
     return (
         <div className=" bg-gray-100">
+
             <div className="flex items-center justify-center h-full">
                 <div className="w-full ">
+
                     <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <div className="mb-4">
                             <div className='pb-5'>
@@ -184,6 +188,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                     />
                                 </div>
                             </div>
+
                             <div className='flex space-x-32'>
 
                                 <div className='flex space-x-8 bg-b'>
@@ -472,8 +477,12 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                             </div>
                                         </div>
                                     ))}
-                                </div>
 
+                                </div>
+                                <div>
+                                    {/* {addService ? <ServiceAddModal /> : null} 
+                                    Render premade services and make the user select them or make a blank one. */}
+                                </div>
                                 <div>
                                     <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                         onClick={handleAddService}
@@ -500,6 +509,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                             </div>
                         </div>
                     </form>
+
                 </div>
             </div >
         </div >
