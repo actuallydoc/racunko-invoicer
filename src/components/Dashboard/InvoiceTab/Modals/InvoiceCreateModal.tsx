@@ -476,7 +476,8 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                 </div>
                             </div>
                             <div className='pb-10'>
-                                <div>
+                                {/* Pretty fascinating that u can do that so easily(scroll) */}
+                                <div className='max-h-[200px] overflow-y-scroll'>
                                     {emptyServices?.map((service, index) => (
                                         <div key={index} className="flex items-center justify-between">
                                             <div className="mb-6">

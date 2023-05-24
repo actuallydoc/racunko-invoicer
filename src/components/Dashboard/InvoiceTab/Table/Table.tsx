@@ -9,15 +9,18 @@ import TableHeader from './TableHeader'
 export default function Table({ Invoices }: { Invoices: InvoiceObject[] | undefined }) {
 
     return (
-        <table className="min-w-full">
-            <thead>
-                <TableHeader />
-            </thead>
-            <tbody>
-                {Invoices?.map((invoice) => (
-                    <TableItem key={invoice.id} invoice={invoice} />
-                ))}
-            </tbody>
-        </table>
+        <div className="max-h-[770px] overflow-y-scroll">
+            <table className="min-w-full">
+                <thead>
+                    <TableHeader />
+                </thead>
+                <tbody >
+                    {Invoices?.map((invoice) => (
+                        <TableItem key={invoice.id} invoice={invoice} />
+                    ))}
+                </tbody>
+            </table>
+        </div>
+
     )
 }
