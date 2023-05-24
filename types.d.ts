@@ -47,7 +47,7 @@ export interface Company {
     services: Service[]?;
     invoices: Invoice[]?;
     partners: Partner[]?;
-    website: string;
+    website: string?;
     city: string;
     zip: string;
     country: string;
@@ -110,7 +110,7 @@ export interface InvoiceObject {
     dueDate: Date?;
     invoiceDate: Date?;
     invoiceServiceDate: Date?;
-    services: string?;
+    services: Service[]?;
     Company: Company?;
     Partner: Partner?;
     status: Status;

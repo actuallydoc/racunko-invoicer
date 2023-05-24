@@ -30,7 +30,7 @@ export const companyRouter = createTRPCRouter({
         city: z.string(),
         zip: z.string(),
         country: z.string(),
-        website: z.string(),
+        website: z.undefined().or(z.string()),
         vat: z.string(),
     })).mutation(async ({ ctx, input }) => {
         const company = await ctx.prisma.company.create({
@@ -44,7 +44,7 @@ export const companyRouter = createTRPCRouter({
                 zip: input.zip,
                 country: input.country,
                 vat: input.vat,
-                website: input.website,
+                website: input.website as string,
             }
         });
         return company;
@@ -59,7 +59,8 @@ export const companyRouter = createTRPCRouter({
         city: z.string(),
         zip: z.string(),
         country: z.string(),
-        website: z.string(),
+        //make website optional
+        website: z.nullable(z.string()),
         vat: z.string(),
     })).mutation(async ({ ctx, input }) => {
         const company = await ctx.prisma.company.update({
@@ -75,7 +76,7 @@ export const companyRouter = createTRPCRouter({
                 zip: input.zip,
                 country: input.country,
                 vat: input.vat,
-                website: input.website,
+                website: input.website ? input.website : undefined,
             }
         });
         return company;

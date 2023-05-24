@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import type { Company } from 'types'
 
-export default function CompanyEditModal({ companyState, setShowModal, handleUpdateCompany, handleDeleteCustomer }: { companyState: Company, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleUpdateCompany: (company: Company) => void, handleDeleteCustomer: (company: Company) => void }) {
+export default function CompanyEditModal({ companyState, setShowModal, handleUpdateCompany, handleDeleteCompany }: { companyState: Company, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleUpdateCompany: (company: Company) => void, handleDeleteCompany: (company: Company) => void }) {
 
     const [company, setCompany] = React.useState<Company>(companyState);
 
@@ -14,12 +14,9 @@ export default function CompanyEditModal({ companyState, setShowModal, handleUpd
     }
     const handleDeleteCustomerCb = () => {
         console.log('delete');
-        handleDeleteCustomer(company)
+        handleDeleteCompany(company)
         setShowModal(false);
     }
-    useEffect(() => {
-        console.log(companyState);
-    }, [companyState]);
 
     return (
         <div className=" bg-gray-100">
@@ -134,7 +131,7 @@ export default function CompanyEditModal({ companyState, setShowModal, handleUpd
                                                 Company Website
                                             </label>
                                             <input
-                                                value={company.website}
+                                                value={company.website ? company.website : ''}
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="website"

@@ -75,6 +75,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                 name: null,
                 price: null,
                 description: null,
+                quantity: 1,
             }
         ]))
     }
@@ -105,7 +106,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
             ...prevState,
             Partner: selectedCustomer as Partner,
             Company: selectedCompany as Company,
-            services: JSON.stringify(emptyServices),
+            services: emptyServices,
             invoiceDate: invoiceDate as Date,
             dueDate: dueDate as Date,
             invoiceServiceDate: serviceDate as Date,
@@ -318,7 +319,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                                 id="Companywebsite"
                                                 type="text"
                                                 placeholder="Company Website"
-                                                value={selectedCompany?.website}
+                                                value={selectedCompany?.website as string}
                                             />
                                         </div>
                                         <div className="mb-6">

@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import LineChart from './Charts/LineChart'
 import VerticalBarChart from './Charts/VerticalBarChart'
-import type { InvoiceObject, Service } from 'types'
+import type { Company, InvoiceObject, Service } from 'types'
 import { RiFilePaper2Fill } from 'react-icons/ri'
 import { BiMoneyWithdraw } from 'react-icons/bi'
 interface HomeTabProps {
     Invoices: (InvoiceObject & { services: Service[]; })[] | undefined;
+    Companies: Company[] | undefined;
 }
+
+
+//!TODO Add so u select a company and see the revenue for that company on the second dropdown
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-export default function HomeTab({ Invoices }: HomeTabProps) {
+export default function HomeTab({ Invoices, Companies }: HomeTabProps) {
     const [revenue, setRevenue] = useState<number>(0)
     const [currentMonth, setCurrentMonth] = useState<string>('')
+    const [currentCompany, setCurrentCompany] = useState<string | undefined>(undefined)
+
+
     useEffect(() => {
         const calculateRevenue = () => {
-            let total = 0
-            Invoices?.map((invoice: InvoiceObject) => {
-                const jsonServices = JSON.parse(invoice.services as string) as Service[]
-                jsonServices.map((service) => {
-                    if (service?.price != null) {
-                        total += Number(service?.price) * Number(service?.quantity)
-                    }
-                })
-            })
-            setRevenue(total)
+
+            //
+            console.log("Whatever man")
         }
         if (Invoices) {
             if (Invoices?.length > 0) {
@@ -33,6 +33,12 @@ export default function HomeTab({ Invoices }: HomeTabProps) {
     }, [Invoices])
     const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setCurrentMonth(e.target.value)
+    }
+    const handleCompanyDropDown = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const companyInvoices = Invoices?.filter((invoice) => invoice.Company?.name === e.target.value)
+        console.log(companyInvoices)
+
+        setCurrentCompany(e.target.value)
     }
 
     useEffect(() => {
@@ -56,11 +62,6 @@ export default function HomeTab({ Invoices }: HomeTabProps) {
                     </div>
 
                 </div>
-                {/* <div className='text-6xl mt-5 text-[#3E00C2] rounded-full p-2 bg-slate-200'>
-                                    <div>
-                                        <p className='text-4xl text-[#23005B]'>{revenue}</p>
-                                    </div>
-                                </div> */}
                 <div>
                     <div className="box-border w-80 h-44  bg-white rounded-3xl p-5 border-4 ...">
                         <div className='flex'>
@@ -118,10 +119,11 @@ export default function HomeTab({ Invoices }: HomeTabProps) {
                                 <p className='text-lg font-medium text-[#5321CA]'>Revenue</p>
                             </div>
                             <div className="relative">
-                                <select value={currentMonth} onChange={handleMonthChange} className="block appearance-none w-full bg-slate-200 border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition duration-300 ease-in-out">
-                                    {months.map((month) => (
-                                        <option key={month} value={month}>{month}</option>
-                                    ))}
+                                <select defaultValue={currentCompany} onChange={handleCompanyDropDown} className="block appearance-none w-full bg-slate-200 border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition duration-300 ease-in-out">
+                                    <option disabled selected value={"123"}> -- select an option -- </option>
+                                    {Companies ? Companies?.map((company) => (
+                                        <option key={company.id} value={company.name}>{company.name}</option>
+                                    )) : <option value=''>No Companies </option>}
                                 </select>
                                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

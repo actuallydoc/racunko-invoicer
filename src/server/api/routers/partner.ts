@@ -29,7 +29,7 @@ export const partnerRouter = createTRPCRouter({
         city: z.string(),
         zip: z.string(),
         country: z.string(),
-        website: z.string(),
+        website: z.string().nullable(),
         vat: z.string().nullable(),
 
     })).mutation(async ({ ctx, input }) => {
@@ -71,9 +71,10 @@ export const partnerRouter = createTRPCRouter({
         city: z.string(),
         zip: z.string(),
         country: z.string(),
-        website: z.string(),
+        website: z.string().nullable().default(null),
         vat: z.string().nullable(),
     })).mutation(async ({ ctx, input }) => {
+        console.log(input);
         const partner = await ctx.prisma.partner.create({
             data: {
                 userId: input.user_id,

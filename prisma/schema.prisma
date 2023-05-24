@@ -117,7 +117,7 @@ model Company {
     country   String
     phone     String
     email     String
-    website   String
+    website   String?
     vat       String
     invoices  Invoice[]
     services  String?

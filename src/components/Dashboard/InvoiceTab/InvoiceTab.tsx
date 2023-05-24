@@ -15,11 +15,8 @@ interface InvoiceTabProps {
 export default function InvoiceTab({ Invoices, Services, handleCreateInvoice, Companies, Customers }: InvoiceTabProps) {
     const [fromDate, setFromDate] = React.useState<Date | null>(new Date());
     const [toDate, setToDate] = React.useState<Date | null>(new Date());
-    //!TODO FILTER
     const [filteredInvoices, setFilteredInvoices] = React.useState<InvoiceObject[]>([]);
-
     const [invoiceState, setInvoiceState] = React.useState<InvoiceObject>({} as InvoiceObject)
-
     //Create modal for creating new invoice
     const [showCreateModal, setCreateShowModal] = React.useState(false);
     const handleOpenCreateModal = () => {

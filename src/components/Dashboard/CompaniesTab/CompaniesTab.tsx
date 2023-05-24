@@ -23,12 +23,17 @@ export default function CustomersTab({ Companies, handleCreateCompanyCb, handleU
         handleCreateCompanyCb(tempCompany);
         console.log(tempCompany);
     };
-    const handleUpdateCompany = (company: Company) => {
-        setUpdateShowModal(true);
-        handleUpdateCompanyCb(company);
+    const handleUpdateCompanyModal = (company: Company) => {
         setSelectedCompany(company);
+        setUpdateShowModal(true);
     };
-    const handleDeleteCustomer = (company: Company) => {
+    const handleUpdateCompany = (company: Company) => {
+        setUpdateShowModal(false);
+        handleUpdateCompanyCb(company);
+        console.log(company);
+    };
+
+    const handleDeleteCompany = (company: Company) => {
         setUpdateShowModal(false);
         console.log(company);
         handleDeleteCompanyCb(company);
@@ -56,7 +61,7 @@ export default function CustomersTab({ Companies, handleCreateCompanyCb, handleU
             )}
             {showUpdateModal && (
                 <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
-                    <CompanyEditModal handleDeleteCustomer={handleDeleteCustomer} handleUpdateCompany={handleUpdateCompany} setShowModal={setUpdateShowModal} companyState={selectedCompany} />
+                    <CompanyEditModal handleDeleteCompany={handleDeleteCompany} handleUpdateCompany={handleUpdateCompany} setShowModal={setUpdateShowModal} companyState={selectedCompany} />
                 </div>
             )}
             <div className="w-10/12 h-[850px] mb-16 bg-white rounded-3xl p-4 border-4">
@@ -83,7 +88,7 @@ export default function CustomersTab({ Companies, handleCreateCompanyCb, handleU
                     </div>
                 </div>
                 <div>
-                    <Table Companies={filteredCompanies} editCompany={handleUpdateCompany} />
+                    <Table Companies={filteredCompanies} editCompany={handleUpdateCompanyModal} />
                 </div>
             </div>
         </div>

@@ -20,6 +20,11 @@ export default function CustomersTab({ Customers, handleCreateCustomerCb, handle
         handleCreateCustomerCb(tempCustomer);
         console.log(tempCustomer);
     };
+    const handleUpdateCustomerModal = (customer: Partner) => {
+        setSelectedCustomer(customer);
+        setUpdateShowModal(true);
+    };
+
     const handleUpdateCustomer = (customer: Partner) => {
         setUpdateShowModal(true);
         handleUpdateCustomerCb(customer);
@@ -80,7 +85,7 @@ export default function CustomersTab({ Customers, handleCreateCustomerCb, handle
                     </div>
                 </div>
                 <div>
-                    <Table Partners={filteredCustomers} editPartner={handleUpdateCustomer} />
+                    <Table Partners={filteredCustomers} editPartner={handleUpdateCustomerModal} />
                 </div>
             </div>
         </div>
