@@ -32,7 +32,6 @@ export default function Index() {
     const { data: getCompanies } = api.company.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
     // const { data: getServices } = api.service.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
     const [invoices, setInvoices] = useState<InvoiceObject[] | undefined>(undefined)
-
     //Fake services data for UserServices
     const getServices: Service[] = [
         {
@@ -40,12 +39,14 @@ export default function Index() {
             name: "Service 1",
             price: 100,
             description: "Description 1",
+            quantity: null
         },
         {
             id: "2",
             name: "Service 2",
             price: 200,
             description: "Description 2",
+            quantity: null
         },
     ]
     //Customer/Partner
@@ -172,6 +173,7 @@ export default function Index() {
                 }
             }, [])
             setInvoices(invoices as unknown as InvoiceObject[])
+            console.log(invoices);
         }
     }, [getInvoices])
 

@@ -18,7 +18,7 @@ export default function HomeTab({ Invoices }: HomeTabProps) {
                 const jsonServices = JSON.parse(invoice.services as string) as Service[]
                 jsonServices.map((service) => {
                     if (service?.price != null) {
-                        total += service?.price
+                        total += Number(service?.price) * Number(service?.quantity)
                     }
                 })
             })
@@ -112,7 +112,7 @@ export default function HomeTab({ Invoices }: HomeTabProps) {
                         </div>
                         <div className='flex-col space-y-2 ml-auto mr-auto mt-5'>
                             <div>
-                                <p className='text-4xl text-[#23005B]'>{revenue}</p>
+                                <p className='text-4xl text-[#23005B]'>{revenue}€</p>
                             </div>
                             <div>
                                 <p className='text-lg font-medium text-[#5321CA]'>Revenue</p>

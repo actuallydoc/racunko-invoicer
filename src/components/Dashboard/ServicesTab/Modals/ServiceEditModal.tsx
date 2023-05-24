@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import type { Service } from 'types'
 
 export default function ServiceEditModal({ serviceState, setShowModal, handleUpdateService, handleDeleteService }: { serviceState: Service, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleUpdateService: (service: Service) => void, handleDeleteService: (service: Service) => void }) {
@@ -7,7 +7,6 @@ export default function ServiceEditModal({ serviceState, setShowModal, handleUpd
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setService({ ...service, [e.target.id]: e.target.value });
-
     }
     const handleUpdateServiceCb = () => {
         handleUpdateService(service);
@@ -18,9 +17,6 @@ export default function ServiceEditModal({ serviceState, setShowModal, handleUpd
         handleDeleteService(service)
         setShowModal(false);
     }
-    useEffect(() => {
-        console.log(serviceState);
-    }, [serviceState]);
 
     return (
         <div className=" bg-gray-100">

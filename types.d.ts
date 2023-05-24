@@ -74,6 +74,7 @@ export interface Service {
     name: string | null;
     price: number | null;
     description: string | null;
+    quantity: number | null;
 }
 
 enum Status {
