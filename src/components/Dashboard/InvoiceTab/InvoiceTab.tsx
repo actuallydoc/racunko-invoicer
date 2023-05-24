@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Table from './Table/Table'
 import type { InvoiceObject, Service, Company, Partner } from 'types'
 import "flatpickr/dist/themes/material_green.css";
@@ -6,7 +6,7 @@ import { IoIosCreate } from 'react-icons/io';
 import Flatpickr from "react-flatpickr";
 import InvoiceCreateModal from './Modals/InvoiceCreateModal';
 interface InvoiceTabProps {
-    Invoices: (InvoiceObject | undefined);
+    Invoices: (InvoiceObject[] | undefined);
     handleCreateInvoice: (invoice: InvoiceObject) => void;
     Companies: Company[] | undefined;
     Customers: Partner[] | undefined;
@@ -16,7 +16,7 @@ export default function InvoiceTab({ Invoices, Services, handleCreateInvoice, Co
     const [fromDate, setFromDate] = React.useState<Date | null>(new Date());
     const [toDate, setToDate] = React.useState<Date | null>(new Date());
     //!TODO FILTER
-    // const [filteredInvoices, setFilteredInvoices] = React.useState<Invoice[]>([]);
+    const [filteredInvoices, setFilteredInvoices] = React.useState<InvoiceObject[]>([]);
 
     const [invoiceState, setInvoiceState] = React.useState<InvoiceObject>({} as InvoiceObject)
 
@@ -27,10 +27,20 @@ export default function InvoiceTab({ Invoices, Services, handleCreateInvoice, Co
     };
     const handleCreateInvoiceCb = () => {
         setCreateShowModal(false);
-        console.log(invoiceState);
         handleCreateInvoice(invoiceState);
     };
-
+    const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const filtered = Invoices?.filter((invoice) => {
+            if (invoice.invoiceNumber === null) return;
+            return invoice.invoiceNumber.toLowerCase().includes(value.toLowerCase());
+        });
+        setFilteredInvoices(filtered as InvoiceObject[]);
+        console.log(filtered);
+    };
+    useEffect(() => {
+        setFilteredInvoices(Invoices as InvoiceObject[]);
+    }, [Invoices]);
 
     return (
         <div className="min-h-screen flex items-center ml-10">
@@ -43,7 +53,7 @@ export default function InvoiceTab({ Invoices, Services, handleCreateInvoice, Co
                 <div className='flex space-x-5 '>
                     <div className='flex space-x-5'>
                         <div>
-                            <input type="text" placeholder="Search" className="w-[150px] h-10 border-2 border-gray-300 rounded-lg p-2" />
+                            <input type="text" onChange={handleFilter} placeholder="Search" className="w-[150px] h-10 border-2 border-gray-300 rounded-lg p-2" />
                         </div>
                         <div className='pt-2 ml-5 rounded-lg border-4'>
                             <Flatpickr
@@ -80,7 +90,7 @@ export default function InvoiceTab({ Invoices, Services, handleCreateInvoice, Co
                     </div>
                 </div>
                 <div>
-                    <Table Invoices={Invoices as InvoiceObject[] | undefined} />
+                    <Table Invoices={filteredInvoices as InvoiceObject[] | undefined} />
                 </div>
             </div>
         </div>

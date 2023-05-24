@@ -203,7 +203,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                             {companies && (
                                                 <select
                                                     onChange={handleCompanyDropDown}
-                                                    value={selectedCompany?.name}
+                                                    defaultValue={selectedCompany?.name}
                                                     className="w-full border-2 border-gray-300 rounded-lg p-2">
                                                     <option disabled selected value={"123"}> -- select an option -- </option>
                                                     {companies?.length > 0 ? companies?.map((company) => (
@@ -341,7 +341,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                         <div>
                                             {customers && (
                                                 <select onChange={handleCustomerDropDown}
-                                                    value={selectedCustomer?.name}
+                                                    defaultValue={selectedCustomer?.name}
                                                     className="w-full border-2 border-gray-300 rounded-lg p-2">
                                                     <option disabled selected value={"123"}> -- select an option -- </option>
                                                     {customers?.length > 0 ? customers?.map((customer) => (
