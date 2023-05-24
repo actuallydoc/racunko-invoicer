@@ -34,14 +34,14 @@ export default function CustomersTab({ Customers, handleCreateCustomerCb, handle
 
     const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        const filtered = Customers.filter((customer) => {
+        const filtered = Customers?.filter((customer) => {
             return customer.name.toLowerCase().includes(value.toLowerCase());
         });
-        setFilteredCustomers(filtered);
+        setFilteredCustomers(filtered as Partner[]);
         console.log(filtered);
     };
     useEffect(() => {
-        setFilteredCustomers(Customers);
+        setFilteredCustomers(Customers as Partner[]);
     }, [Customers]);
 
     return (
