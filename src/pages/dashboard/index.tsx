@@ -151,12 +151,12 @@ export default function Index() {
     const handleCreateInvoice = (formState: InvoiceObject) => {
         console.log(formState);
         createInvoice.mutate({
-            companyId: formState.Company.id,
-            dueDate: formState.dueDate,
-            invoiceDate: formState.invoiceDate,
-            invoiceNumber: formState.invoiceNumber,
-            partnerId: formState.Partner.id,
-            invoiceServiceDate: formState.invoiceServiceDate,
+            companyId: formState?.Company?.id as string,
+            dueDate: formState?.dueDate as Date,
+            invoiceDate: formState?.invoiceDate as Date,
+            invoiceNumber: formState?.invoiceNumber as string,
+            partnerId: formState.Partner?.id as string,
+            invoiceServiceDate: formState.invoiceServiceDate as Date,
             services: JSON.stringify(formState.services),
             id: sessionData?.user?.id?.toString() as string,
         })

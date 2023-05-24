@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Table from './Table/Table'
-import type { InvoiceObject, InvoiceJSON, Service, Company, Partner } from 'types'
+import type { InvoiceObject, Service, Company, Partner } from 'types'
 import "flatpickr/dist/themes/material_green.css";
 import { IoIosCreate } from 'react-icons/io';
 import Flatpickr from "react-flatpickr";

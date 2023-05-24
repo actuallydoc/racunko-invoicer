@@ -117,16 +117,16 @@ export interface InvoiceForm {
 
 
 export interface InvoiceObject {
-    id: string;
-    updatedAt: Date;
-    createdAt: Date;
+    id: string?;
+    updatedAt: Date?;
+    createdAt: Date?;
     userId: User;
-    invoiceNumber: string;
-    dueDate: Date;
-    invoiceDate: Date;
-    invoiceServiceDate: Date;
-    services: string;
-    Company: Company;
-    Partner: Partner;
+    invoiceNumber: string?;
+    dueDate: Date?;
+    invoiceDate: Date?;
+    invoiceServiceDate: Date?;
+    services: string?;
+    Company: Company?;
+    Partner: Partner?;
     status: Status;
 }

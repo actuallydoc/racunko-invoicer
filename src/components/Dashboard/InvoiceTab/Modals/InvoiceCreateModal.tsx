@@ -3,7 +3,7 @@ import type { InvoiceObject, Company, Partner, Service } from 'types'
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
 import ServiceItem from './ServiceItem';
-import ServiceAddModal from './ServiceAddModal';
+// import ServiceAddModal from './ServiceAddModal';
 export default function InvoiceCreateModal({ customers, services, companies, invoiceState, invoiceData, setShowModal, handleCreateInvoice }: { invoiceData: InvoiceObject, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<InvoiceObject>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateInvoice: () => void, services: Service[] }) {
     const [invoiceDate] = React.useState<Date | null>(new Date());
     const [dueDate] = React.useState<Date | null>(new Date());
@@ -11,35 +11,42 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
     const [selectedCustomer, setSelectedCustomer] = React.useState<Partner | undefined>(undefined);
     const [emptyServices, setEmptyServices] = React.useState<Service[]>([]);
     const [selectedCompany, setSelectedCompany] = React.useState<Company | undefined>(undefined);
-    const [addService, setAddService] = React.useState(false);
+    // const [addService, setAddService] = React.useState(false);
+
+
+    //Use this for all the state and not the separate functions for each field
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         invoiceState((prevState) => ({
             ...prevState,
             [e.target.id]: e.target.value,
             Company: {
-                ...prevState.company,
+                ...prevState.Company as Company,
             },
             Partner: {
-                ...prevState.partner,
+                ...prevState.Partner as Partner,
             },
-
         }))
     }
     const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => {
-        invoiceState((prevState) => ({
-            ...prevState,
-            services: prevState.services.map((service) => {
+        console.log(e.target.name)
+        setEmptyServices((prevState) => {
+            return prevState.map((service) => {
                 if (service.id === id) {
                     return {
                         ...service,
-                        [e.target.name]: e.target.value,
+                        [e.target.name]: e.target.value
                     }
                 }
                 return service
             })
+        })
+        invoiceState((prevState) => ({
+            ...prevState,
+            services: JSON.stringify(emptyServices),
         }))
 
     }
+    //Dates for service
     const handleDueDate = (e: Date) => {
         invoiceState((prevState) => ({
             ...prevState,
@@ -59,16 +66,17 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
         }))
     }
     const handleAddService = () => {
-        setAddService(true)
-        // setEmptyServices((prevState) => ([
-        //     ...prevState,
-        //     {
-        //         id: Math.random().toString(),
-        //         name: null,
-        //         price: null,
-        //         description: null,
-        //     }
-        // ]))
+        // setAddService(true)
+        //Initializes the empty services array with a blank service
+        setEmptyServices((prevState) => ([
+            ...prevState,
+            {
+                id: Math.random().toString(),
+                name: null,
+                price: null,
+                description: null,
+            }
+        ]))
     }
     //!WARNING Services are premade services that a user can add to the invoice
 
@@ -84,7 +92,6 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
             return company.name === e.currentTarget.value
         }
         )[0])
-
     }
     const handleDeleteService = (id: string) => {
         setEmptyServices((prevState) => (prevState.filter((service) => service.id !== id)))
@@ -98,11 +105,10 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
             ...prevState,
             Partner: selectedCustomer as Partner,
             Company: selectedCompany as Company,
-            services: emptyServices,
+            services: JSON.stringify(emptyServices),
             invoiceDate: invoiceDate as Date,
             dueDate: dueDate as Date,
             invoiceServiceDate: serviceDate as Date,
-
         }))
     }, [selectedCustomer, selectedCompany, services, emptyServices, invoiceState, invoiceDate, dueDate, serviceDate])
     return (
@@ -184,7 +190,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                         id="invoiceNumber"
                                         type="name"
                                         placeholder="Invoice Number"
-                                        value={invoiceData?.invoiceNumber}
+                                        value={invoiceData?.invoiceNumber as string}
                                     />
                                 </div>
                             </div>
@@ -480,8 +486,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
 
                                 </div>
                                 <div>
-                                    {/* {addService ? <ServiceAddModal /> : null} 
-                                    Render premade services and make the user select them or make a blank one. */}
+
                                 </div>
                                 <div>
                                     <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
