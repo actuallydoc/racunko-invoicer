@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react'
-import type { Invoice } from 'types'
+import React from 'react'
+import type { InvoiceObject } from 'types'
 import TableItem from './TableItem'
 import TableHeader from './TableHeader'
 
 
 
 
-export default function Table({ Invoices }: { Invoices: Invoice[] | undefined }) {
+export default function Table({ Invoices }: { Invoices: InvoiceObject[] | undefined }) {
 
     return (
         <table className="min-w-full">
