@@ -16,29 +16,33 @@ export default function HomeTab({ Invoices, Companies }: HomeTabProps) {
     const [revenue, setRevenue] = useState<number>(0)
     const [currentMonth, setCurrentMonth] = useState<string>('')
     const [currentCompany, setCurrentCompany] = useState<string | undefined>(undefined)
-
-
     useEffect(() => {
         const calculateRevenue = () => {
+            let total = 0
+            Invoices?.map((invoice) => {
+                invoice.services?.map((service) => {
+                    if (invoice.Company?.name === currentCompany) {
+                        total += Number(service.price)
+                    }
+                    setRevenue(total)
 
-            //
-            console.log("Whatever man")
+                })
+            })
+
+            console.log(total)
         }
         if (Invoices) {
             if (Invoices?.length > 0) {
                 calculateRevenue()
             }
         }
-
-    }, [Invoices])
+    }, [Invoices, currentCompany])
     const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setCurrentMonth(e.target.value)
     }
     const handleCompanyDropDown = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const companyInvoices = Invoices?.filter((invoice) => invoice.Company?.name === e.target.value)
-        console.log(companyInvoices)
-
         setCurrentCompany(e.target.value)
+
     }
 
     useEffect(() => {

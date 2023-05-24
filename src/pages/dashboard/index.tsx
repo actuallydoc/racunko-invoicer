@@ -25,13 +25,13 @@ const Items = [
 
 export default function Index() {
     const [activeItem, setActiveItem] = useState<string>(Items[0] as string);
+    const [invoices, setInvoices] = useState<(InvoiceObject & { services: Service[]; })[] | undefined>(undefined)
     const { data: sessionData } = useSession({ required: true })
     //Fetch data
     const { data: getInvoices, refetch: refetchInvoices, isSuccess: getInvoiceStatus } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
     const { data: getCustomers, refetch: refetchCustomers, isSuccess: getCustomerStatus } = api.partner.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
     const { data: getCompanies, refetch: refetchCompanies, isSuccess: getCompanyStatus } = api.company.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
     // const { data: getServices, refetch: refetchServices } = api.service.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
-    const [invoices, setInvoices] = useState<InvoiceObject[] | undefined>(undefined)
     //Fake services data for UserServices
     const getServices: Service[] = [
         {
@@ -63,8 +63,6 @@ export default function Index() {
     // const createService = api.service.createService.useMutation();
     // const updateService = api.service.updateService.useMutation();
     // const deleteService = api.service.deleteService.useMutation();
-
-
     const handleCreateCustomer = (formState: Partner) => {
         // console.log(formState);
         createCustomer.mutate({
@@ -218,14 +216,17 @@ export default function Index() {
             id: sessionData?.user?.id?.toString() as string,
         })
         setTimeout(() => {
-            refetchInvoices().then(() => {
-                const invoices = getInvoices?.map((invoice) => {
-                    return {
-                        ...invoice,
-                        services: JSON.parse(invoice.services as string) as Service[],
-                    }
-                }, [])
-                setInvoices(invoices as unknown as InvoiceObject[])
+            refetchInvoices().then((data) => {
+                console.log("Refetching invoices");
+                if (data.isSuccess) {
+                    //Convert services to JSON from string
+                    data.data?.map((invoice) => {
+                        invoice.services = JSON.parse(invoice.services) as Service[];
+                    })
+                    //This works properly
+                    console.log(data.data);
+                    setInvoices(data.data as unknown as InvoiceObject[]);
+                }
             }
             ).catch((err) => {
                 console.log(err);
@@ -234,26 +235,17 @@ export default function Index() {
         }, 2000)
 
     }
-
-    //Doesnt work just converts the last one to json object and not all of them
+    //Yes this is a mess, but it works
     useEffect(() => {
-        if (getInvoices) {
-            const invoices = getInvoices?.map((invoice) => {
-                // Check if services is already an object
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                const services = typeof invoice.services === 'object'
-                    ? invoice.services
-                    : JSON.parse(invoice.services);
-
-                return {
-                    ...invoice,
-                    services: services as Service[],
-                };
-            });
-
-            setInvoices(invoices as unknown as InvoiceObject[]);
+        if (getInvoiceStatus) {
+            //Convert services to JSON from string
+            getInvoices?.map((invoice) => {
+                invoice.services = JSON.parse(invoice.services) as Service[];
+            })
+            setInvoices(getInvoices as unknown as InvoiceObject[]);
         }
-    }, []);
+        console.log("Invoices", getInvoices);
+    }, [getInvoiceStatus])
     return (
         <div className='flex bg-[#90C28B]'>
             <div>

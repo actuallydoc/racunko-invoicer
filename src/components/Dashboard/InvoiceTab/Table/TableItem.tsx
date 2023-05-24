@@ -5,9 +5,18 @@ export default function TableItem({ invoice }: { invoice: InvoiceObject }) {
 
     const [total, setTotal] = React.useState<number>(0)
     useEffect(() => {
-        console.log(typeof invoice.services)
-
-    }, [])
+        console.log(invoice)
+        const calculateTotal = () => {
+            let total = 0
+            invoice.services?.map((service: Service) => {
+                if (service.price) {
+                    total += Number(service.price)
+                }
+            })
+            setTotal(total)
+        }
+        calculateTotal()
+    }, [invoice])
 
 
     return (

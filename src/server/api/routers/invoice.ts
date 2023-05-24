@@ -33,8 +33,7 @@ export const invoiceRouter = createTRPCRouter({
     }),
     createInvoice: protectedProcedure.input(z.object({ id: z.string(), invoiceNumber: z.string(), partnerId: z.string(), companyId: z.string(), services: z.string(), invoiceDate: z.date(), invoiceServiceDate: z.date(), dueDate: z.date(), })).mutation(async ({ ctx, input }) => {
 
-        //If the fields are not empty, create the invoice
-        //Put the string in the services field
+
         const createdInvoice = await ctx.prisma.invoice.create({
             data: {
                 userId: input.id,
@@ -48,7 +47,6 @@ export const invoiceRouter = createTRPCRouter({
                 status: "Draft",
             },
         })
-        //Modify the services to a type 
 
         return createdInvoice;
     }),
