@@ -44,7 +44,7 @@ export default function ServiceEditModal({ serviceState, setShowModal, handleUpd
                                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                             id="name"
                                             type="name"
-                                            value={service.name}
+                                            value={service.name as string}
                                             placeholder="Service name"
                                         />
                                     </div>
@@ -57,7 +57,7 @@ export default function ServiceEditModal({ serviceState, setShowModal, handleUpd
                                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                             id="description"
                                             type="text"
-                                            value={service.description}
+                                            value={service.description as string}
                                             placeholder="Service Description"
                                         />
                                     </div>
@@ -70,7 +70,7 @@ export default function ServiceEditModal({ serviceState, setShowModal, handleUpd
                                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                             id="price"
                                             type="number"
-                                            value={service.price}
+                                            value={service.price as number}
                                             placeholder="Service Price"
                                         />
                                     </div>
