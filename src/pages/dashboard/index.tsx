@@ -184,8 +184,9 @@ export default function Index() {
             </div>
             <div className='w-full h-full'>
                 {/* <HomeTab /> */}
-                {activeItem === "Home" ? <HomeTab Invoices={getInvoices} /> : null}
-                {activeItem === "Invoices" ? <InvoiceTab Services={getServices} Companies={getCompanies as Company[] | undefined} Customers={getCustomers as Partner[] | undefined} handleCreateInvoice={handleCreateInvoice} Invoices={invoices as InvoiceObject | undefined} /> : null}
+
+                {activeItem === "Home" ? <HomeTab Invoices={getInvoices as (InvoiceObject & { services: Service[]; })[] | undefined} /> : null}
+                {activeItem === "Invoices" ? <InvoiceTab Services={getServices} Companies={getCompanies as Company[] | undefined} Customers={getCustomers as Partner[] | undefined} handleCreateInvoice={handleCreateInvoice} Invoices={invoices} /> : null}
                 {activeItem === "Customers" ? <CustomersTab handleDeleteCustomerCb={handleDeleteCustomer} handleUpdateCustomerCb={handleUpdateCustomer} Customers={getCustomers as Partner[] | undefined} handleCreateCustomerCb={handleCreateCustomer} /> : null}
                 {activeItem === "Companies" ? <CompaniesTab handleCreateCompanyCb={handleCreateCompany} handleDeleteCompanyCb={handleDeleteCompany} handleUpdateCompanyCb={handleUpdateCompany} Companies={getCompanies as Company[] | undefined} /> : null}
                 {activeItem === "Services" ? <ServicesTab Services={getServices} handleDeleteServiceCb={handleDeleteService} handleUpdateServiceCb={handleUpdateService} handleCreateServiceCb={handleCreateService} /> : null}

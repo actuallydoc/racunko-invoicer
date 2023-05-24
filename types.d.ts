@@ -100,22 +100,6 @@ export interface InvoiceJSON {
     status: Status;
 }
 
-export interface InvoiceForm {
-    id: string;
-    updatedAt: Date;
-    createdAt: Date;
-    userId: User;
-    invoiceNumber: string;
-    dueDate: Date;
-    invoiceDate: Date;
-    invoiceServiceDate: Date;
-    services: string;
-    status: Status;
-    companyId: string;
-    partnerId: string;
-}
-
-
 export interface InvoiceObject {
     id: string?;
     updatedAt: Date?;
