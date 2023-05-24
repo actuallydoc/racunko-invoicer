@@ -2,7 +2,7 @@ import HomeTab from '@/components/Dashboard/HomeTab/HomeTab'
 import Sidebar from '@/components/Dashboard/Sidebar/Sidebar'
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
-import { ToastContainer } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
 import { api } from '@/utils/api'
 import InvoiceTab from '@/components/Dashboard/InvoiceTab/InvoiceTab'
 import type { Company, InvoiceObject, Partner, Service } from 'types'
@@ -79,10 +79,11 @@ export default function Index() {
         })
         setTimeout(() => {
             refetchCustomers().then(() => {
-                console.log("Refetching invoices");
+                toast.success(`Customer ${formState.name} created`);
             }
             ).catch((err) => {
                 console.log(err);
+                toast.error("Error creating customer");
             }
             )
         }, 2000)
@@ -104,10 +105,10 @@ export default function Index() {
         })
         setTimeout(() => {
             refetchCustomers().then(() => {
-                console.log("Refetching invoices");
+                toast.success(`Customer ${formState.name} updated`);
             }
-            ).catch((err) => {
-                console.log(err);
+            ).catch(() => {
+                toast.error("Error updating customer");
             }
             )
         }, 2000)
@@ -119,10 +120,10 @@ export default function Index() {
         })
         setTimeout(() => {
             refetchCustomers().then(() => {
-                console.log("Refetching invoices");
+                toast.success(`Customer ${formState.name} deleted`);
             }
-            ).catch((err) => {
-                console.log(err);
+            ).catch(() => {
+                toast.error("Error deleting customer");
             }
             )
         }, 2000)
@@ -142,11 +143,11 @@ export default function Index() {
             vat: formState.vat,
         })
         setTimeout(() => {
-            refetchInvoices().then(() => {
-                console.log("Refetching invoices");
+            refetchCompanies().then(() => {
+                toast.success(`Company ${formState.name} created`);
             }
-            ).catch((err) => {
-                console.log(err);
+            ).catch(() => {
+                toast.error("Error creating company");
             }
             )
         }, 2000)
@@ -166,11 +167,11 @@ export default function Index() {
             vat: formState.vat,
         })
         setTimeout(() => {
-            refetchInvoices().then(() => {
-                console.log("Refetching invoices");
+            refetchCompanies().then(() => {
+                toast.success(`Company ${formState.name} updated`);
             }
-            ).catch((err) => {
-                console.log(err);
+            ).catch(() => {
+                toast.error("Error updating company");
             }
             )
         }, 2000)
@@ -180,11 +181,11 @@ export default function Index() {
             id: formState.id,
         })
         setTimeout(() => {
-            refetchInvoices().then(() => {
-                console.log("Refetching invoices");
+            refetchCompanies().then(() => {
+                toast.success("Company deleted");
             }
-            ).catch((err) => {
-                console.log(err);
+            ).catch(() => {
+                toast.error("Error deleting company");
             }
             )
         }, 2000)
@@ -215,6 +216,7 @@ export default function Index() {
             services: JSON.stringify(formState.services),
             id: sessionData?.user?.id?.toString() as string,
         })
+        //!TODO Fix this typescript mess
         setTimeout(() => {
             refetchInvoices().then((data) => {
                 console.log("Refetching invoices");
@@ -223,19 +225,19 @@ export default function Index() {
                     data.data?.map((invoice) => {
                         invoice.services = JSON.parse(invoice.services) as Service[];
                     })
-                    //This works properly
-                    console.log(data.data);
                     setInvoices(data.data as unknown as InvoiceObject[]);
+                    toast.success(`Invoice ${formState.invoiceNumber as string} created`);
                 }
             }
             ).catch((err) => {
-                console.log(err);
+
+                toast.error("Error creating invoice");
             }
             )
         }, 2000)
 
     }
-    //Yes this is a mess, but it works
+    //Yes this is a mess, but it works. Fix this later
     useEffect(() => {
         if (getInvoiceStatus) {
             //Convert services to JSON from string
