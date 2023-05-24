@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 
 export default function LoginForm({ setState }: { setState: React.Dispatch<React.SetStateAction<boolean>> }) {
-
     useEffect(() => {
         console.log("Login form mounted")
     }, [])

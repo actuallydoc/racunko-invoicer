@@ -2,10 +2,10 @@ import HomeTab from '@/components/Dashboard/HomeTab/HomeTab'
 import Sidebar from '@/components/Dashboard/Sidebar/Sidebar'
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
-import { toast, ToastContainer } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import { api } from '@/utils/api'
 import InvoiceTab from '@/components/Dashboard/InvoiceTab/InvoiceTab'
-import type { Company, InvoiceObject, InvoiceJSON, Partner, Service, InvoiceForm } from 'types'
+import type { Company, InvoiceObject, Partner, Service } from 'types'
 import CustomersTab from '@/components/Dashboard/CustomersTab/CustomersTab'
 import CompaniesTab from '@/components/Dashboard/CompaniesTab/CompaniesTab'
 import ServicesTab from '@/components/Dashboard/ServicesTab/ServicesTab'
@@ -33,6 +33,7 @@ export default function Index() {
     // const { data: getServices } = api.service.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
     const [invoices, setInvoices] = useState<InvoiceObject[] | undefined>(undefined)
 
+    //Fake services data for UserServices
     const getServices: Service[] = [
         {
             id: "1",
