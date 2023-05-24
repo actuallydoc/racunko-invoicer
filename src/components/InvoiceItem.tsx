@@ -1,10 +1,10 @@
-import type { UseTRPCMutationResult } from '@trpc/react-query/shared'
-import React from 'react'
-import { Invoice, Service } from 'types'
 
-export default function InvoiceItem({ invoice, deletecb }: { deletecb: (id: string) => Promise<void>, invoice: Invoice & { services: Service[] } }) {
+import React from 'react'
+import type { InvoiceObject, Service } from 'types'
+
+export default function InvoiceItem({ invoice, deletecb }: { deletecb: (id: string) => Promise<void>, invoice: InvoiceObject & { services: Service[] } }) {
     const handleDelete = () => {
-        deletecb(invoice.id).then(() => {
+        deletecb(invoice.id as string).then(() => {
             console.log("deleted");
         })
             .catch((err) => {
@@ -15,8 +15,8 @@ export default function InvoiceItem({ invoice, deletecb }: { deletecb: (id: stri
     return (
         <div>
             <h1>{invoice.id}</h1>
-            <h1>{invoice.createdAt.toString()}</h1>
-            <h1>{invoice.updatedAt.toString()}</h1>
+            {invoice.createdAt ? <h1>{invoice.createdAt.toString()}</h1> : <h1>no date</h1>}
+            {invoice.dueDate ? <h1>{invoice.dueDate.toString()}</h1> : <h1>no date</h1>}
             <h1>{invoice.userId.name}</h1>
             {invoice.services.map((service) => (
                 <div key={service.id}>
