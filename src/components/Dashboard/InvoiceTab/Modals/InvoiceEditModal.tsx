@@ -26,9 +26,10 @@ export default function InvoiceEditModal({ customers, services, companies, invoi
             },
         }))
     }
-    const handleGenerateInvoice = () => {
+    const handleGenerateInvoice = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
         let blob = generatePDFInvoice(invoiceData)
-        window.open(blob)
+        window.open(blob, "_blank")
     }
     const handleEditInvoiceFn = () => {
         handleEditInvoice(invoiceData)
@@ -123,7 +124,9 @@ export default function InvoiceEditModal({ customers, services, companies, invoi
             invoiceServiceDate: serviceDate as Date,
         }))
     }, [selectedCustomer, selectedCompany, services, emptyServices, invoiceState, invoiceDate, dueDate, serviceDate])
-
+    useEffect(() => {
+        console.log(invoiceData)
+    }, [])
     return (
         <div className=" bg-gray-100">
 

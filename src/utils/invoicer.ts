@@ -1,10 +1,11 @@
 import jsPDF from "jspdf";
 import { Company, InvoiceObject, Partner } from "types";
 
-import autoTable from "jspdf-autotable"
-import { RowInput } from "jspdf-autotable";
+import 'jspdf-autotable';
+import autoTable, { RowInput, UserOptions } from "jspdf-autotable";
 
-
+//!TODO Somehow track the Y pos of the tables so you can dynamically place the content below the table.
+//!TODO Implement the missing data to put it inside the PDF (Update the Schema)
 export default function generatePDFInvoice(invoice: InvoiceObject): URL {
     let doc = new jsPDF;
     renderPartner(doc, invoice.Partner as Partner)
@@ -22,14 +23,14 @@ const renderPaymentData = (doc: jsPDF, invoice: InvoiceObject, customer: Partner
 const renderFooter = (doc: jsPDF, company: Company) => {
     doc.line(15, 276, 190, 276);
     doc.text(
-        "Vpis v poslovni register pri Ajpes. Matična št: 3316823",
+        "Vpis v poslovni register pri Ajpes. Matična št: NOt implemented",
         65,
         280
     );
 }
 const renderTable = (doc: jsPDF, company: Company, invoice: InvoiceObject) => {
     let finalY = 0;
-    autoTable(doc, {
+    let options: UserOptions = {
         styles: {
             lineColor: [0, 0, 0],
             lineWidth: 0.1,
@@ -43,8 +44,9 @@ const renderTable = (doc: jsPDF, company: Company, invoice: InvoiceObject) => {
         body: [['1', 'Simon', 'Sweden'], ['2', 'Karl', 'Norway']],
         theme: "plain",
         columnStyles: { text: { cellWidth: "auto" } },
-    });
-
+    }
+    autoTable(doc, options);
+    console.log(options.startY)
     //this.finalY = autoTable.final;
     ///////////////////////////SKUPAJ , DDV , ZA PLAČILO
     doc.text("Skupaj: " + "skupaj" + "racun.currency", 165, finalY + 3);

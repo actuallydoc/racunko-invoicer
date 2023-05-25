@@ -9,10 +9,6 @@ import type { Company, InvoiceObject, Partner, Service } from 'types'
 import CustomersTab from '@/components/Dashboard/CustomersTab/CustomersTab'
 import CompaniesTab from '@/components/Dashboard/CompaniesTab/CompaniesTab'
 import ServicesTab from '@/components/Dashboard/ServicesTab/ServicesTab'
-import { Document, Page, pdfjs } from 'react-pdf'
-import jsPDF from 'jspdf'
-import PDFViewer from "@/components/Dashboard/InvoiceTab/PDFViewer"
-import generatePDFInvoice from '@/utils/invoicer'
 const Items = [
     "Home",
     "Invoices",

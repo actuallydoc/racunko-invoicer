@@ -42,7 +42,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
         })
         invoiceState((prevState) => ({
             ...prevState,
-            services: JSON.stringify(emptyServices),
+            services: JSON.stringify(emptyServices) as unknown as Service[],
         }))
 
     }

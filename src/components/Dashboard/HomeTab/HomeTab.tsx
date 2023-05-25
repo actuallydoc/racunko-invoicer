@@ -82,7 +82,7 @@ export default function HomeTab({ Invoices, Companies }: HomeTabProps) {
                                     <p className='text-lg font-medium text-[#5321CA]'>Invoices created</p>
                                 </div>
                                 <div className="relative">
-                                    <select value={currentMonth} onChange={handleMonthChange} className="block appearance-none w-full bg-slate-200 border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition duration-300 ease-in-out">
+                                    <select defaultValue={currentMonth} onChange={handleMonthChange} className="block appearance-none w-full bg-slate-200 border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition duration-300 ease-in-out">
                                         {months.map((month) => (
                                             <option key={month} value={month}>{month}</option>
                                         ))}
