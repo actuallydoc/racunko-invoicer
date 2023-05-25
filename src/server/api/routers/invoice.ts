@@ -50,4 +50,33 @@ export const invoiceRouter = createTRPCRouter({
 
         return createdInvoice;
     }),
+    editInvoice: protectedProcedure.input(z.object({ id: z.string(), invoiceNumber: z.string(), partnerId: z.string(), companyId: z.string(), services: z.string(), invoiceDate: z.date(), invoiceServiceDate: z.date(), dueDate: z.date(), })).mutation(async ({ ctx, input }) => {
+        const updatedInvoice = await ctx.prisma.invoice.update({
+            where: {
+                id: input.id,
+            },
+            data: {
+                services: input.services,
+                dueDate: input.dueDate,
+                invoiceDate: input.invoiceDate,
+                invoiceNumber: input.invoiceNumber,
+                invoiceServiceDate: input.invoiceServiceDate,
+                partnerId: input.partnerId,
+                companyId: input.companyId,
+            },
+        })
+
+        return updatedInvoice;
+    }
+    ),
+    deleteInvoice: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+        const deletedInvoice = await ctx.prisma.invoice.delete({
+            where: {
+                id: input.id,
+            },
+        })
+
+        return deletedInvoice;
+    }),
+
 });

@@ -5,18 +5,33 @@ import "flatpickr/dist/themes/material_green.css";
 import { IoIosCreate } from 'react-icons/io';
 import Flatpickr from "react-flatpickr";
 import InvoiceCreateModal from './Modals/InvoiceCreateModal';
+import InvoiceEditModal from './Modals/InvoiceEditModal';
 interface InvoiceTabProps {
     Invoices: (InvoiceObject[] | undefined);
     handleCreateInvoice: (invoice: InvoiceObject) => void;
     Companies: Company[] | undefined;
     Customers: Partner[] | undefined;
     Services: Service[] | undefined;
+    handleDeleteInvoice: (invoice: InvoiceObject) => void;
+    handleEditInvoice: (invoice: InvoiceObject) => void;
 }
-export default function InvoiceTab({ Invoices, Services, handleCreateInvoice, Companies, Customers }: InvoiceTabProps) {
+export default function InvoiceTab({ Invoices, Services, handleEditInvoice, handleCreateInvoice, handleDeleteInvoice, Companies, Customers }: InvoiceTabProps) {
     const [fromDate, setFromDate] = React.useState<Date | null>(new Date());
     const [toDate, setToDate] = React.useState<Date | null>(new Date());
     const [filteredInvoices, setFilteredInvoices] = React.useState<InvoiceObject[]>([]);
     const [invoiceState, setInvoiceState] = React.useState<InvoiceObject>({} as InvoiceObject)
+    const [invoiceTemp, setInvoiceTemp] = React.useState<InvoiceObject>({} as InvoiceObject)
+    const [editInvoice, setEditInvoice] = React.useState<boolean>(false)
+    const handleInvoiceClick = (invoice: InvoiceObject) => {
+        setInvoiceTemp(invoice)
+        setEditInvoice(true)
+        console.log(invoice.services?.map((service) => service.name).join(", "))
+        console.log(invoiceTemp.services?.map((service) => service.name).join(", "))
+    }
+    const HandleEditInvoiceFn = (invoice: InvoiceObject) => {
+        handleEditInvoice(invoice)
+        setEditInvoice(false)
+    }
     //Create modal for creating new invoice
     const [showCreateModal, setCreateShowModal] = React.useState(false);
     const handleOpenCreateModal = () => {
@@ -26,6 +41,9 @@ export default function InvoiceTab({ Invoices, Services, handleCreateInvoice, Co
         setCreateShowModal(false);
         handleCreateInvoice(invoiceState);
     };
+    useEffect(() => {
+        console.log(invoiceTemp.services?.map((service) => service.name).join(", "));
+    }, [invoiceTemp.services]);
     const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const filtered = Invoices?.filter((invoice) => {
@@ -39,11 +57,17 @@ export default function InvoiceTab({ Invoices, Services, handleCreateInvoice, Co
         setFilteredInvoices(Invoices as InvoiceObject[]);
     }, [Invoices]);
 
+
     return (
         <div className="min-h-screen flex items-center ml-10">
             {showCreateModal && (
                 <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
                     <InvoiceCreateModal services={Services as Service[]} invoiceData={invoiceState} companies={Companies as Company[]} customers={Customers as Partner[]} handleCreateInvoice={handleCreateInvoiceCb} invoiceState={setInvoiceState} setShowModal={setCreateShowModal} />
+                </div>
+            )}
+            {editInvoice && (
+                <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
+                    <InvoiceEditModal handleDeleteInvoice={handleDeleteInvoice} setShowModal={setEditInvoice} companies={Companies as Company[]} customers={Customers as Partner[]} invoiceData={invoiceTemp} handleEditInvoice={HandleEditInvoiceFn} invoiceState={setInvoiceTemp} services={Services as Service[]} />
                 </div>
             )}
             <div className="w-10/12 h-[850px] mb-16 bg-white rounded-3xl p-4 border-4">
@@ -87,7 +111,7 @@ export default function InvoiceTab({ Invoices, Services, handleCreateInvoice, Co
                     </div>
                 </div>
                 <div>
-                    <Table Invoices={filteredInvoices as InvoiceObject[] | undefined} />
+                    <Table handleInvoiceClick={handleInvoiceClick} Invoices={filteredInvoices as InvoiceObject[] | undefined} />
                 </div>
             </div>
         </div>

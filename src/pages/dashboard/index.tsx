@@ -59,6 +59,8 @@ export default function Index() {
     const deleteCompany = api.company.deleteCompany.useMutation();
     //Invoice
     const createInvoice = api.invoice.createInvoice.useMutation();
+    const editInvoice = api.invoice.editInvoice.useMutation();
+    const deleteInvoice = api.invoice.deleteInvoice.useMutation();
     //Service
     // const createService = api.service.createService.useMutation();
     // const updateService = api.service.updateService.useMutation();
@@ -237,6 +239,63 @@ export default function Index() {
         }, 2000)
 
     }
+    const handleUpdateInvoice = (formState: InvoiceObject) => {
+        console.log(formState);
+        editInvoice.mutate({
+            id: formState.id as string,
+            companyId: formState?.Company?.id as string,
+            dueDate: formState?.dueDate as Date,
+            invoiceDate: formState?.invoiceDate as Date,
+            invoiceNumber: formState?.invoiceNumber as string,
+            partnerId: formState.Partner?.id as string,
+            invoiceServiceDate: formState.invoiceServiceDate as Date,
+            services: JSON.stringify(formState.services),
+        })
+        //!TODO Fix this typescript mess
+        setTimeout(() => {
+            refetchInvoices().then((data) => {
+                console.log("Refetching invoices");
+                if (data.isSuccess) {
+                    //Convert services to JSON from string
+                    data.data?.map((invoice) => {
+                        invoice.services = JSON.parse(invoice.services as string) as unknown as Service[];
+                    })
+                    setInvoices(data.data as unknown as InvoiceObject[]);
+                    toast.success(`Invoice ${formState.invoiceNumber as string} updated`);
+                }
+            }
+            ).catch((err) => {
+
+                toast.error("Error updating invoice");
+            }
+            )
+        }, 2000)
+    }
+    const handleDeleteInvoice = (formState: InvoiceObject) => {
+        deleteInvoice.mutate({
+            id: formState.id as string,
+        })
+        //!TODO Fix this typescript mess
+        setTimeout(() => {
+            refetchInvoices().then((data) => {
+                console.log("Refetching invoices");
+                if (data.isSuccess) {
+                    //Convert services to JSON from string
+                    data.data?.map((invoice) => {
+                        invoice.services = JSON.parse(invoice.services as string) as unknown as Service[];
+                    })
+                    setInvoices(data.data as unknown as InvoiceObject[]);
+                    toast.success(`Invoice ${formState.invoiceNumber as string} deleted`);
+                }
+            }
+            ).catch(() => {
+
+                toast.error("Error deleting invoice");
+            }
+            )
+        }, 2000)
+    }
+
     //Yes this is a mess, but it works. Fix this later
     useEffect(() => {
         if (getInvoiceStatus) {
@@ -259,7 +318,7 @@ export default function Index() {
                 {/* <HomeTab /> */}
 
                 {activeItem === "Home" ? <HomeTab Companies={getCompanies as Company[] | undefined} Invoices={invoices as (InvoiceObject & { services: string; })[] | undefined} /> : null}
-                {activeItem === "Invoices" ? <InvoiceTab Services={getServices} Companies={getCompanies as Company[] | undefined} Customers={getCustomers as Partner[] | undefined} handleCreateInvoice={handleCreateInvoice} Invoices={invoices as unknown as InvoiceObject[]} /> : null}
+                {activeItem === "Invoices" ? <InvoiceTab handleDeleteInvoice={handleDeleteInvoice} handleEditInvoice={handleUpdateInvoice} Services={getServices} Companies={getCompanies as Company[] | undefined} Customers={getCustomers as Partner[] | undefined} handleCreateInvoice={handleCreateInvoice} Invoices={invoices as unknown as InvoiceObject[]} /> : null}
                 {activeItem === "Customers" ? <CustomersTab handleDeleteCustomerCb={handleDeleteCustomer} handleUpdateCustomerCb={handleUpdateCustomer} Customers={getCustomers as Partner[] | undefined} handleCreateCustomerCb={handleCreateCustomer} /> : null}
                 {activeItem === "Companies" ? <CompaniesTab handleCreateCompanyCb={handleCreateCompany} handleDeleteCompanyCb={handleDeleteCompany} handleUpdateCompanyCb={handleUpdateCompany} Companies={getCompanies as Company[] | undefined} /> : null}
                 {activeItem === "Services" ? <ServicesTab Services={getServices} handleDeleteServiceCb={handleDeleteService} handleUpdateServiceCb={handleUpdateService} handleCreateServiceCb={handleCreateService} /> : null}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import type { Service } from 'types'
 
 export default function ServiceItem({ service, deleteCallBack, handleServiceChange }: { service: Service, deleteCallBack: (id: string) => void, handleServiceChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => void }) {

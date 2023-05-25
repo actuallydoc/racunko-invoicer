@@ -6,7 +6,7 @@ import TableHeader from './TableHeader'
 
 
 
-export default function Table({ Invoices }: { Invoices: InvoiceObject[] | undefined }) {
+export default function Table({ Invoices, handleInvoiceClick }: { Invoices: InvoiceObject[] | undefined, handleInvoiceClick: (invoice: InvoiceObject) => void }) {
 
     return (
         <div className="max-h-[770px] overflow-y-scroll">
@@ -16,7 +16,7 @@ export default function Table({ Invoices }: { Invoices: InvoiceObject[] | undefi
                 </thead>
                 <tbody >
                     {Invoices?.map((invoice) => (
-                        <TableItem key={invoice.id} invoice={invoice} />
+                        <TableItem handleInvoiceClick={handleInvoiceClick} key={invoice.id} invoice={invoice} />
                     ))}
                 </tbody>
             </table>

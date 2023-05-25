@@ -1,9 +1,13 @@
 import React, { useEffect } from 'react'
 import type { InvoiceJSON, InvoiceObject, Service } from 'types'
 
-export default function TableItem({ invoice }: { invoice: InvoiceObject }) {
+export default function TableItem({ invoice, handleInvoiceClick }: { invoice: InvoiceObject, handleInvoiceClick: (invoice: InvoiceObject) => void }) {
 
     const [total, setTotal] = React.useState<number>(0)
+
+    const handleItemClick = (invoice: InvoiceObject) => {
+        handleInvoiceClick(invoice)
+    }
     useEffect(() => {
         console.log(invoice)
         const calculateTotal = () => {
@@ -20,7 +24,7 @@ export default function TableItem({ invoice }: { invoice: InvoiceObject }) {
 
 
     return (
-        <tr key={invoice.id}>
+        <tr key={invoice.id} onClick={() => handleItemClick(invoice)} className='cursor-pointer overflow-x-hidden hover:translate-x-2 duration-200'>
             <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                 <div className="flex items-center">
                     <div>
