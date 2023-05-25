@@ -3,6 +3,7 @@ import type { InvoiceObject, Company, Partner, Service } from 'types'
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
 import ServiceItem from './ServiceItem';
+import generatePDFInvoice from '@/utils/invoicer';
 // import ServiceAddModal from './ServiceAddModal';
 export default function InvoiceEditModal({ customers, services, companies, invoiceState, invoiceData, setShowModal, handleEditInvoice, handleDeleteInvoice }: { handleDeleteInvoice: (invoice: InvoiceObject) => void, invoiceData: InvoiceObject, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<InvoiceObject>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleEditInvoice: (invoice: InvoiceObject) => void, services: Service[] }) {
     const [invoiceDate] = React.useState<Date | null>(invoiceData.invoiceDate);
@@ -24,6 +25,10 @@ export default function InvoiceEditModal({ customers, services, companies, invoi
                 ...prevState.Partner as Partner,
             },
         }))
+    }
+    const handleGenerateInvoice = () => {
+        let blob = generatePDFInvoice(invoiceData)
+        window.open(blob)
     }
     const handleEditInvoiceFn = () => {
         handleEditInvoice(invoiceData)
@@ -74,7 +79,6 @@ export default function InvoiceEditModal({ customers, services, companies, invoi
     }
     const handleAddService = () => {
         // setAddService(true)
-        //Initializes the empty services array with a blank service
         setEmptyServices((prevState) => ([
             ...prevState,
             {
@@ -170,7 +174,6 @@ export default function InvoiceEditModal({ customers, services, companies, invoi
                                     </div>
                                 </div>
                                 <div className='flex-col'>
-
                                     <div>
                                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="date">
                                             Invoice Due Date
@@ -185,9 +188,13 @@ export default function InvoiceEditModal({ customers, services, companies, invoi
                                             }}
                                         />
                                     </div>
-                                </div>
 
+                                </div>
+                                <div className='flex content-center '>
+                                    <button onClick={handleGenerateInvoice} className="bg-green-500 hover:bg-green-700 text-white font-bold px-4 rounded focus:outline-none focus:shadow-outline">View PDF</button>
+                                </div>
                             </div>
+
                             <div>
                                 <div className='mb-6'>
                                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="invoiceNumber">

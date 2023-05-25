@@ -8,6 +8,9 @@ export default function ServiceItem({ service, deleteCallBack, handleServiceChan
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => {
         handleServiceChange(e, id)
     }
+    useEffect(() => {
+      console.log("Services for the invoice", service)
+    }, [])
     return (
         <div className=''>
             <hr className="border-gray-300 my-2 border-2" />
