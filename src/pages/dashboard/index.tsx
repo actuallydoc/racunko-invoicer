@@ -26,11 +26,11 @@ const Items = [
 export default function Index() {
     const [activeItem, setActiveItem] = useState<string>(Items[0] as string);
     const [invoices, setInvoices] = useState<(InvoiceObject & { services: Service[]; })[] | undefined>(undefined)
-    const { data: sessionData } = useSession({ required: true })
+    const { data: sessionData, status } = useSession({ required: true })
     //Fetch data
-    const { data: getInvoices, refetch: refetchInvoices, isSuccess: getInvoiceStatus } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
-    const { data: getCustomers, refetch: refetchCustomers, isSuccess: getCustomerStatus } = api.partner.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
-    const { data: getCompanies, refetch: refetchCompanies, isSuccess: getCompanyStatus } = api.company.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
+    const { data: getInvoices, refetch: refetchInvoices } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
+    const { data: getCustomers, refetch: refetchCustomers } = api.partner.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
+    const { data: getCompanies, refetch: refetchCompanies } = api.company.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
     // const { data: getServices, refetch: refetchServices } = api.service.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string })
     //Fake services data for UserServices
     const getServices: Service[] = [
@@ -298,7 +298,7 @@ export default function Index() {
 
     //Yes this is a mess, but it works. Fix this later
     useEffect(() => {
-        if (getInvoiceStatus) {
+        if (status === "authenticated") {
             //Convert services to JSON from string
             getInvoices?.map((invoice) => {
                 invoice.services = JSON.parse(invoice.services) as Service[];

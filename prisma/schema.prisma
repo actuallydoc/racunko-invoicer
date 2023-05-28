@@ -1,147 +1,121 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["jsonProtocol"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
 }
 
 datasource db {
-    provider = "sqlite"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-// Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? // @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
 
-// Here it starts after the next auth Stuff
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    invoices      Invoice[]
-    services      String?
-    companies     Company[]
-    partners      Partner[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  services      String?
+  accounts      Account[]
+  companies     Company[]
+  invoices      Invoice[]
+  partners      Partner[]
+  sessions      Session[]
 }
 
 model Invoice {
-    id                 String   @id @default(cuid())
-    createdAt          DateTime @default(now())
-    updatedAt          DateTime @updatedAt
-    userId             String
-    user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    //Can be empty default is []
-    services           String?
-    invoiceNumber      String
-    invoiceDate        DateTime
-    dueDate            DateTime
-    invoiceServiceDate DateTime
-    status             String
-    //Can be empty default is []
-    Company            Company  @relation(fields: [companyId], references: [id])
-    companyId          String
-    Partner            Partner  @relation(fields: [partnerId], references: [id])
-    partnerId          String
+  id                 String   @id @default(cuid())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  userId             String
+  services           String?
+  invoiceNumber      String
+  invoiceDate        DateTime
+  dueDate            DateTime
+  invoiceServiceDate DateTime
+  status             String
+  companyId          String
+  partnerId          String
+  Partner            Partner  @relation(fields: [partnerId], references: [id])
+  Company            Company  @relation(fields: [companyId], references: [id])
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// model Service {
-//     id          String   @id @default(cuid())
-//     name        String
-//     price       Float
-//     description String?
-//     invoiceId   String?
-//     invoice     Invoice? @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-//     Company     Company? @relation(fields: [companyId], references: [id])
-//     companyId   String?
-//     Partner     Partner? @relation(fields: [partnerId], references: [id])
-//     partnerId   String?
-//     User        User?    @relation(fields: [userId], references: [id])
-//     userId      String?
-// }
-
 model Company {
-    id        String    @id @default(cuid())
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    name      String
-    address   String
-    city      String
-    zip       String
-    country   String
-    phone     String
-    email     String
-    website   String?
-    vat       String
-    invoices  Invoice[]
-    services  String?
-    partners  Partner[]
-    User      User?     @relation(fields: [userId], references: [id])
-    userId    String?
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String
+  address   String
+  city      String
+  zip       String
+  country   String
+  phone     String
+  email     String
+  website   String?
+  vat       String
+  services  String?
+  userId    String?
+  User      User?     @relation(fields: [userId], references: [id])
+  invoices  Invoice[]
+  partners  Partner[] @relation("CompanyToPartner")
 }
 
 model Partner {
-    id        String    @id @default(cuid())
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    name      String
-    address   String
-    city      String
-    zip       String
-    country   String
-    phone     String
-    email     String
-    website   String?
-    vat       String?
-    invoices  Invoice[]
-    services  String?
-    companies Company[]
-    User      User?     @relation(fields: [userId], references: [id])
-    userId    String?
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String
+  address   String
+  city      String
+  zip       String
+  country   String
+  phone     String
+  email     String
+  website   String?
+  vat       String?
+  services  String?
+  userId    String?
+  invoices  Invoice[]
+  User      User?     @relation(fields: [userId], references: [id])
+  companies Company[] @relation("CompanyToPartner")
 }

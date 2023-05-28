@@ -92,9 +92,9 @@ export interface InvoiceObject {
   updatedAt: Date?;
   createdAt: Date?;
   userId: User;
-  invoiceNumber: string?;
-  dueDate: Date?;
-  invoiceDate: Date?;
+  invoiceNumber: string;
+  dueDate: Date;
+  invoiceDate: Date;
   invoiceServiceDate: Date?;
   Services: Service[] | undefined;
   Company: Company?;
