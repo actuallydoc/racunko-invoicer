@@ -1,66 +1,64 @@
-import React, { useEffect } from 'react'
-import type { InvoiceObject, Company, Partner, Service } from 'types'
+import React, { useState } from 'react'
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
 import ServiceItem from './ServiceItem';
+import { Invoice, Company, Partner } from '@prisma/client';
+import { InvoiceType } from 'types';
+import { api } from '@/utils/api';
+import { toast } from 'react-toastify';
+import { useSession } from 'next-auth/react';
 // import ServiceAddModal from './ServiceAddModal';
-export default function InvoiceCreateModal({ customers, services, companies, invoiceState, invoiceData, setShowModal, handleCreateInvoice }: { invoiceData: InvoiceObject, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<InvoiceObject>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateInvoice: () => void, services: Service[] }) {
-    const [invoiceDate] = React.useState<Date | null>(new Date());
-    const [dueDate] = React.useState<Date | null>(new Date());
-    const [serviceDate] = React.useState<Date | null>(new Date());
-    const [selectedCustomer, setSelectedCustomer] = React.useState<Partner | undefined>(undefined);
-    const [emptyServices, setEmptyServices] = React.useState<Service[]>([]);
-    const [selectedCompany, setSelectedCompany] = React.useState<Company | undefined>(undefined);
+export default function InvoiceCreateModal({ customers, companies, invoiceData, setShowModal }: { invoiceData: Invoice, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<Invoice>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>> }) {
+    const createInvoice = api.invoice.createInvoice.useMutation();
+    const [invoiceDate, setInvoiceDate] = React.useState<Date>(new Date());
+    const [dueDate, setDueDate] = React.useState<Date>(new Date());
+    const [serviceDate, setServiceDate] = React.useState<Date>(new Date());
+    const [selectedCustomer, setSelectedCustomer] = React.useState<Partner>();
+    // const [emptyServices, setEmptyServices] = React.useState<Service[]>([]);
+    const [selectedCompany, setSelectedCompany] = React.useState<Company>();
     // const [addService, setAddService] = React.useState(false);
-
-
+    const [tempInvoice, setTempInvoice] = useState<InvoiceType>();
     //Use this for all the state and not the separate functions for each field
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        invoiceState((prevState) => ({
+        setTempInvoice((prevState) => ({
             ...prevState,
-            [e.target.id]: e.target.value,
-            Company: {
-                ...prevState.Company as Company,
-            },
-            Partner: {
-                ...prevState.Partner as Partner,
-            },
+            [e.target.name]: e.target.value
         }))
     }
-    const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => {
-        console.log(e.target.name)
-        setEmptyServices((prevState) => {
-            return prevState.map((service) => {
-                if (service.id === id) {
-                    return {
-                        ...service,
-                        [e.target.name]: e.target.value
-                    }
-                }
-                return service
-            })
-        })
-        invoiceState((prevState) => ({
-            ...prevState,
-            services: JSON.stringify(emptyServices) as unknown as Service[],
-        }))
+    // const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => {
+    //     console.log(e.target.name)
+    //     setEmptyServices((prevState) => {
+    //         return prevState.map((service) => {
+    //             if (service.id === id) {
+    //                 return {
+    //                     ...service,
+    //                     [e.target.name]: e.target.value
+    //                 }
+    //             }
+    //             return service
+    //         })
+    //     })
+    //     invoiceState((prevState) => ({
+    //         ...prevState,
+    //         services: JSON.stringify(emptyServices) as unknown as Service[],
+    //     }))
 
-    }
+    // }
     //Dates for service
     const handleDueDate = (e: Date) => {
-        invoiceState((prevState) => ({
+        setDueDate((prevState) => ({
             ...prevState,
             dueDate: e,
         }))
     }
     const handleInvoiceDate = (e: Date) => {
-        invoiceState((prevState) => ({
+        setInvoiceDate((prevState) => ({
             ...prevState,
             invoiceDate: e,
         }))
     }
     const handleServiceDate = (e: Date) => {
-        invoiceState((prevState) => ({
+        setServiceDate((prevState) => ({
             ...prevState,
             serviceDate: e,
         }))
@@ -68,16 +66,35 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
     const handleAddService = () => {
         // setAddService(true)
         //Initializes the empty services array with a blank service
-        setEmptyServices((prevState) => ([
-            ...prevState,
-            {
-                id: Math.random().toString(),
-                name: null,
-                price: null,
-                description: null,
-                quantity: 1,
-            }
-        ]))
+        // setEmptyServices((prevState) => ([
+        //     ...prevState,
+        //     {
+        //         id: Math.random().toString(),
+        //         name: null,
+        //         price: null,
+        //         description: null,
+        //         quantity: 1,
+        //     }
+        // ]))
+    }
+    const { data: sessionData } = useSession();
+    const handleInvoiceCreate = () => {
+
+        createInvoice.mutate({
+            companyId: selectedCompany?.id as string,
+            partnerId: selectedCustomer?.id as string,
+            invoiceDate: invoiceDate,
+            dueDate: dueDate,
+            invoiceNumber: tempInvoice?.invoiceNumber as string,
+            invoiceServiceDate: serviceDate,
+            services: tempInvoice?.services as string,
+            id: sessionData?.user?.id as string,
+            status: "DRAFT",
+        }, {
+            onSuccess: () => {
+                toast.success('Invoice Created')
+            },
+        })
     }
     //!WARNING Services are premade services that a user can add to the invoice
 
@@ -94,24 +111,13 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
         }
         )[0])
     }
-    const handleDeleteService = (id: string) => {
-        setEmptyServices((prevState) => (prevState.filter((service) => service.id !== id)))
-    }
+    // const handleDeleteService = (id: string) => {
+    //     setEmptyServices((prevState) => (prevState.filter((service) => service.id !== id)))
+    // }
     const handleCloseModal = () => {
         setShowModal(false)
     }
 
-    useEffect(() => {
-        invoiceState((prevState) => ({
-            ...prevState,
-            Partner: selectedCustomer as Partner,
-            Company: selectedCompany as Company,
-            services: emptyServices,
-            invoiceDate: invoiceDate as Date,
-            dueDate: dueDate as Date,
-            invoiceServiceDate: serviceDate as Date,
-        }))
-    }, [selectedCustomer, selectedCompany, services, emptyServices, invoiceState, invoiceDate, dueDate, serviceDate])
     return (
         <div className=" bg-gray-100">
 
@@ -135,9 +141,8 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                     <div className='border-4  rounded-lg'>
                                         <Flatpickr
                                             id='invoiceDate'
-                                            value={invoiceDate?.toString()}
+                                            value={invoiceDate.toString()}
                                             onChange={([date]) => {
-
                                                 handleInvoiceDate(date as Date);
                                             }}
                                         />
@@ -191,7 +196,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                         id="invoiceNumber"
                                         type="name"
                                         placeholder="Invoice Number"
-                                        value={invoiceData?.invoiceNumber as string}
+                                        value={invoiceData?.invoiceNumber}
                                     />
                                 </div>
                             </div>
@@ -477,7 +482,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                             </div>
                             <div className='pb-10'>
                                 {/* Pretty fascinating that u can do that so easily(scroll) */}
-                                <div className='max-h-[200px] overflow-y-scroll'>
+                                {/* <div className='max-h-[200px] overflow-y-scroll'>
                                     {emptyServices?.map((service, index) => (
                                         <div key={index} className="flex items-center justify-between">
                                             <div className="mb-6">
@@ -486,7 +491,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                                         </div>
                                     ))}
 
-                                </div>
+                                </div> */}
                                 <div>
 
                                 </div>
@@ -507,7 +512,7 @@ export default function InvoiceCreateModal({ customers, services, companies, inv
                             </div>
                             <div className="flex items-center justify-between">
                                 <button
-                                    onClick={handleCreateInvoice}
+                                    onClick={handleInvoiceCreate}
                                     className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                     type="button"
                                 >

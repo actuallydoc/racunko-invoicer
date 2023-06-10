@@ -1,13 +1,23 @@
-import { string, z } from "zod";
+import { z } from "zod";
 
 import {
     createTRPCRouter,
     protectedProcedure,
 } from "@/server/api/trpc";
-import type { Service } from "types";
 
 
 
+const invoice = z.object({
+    id: z.string(),
+    invoiceNumber: z.string(),
+    partnerId: z.string(),
+    companyId: z.string(),
+    services: z.string(),
+    invoiceDate: z.date(),
+    invoiceServiceDate: z.date(),
+    dueDate: z.date(),
+    status: z.string(),
+});
 export const invoiceRouter = createTRPCRouter({
     getAll: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
         const user = await ctx.prisma.user.findUnique({
@@ -18,7 +28,9 @@ export const invoiceRouter = createTRPCRouter({
                 invoices: true,
             },
         })
-        if (!user) throw new Error("User not found");
+        if (!user) throw new Error("User not found"); //Handle user not found
+
+        // If user exist fetch its invoices from database
         const invoices = await ctx.prisma.invoice.findMany({
             where: {
                 userId: input.id,
@@ -31,7 +43,7 @@ export const invoiceRouter = createTRPCRouter({
 
         return invoices;
     }),
-    createInvoice: protectedProcedure.input(z.object({ id: z.string(), invoiceNumber: z.string(), partnerId: z.string(), companyId: z.string(), services: z.string(), invoiceDate: z.date(), invoiceServiceDate: z.date(), dueDate: z.date(), })).mutation(async ({ ctx, input }) => {
+    createInvoice: protectedProcedure.input(invoice).mutation(async ({ ctx, input }) => {
 
 
         const createdInvoice = await ctx.prisma.invoice.create({

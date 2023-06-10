@@ -1,9 +1,8 @@
 import React from 'react'
-import type { InvoiceObject } from 'types'
 import TableItem from './TableItem'
 import TableHeader from './TableHeader'
-export default function Table({ Invoices, handleInvoiceClick }: { Invoices: InvoiceObject[] | undefined, handleInvoiceClick: (invoice: InvoiceObject) => void }) {
-
+import { Invoice } from '@prisma/client'
+export default function Table({ Invoices, handleInvoiceClick }: { Invoices: Invoice[] | undefined, handleInvoiceClick: (invoice: Invoice) => void }) {
   return (
     <div className="max-h-[770px] overflow-y-scroll overflow-x-hidden">
       <table className="min-w-full">

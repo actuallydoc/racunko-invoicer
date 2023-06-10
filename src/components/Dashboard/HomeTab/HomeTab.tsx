@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import LineChart from './Charts/LineChart'
 import VerticalBarChart from './Charts/VerticalBarChart'
-import type { Company, InvoiceObject, Service } from 'types'
+
 import { RiFilePaper2Fill } from 'react-icons/ri'
 import { BiMoneyWithdraw } from 'react-icons/bi'
+import type { Company, Invoice } from '@prisma/client'
 interface HomeTabProps {
-    Invoices: (InvoiceObject & { services: Service[]; })[] | undefined;
+    Invoices: Invoice[] | undefined;
     Companies: Company[] | undefined;
 }
 
@@ -13,29 +14,29 @@ interface HomeTabProps {
 //!TODO Add so u select a company and see the revenue for that company on the second dropdown
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 export default function HomeTab({ Invoices, Companies }: HomeTabProps) {
-    const [revenue, setRevenue] = useState<number>(0)
+    // const [revenue, setRevenue] = useState<number>(0)
     const [currentMonth, setCurrentMonth] = useState<string>('')
     const [currentCompany, setCurrentCompany] = useState<string | undefined>(undefined)
     useEffect(() => {
-        const calculateRevenue = () => {
-            let total = 0
-            Invoices?.map((invoice) => {
-                invoice.services?.map((service) => {
-                    if (invoice.Company?.name === currentCompany) {
-                        total += Number(service.price)
-                    }
-                    setRevenue(total)
+        // const calculateRevenue = () => {
+        //     let total = 0
+        //     Invoices?.map((invoice) => {
+        //         invoice.services?.map((service) => {
+        //             if (invoice.Company?.name === currentCompany) {
+        //                 total += Number(service.price)
+        //             }
+        //             setRevenue(total)
 
-                })
-            })
+        //         })
+        //     })
 
-            console.log(total)
-        }
-        if (Invoices) {
-            if (Invoices?.length > 0) {
-                calculateRevenue()
-            }
-        }
+        //     console.log(total)
+        // }
+        // if (Invoices) {
+        //     if (Invoices?.length > 0) {
+        //         calculateRevenue()
+        //     }
+        // }
     }, [Invoices, currentCompany])
     const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setCurrentMonth(e.target.value)
@@ -117,7 +118,7 @@ export default function HomeTab({ Invoices, Companies }: HomeTabProps) {
                         </div>
                         <div className='flex-col space-y-2 ml-auto mr-auto mt-5'>
                             <div>
-                                <p className='text-4xl text-[#23005B]'>{revenue}€</p>
+                                {/* <p className='text-4xl text-[#23005B]'>{revenue}€</p> */}
                             </div>
                             <div>
                                 <p className='text-lg font-medium text-[#5321CA]'>Revenue</p>

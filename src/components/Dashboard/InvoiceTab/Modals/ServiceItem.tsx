@@ -1,12 +1,18 @@
 import React, { useEffect } from 'react'
-import type { Service } from 'types'
 
-export default function ServiceItem({ service, deleteCallBack, handleServiceChange }: { service: Service, deleteCallBack: (id: string) => void, handleServiceChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => void }) {
+import type { Service } from 'types'
+export default function ServiceItem({ service }: { service: Service }) {
   const handleDelete = () => {
-    deleteCallBack(service.id as string)
+    console.log('====================================');
+    console.log('Delete: ', service);
+    console.log('====================================');
   }
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => {
-    handleServiceChange(e, id)
+  // TODO: Implement this to change the service inside the parent "InvoiceEditTab"
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    console.log('====================================');
+    console.log('Change: ', service);
+    console.log('====================================');
+
   }
   return (
     <div className=''>
@@ -18,8 +24,8 @@ export default function ServiceItem({ service, deleteCallBack, handleServiceChan
           </div>
           <div>
             <input onChange={(e) => {
-              handleChange(e, service.id as string)
-            }} name='name' type="text" className="w-1/2 border border-gray-300 rounded-md px-2 py-1" defaultValue={service.name as string} />
+              handleChange(e)
+            }} name='name' type="text" className="w-1/2 border border-gray-300 rounded-md px-2 py-1" defaultValue={service.name} />
           </div>
         </div>
         <div>
@@ -28,7 +34,7 @@ export default function ServiceItem({ service, deleteCallBack, handleServiceChan
               <label htmlFor="quantity" className="text-sm">Quantity</label>
             </div>
             <input onChange={(e) => {
-              handleChange(e, service.id as string)
+              handleChange(e)
             }} type="number" name='quantity' className="w-1/4 border border-gray-300 rounded-md px-2 py-1" defaultValue={1} />
           </div>
         </div>
@@ -36,8 +42,8 @@ export default function ServiceItem({ service, deleteCallBack, handleServiceChan
         <div>
           <label htmlFor="description" className="text-sm">Description</label>
           <textarea placeholder='Description' name='description' onChange={(e) => {
-            handleChange(e, service.id as string)
-          }} className="w-full border border-gray-300 rounded-md px-2 py-1" defaultValue={service.description as string} />
+            handleChange(e)
+          }} className="w-full border border-gray-300 rounded-md px-2 py-1" defaultValue={service.description} />
         </div>
         <div className='flex-col'>
           <div>
@@ -45,8 +51,8 @@ export default function ServiceItem({ service, deleteCallBack, handleServiceChan
           </div>
           <div className=''>
             <input onChange={(e) => {
-              handleChange(e, service.id as string)
-            }} type="number" name='price' className="w-1/4 border  border-gray-300 rounded-md px-2 py-1" defaultValue={service.price as number} />
+              handleChange(e)
+            }} type="number" name='price' className="w-1/4 border  border-gray-300 rounded-md px-2 py-1" defaultValue={service.price} />
           </div>
         </div>
         <div>
