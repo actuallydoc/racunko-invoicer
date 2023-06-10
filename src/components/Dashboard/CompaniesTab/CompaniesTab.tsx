@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import type { Company } from 'types';
 import CompanyCreateModal from './Modals/CompanyCreateModal';
 import CompanyEditModal from './Modals/CompanyEditModal';
 import { IoIosCreate } from 'react-icons/io';
 import Table from './Table/Table';
+import type { Company } from '@prisma/client';
+import { api } from '@/utils/api';
+import { toast } from 'react-toastify';
+import { useSession } from 'next-auth/react';
 
-export default function CustomersTab({ Companies, handleCreateCompanyCb, handleUpdateCompanyCb, handleDeleteCompanyCb }: { Companies: Company[] | undefined, handleCreateCompanyCb: (formState: Company) => void, handleUpdateCompanyCb: (formState: Company) => void, handleDeleteCompanyCb: (formState: Company) => void }) {
+export default function CustomersTab({ Companies }: { Companies: Company[] | undefined }) {
     //!TODO SCROLLABLE TABLE
-    // const [filteredCustomers, setFđđilteredCustomers] = React.useState<Partner[]>([]);
-
+    // const [filteredCustomers, setFilteredCustomers] = React.useState<Partner[]>([]);
+    const { data: sessionData } = useSession();
+    const createCompany = api.company.createCompany.useMutation();
+    const updateCompany = api.company.updateCompany.useMutation();
+    const deleteCompany = api.company.deleteCompany.useMutation();
     //Create modal for creating new customers
     const [showCreateModal, setCreateShowModal] = useState(false);
     const [showUpdateModal, setUpdateShowModal] = useState(false);
@@ -18,25 +24,61 @@ export default function CustomersTab({ Companies, handleCreateCompanyCb, handleU
     const handleOpenCreateModal = () => {
         setCreateShowModal(true);
     };
+
     const handleCreateCompany = () => {
-        setCreateShowModal(false);
-        handleCreateCompanyCb(tempCompany);
-        console.log(tempCompany);
+        createCompany.mutate({
+            address: tempCompany.address,
+            city: tempCompany.city,
+            country: tempCompany.country,
+            email: tempCompany.email,
+            name: tempCompany.name,
+            phone: tempCompany.phone,
+            user_id: sessionData?.user.id as string,
+            vat: tempCompany.vat,
+            zip: tempCompany.zip,
+            website: tempCompany.website as string,
+        }, {
+            onSuccess: () => {
+                toast.success('Company created successfully');
+                setCreateShowModal(false);
+            }
+        });
     };
     const handleUpdateCompanyModal = (company: Company) => {
         setSelectedCompany(company);
         setUpdateShowModal(true);
     };
     const handleUpdateCompany = (company: Company) => {
-        setUpdateShowModal(false);
-        handleUpdateCompanyCb(company);
-        console.log(company);
+        updateCompany.mutate({
+            id: company.id,
+            address: company.address,
+            city: company.city,
+            country: company.country,
+            email: company.email,
+            name: company.name,
+            phone: company.phone,
+            vat: company.vat,
+            zip: company.zip,
+            website: company.website,
+        }, {
+            onSuccess: () => {
+                toast.success('Company updated successfully');
+                setUpdateShowModal(false);
+            }
+        });
     };
 
     const handleDeleteCompany = (company: Company) => {
         setUpdateShowModal(false);
         console.log(company);
-        handleDeleteCompanyCb(company);
+        deleteCompany.mutate({
+            id: company.id,
+        }, {
+            onSuccess: () => {
+                toast.success('Company deleted successfully');
+                setUpdateShowModal(false);
+            }
+        })
 
     };
 
@@ -46,7 +88,6 @@ export default function CustomersTab({ Companies, handleCreateCompanyCb, handleU
             return customer.name.toLowerCase().includes(value.toLowerCase());
         });
         setFilteredCompanies(filtered as Company[]);
-        console.log(filtered);
     };
     useEffect(() => {
         setFilteredCompanies(Companies as Company[]);

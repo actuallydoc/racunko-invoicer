@@ -19,7 +19,7 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
     const [selectedCustomer, setSelectedCustomer] = useState<Partner>(invoiceData?.Partner as Partner);
     const [selectedCompany, setSelectedCompany] = useState<Company>(invoiceData?.Company as Company);
     const [tempInvoice, setTempInvoice] = useState<InvoiceType>(invoiceData as InvoiceType);
-    const [services, setServices] = useState<Service[]>(JSON.parse(invoiceData?.services) as unknown as Service[]);
+    const [services, setServices] = useState<Service[]>(JSON.parse(invoiceData?.services as string) as unknown as Service[]);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTempInvoice((prevState) => ({
             ...prevState,

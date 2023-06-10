@@ -2,11 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { IoIosCreate } from 'react-icons/io';
 import CustomerCreateModal from './Modals/CustomerCreateModal';
 import Table from './Table/Table';
-import type { Partner } from 'types';
+import { api } from '@/utils/api';
 import CustomerEditModal from './Modals/CustomerEditModal';
+import type { Partner } from '@prisma/client';
+import { toast } from 'react-toastify';
+import { useSession } from 'next-auth/react';
 
-export default function CustomersTab({ Customers, handleCreateCustomerCb, handleUpdateCustomerCb, handleDeleteCustomerCb }: { Customers: Partner[] | undefined, handleCreateCustomerCb: (formState: Partner) => void, handleUpdateCustomerCb: (formState: Partner) => void, handleDeleteCustomerCb: (formState: Partner) => void }) {
+export default function CustomersTab({ Customers }: { Customers: Partner[] | undefined }) {
     //!TODO SCROLLABLE TABLE
+    const { data: sessionData } = useSession();
+    const createCustomer = api.partner.createPartner.useMutation();
+    const updateCustomer = api.partner.updatePartner.useMutation();
+    const deleteCustomer = api.partner.deletePartner.useMutation();
     const [showCreateModal, setCreateShowModal] = useState(false);
     const [showUpdateModal, setUpdateShowModal] = useState(false);
     const [tempCustomer, setTempCustomer] = useState<Partner>({} as Partner);
@@ -17,8 +24,23 @@ export default function CustomersTab({ Customers, handleCreateCustomerCb, handle
     };
     const handleCreateCustomer = () => {
         setCreateShowModal(false);
-        handleCreateCustomerCb(tempCustomer);
-        console.log(tempCustomer);
+        createCustomer.mutate({
+            address: tempCustomer.address,
+            city: tempCustomer.city,
+            country: tempCustomer.country,
+            email: tempCustomer.email,
+            name: tempCustomer.name,
+            phone: tempCustomer.phone,
+            user_id: sessionData?.user.id as string,
+            vat: tempCustomer.vat,
+            zip: tempCustomer.zip,
+            website: tempCustomer.website,
+        }, {
+            onSuccess: () => {
+                toast.success('Customer created successfully');
+                setCreateShowModal(false);
+            }
+        })
     };
     const handleUpdateCustomerModal = (customer: Partner) => {
         setSelectedCustomer(customer);
@@ -27,13 +49,37 @@ export default function CustomersTab({ Customers, handleCreateCustomerCb, handle
 
     const handleUpdateCustomer = (customer: Partner) => {
         setUpdateShowModal(true);
-        handleUpdateCustomerCb(customer);
+        updateCustomer.mutate({
+            id: customer.id,
+            address: customer.address,
+            city: customer.city,
+            country: customer.country,
+            email: customer.email,
+            name: customer.name,
+            phone: customer.phone,
+            user_id: sessionData?.user.id as string,
+            vat: customer.vat,
+            zip: customer.zip,
+            website: customer.website,
+        }, {
+            onSuccess: () => {
+                toast.success('Customer updated successfully');
+                setUpdateShowModal(false);
+            }
+        });
         setSelectedCustomer(customer);
     };
     const handleDeleteCustomer = (customer: Partner) => {
         setUpdateShowModal(false);
         console.log(customer);
-        handleDeleteCustomerCb(customer);
+        deleteCustomer.mutate({
+            id: customer.id,
+        }, {
+            onSuccess: () => {
+                toast.success('Customer deleted successfully');
+                setUpdateShowModal(false);
+            }
+        });
 
     };
 
