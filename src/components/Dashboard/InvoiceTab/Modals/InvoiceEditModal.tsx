@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
@@ -8,7 +8,22 @@ import { api } from '@/utils/api';
 import type { InvoiceType, Service } from 'types';
 import { toast } from 'react-toastify';
 import ServiceItem from './ServiceItem';
-
+import { Input } from '@/components/ui/input';
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+} from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { ChevronsUpDown, Check } from 'lucide-react';
 // TODO: Fix date input's they r trippin out
 
 export default function InvoiceEditModal({ customers, companies, invoiceData, setShowModal }: {
@@ -99,23 +114,14 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
         //     }
         // ]))
     }
-    const handleCustomerDropDown = (e: React.FormEvent<HTMLSelectElement>) => {
-        setSelectedCustomer(customers?.filter((customer) => {
-            return customer.name === e.currentTarget.value
-        }
-        )
-        [0])
-    }
-    const handleCompanyDropDown = (e: React.FormEvent<HTMLSelectElement>) => {
-        setSelectedCompany(companies?.filter((company) => {
-            return company.name === e.currentTarget.value
-        }
-        )[0])
-    }
+
     // const handleDeleteService = (id: string) => {
     //     setEmptyServices((prevState) => (prevState.filter((service) => service.id !== id)))
     // }
-
+    const [openCompanyPopover, setOpenCompanyPopover] = React.useState(false)
+    const [companyValue, setCompanyValue] = React.useState("")
+    const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
+    const [customerValue, setCustomerValue] = React.useState("")
     const handleCloseModal = () => {
         setShowModal(false)
     }
@@ -194,13 +200,13 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="invoiceNumber">
                                         Invoice Number
                                     </label>
-                                    <input
+                                    <Input
                                         onChange={handleChange}
                                         className="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                         id="invoiceNumber"
                                         type="name"
                                         placeholder="Invoice Number"
-                                        value={invoiceData?.invoiceNumber}
+                                        defaultValue={invoiceData?.invoiceNumber}
                                     />
                                 </div>
                             </div>
@@ -209,27 +215,55 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
 
                                 <div className='flex space-x-8 bg-b'>
                                     <div className='flex-col'>
-                                        <div>
-                                            {companies && (
-                                                <select
-                                                    onChange={handleCompanyDropDown}
-                                                    defaultValue={selectedCompany?.name}
-                                                    className="w-full border-2 border-gray-300 rounded-lg p-2">
-                                                    <option disabled selected value={"123"}> -- select an option -- </option>
-                                                    {companies?.length > 0 ? companies?.map((company) => (
-                                                        <option key={company.id} value={company.name}>{company.name}</option>
-                                                    )) : <option value=''>No Companies </option>}
+                                        <Popover open={openCompanyPopover} onOpenChange={setOpenCompanyPopover}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    aria-expanded={open}
+                                                    className="w-[200px] justify-between"
+                                                >
+                                                    {companyValue
+                                                        ? companies.find((company) => company.name === companyValue)?.name
+                                                        : "Select company..."}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-[200px] p-0">
+                                                <Command>
+                                                    <CommandInput placeholder="Search companies..." />
+                                                    <CommandEmpty>No companies found.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {companies.map((company) => (
+                                                            <CommandItem
+                                                                key={company.id}
+                                                                onSelect={(currentValue) => {
+                                                                    setCompanyValue(currentValue === companyValue ? "" : currentValue)
+                                                                    setSelectedCompany(company)
+                                                                    setOpenCompanyPopover(false)
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        companyValue === company.name ? "opacity-100" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                                {company.name}
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
 
-                                                </select>
-                                            )
-                                            }
-                                        </div>
                                         <div className='mb-6'>
 
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyname">
                                                 Company Name
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyname"
@@ -242,7 +276,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyaddress">
                                                 Company Address
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 value={selectedCompany?.address}
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -255,7 +290,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyzip">
                                                 Company Zip
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyzip"
@@ -268,7 +304,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companycity">
                                                 Company City
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companycity"
@@ -281,7 +318,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companycountry">
                                                 Company Country
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companycountry"
@@ -296,7 +334,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyphone">
                                                 Company Phone
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyphone"
@@ -309,7 +348,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyemail">
                                                 Company Email
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyemail"
@@ -322,7 +362,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companywebsite">
                                                 Company Website
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companywebsite"
@@ -335,7 +376,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyvat">
                                                 Company VAT
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyvat"
@@ -346,27 +388,56 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                         </div>
                                     </div>
                                 </div>
-                                <div className='flex'>
+                                <div className='flex space-x-2'>
                                     <div className='flex-col'>
-                                        <div>
-                                            {customers && (
-                                                <select onChange={handleCustomerDropDown}
-                                                    defaultValue={selectedCustomer?.name}
-                                                    className="w-full border-2 border-gray-300 rounded-lg p-2">
-                                                    <option disabled selected value={"123"}> -- select an option -- </option>
-                                                    {customers?.length > 0 ? customers?.map((customer) => (
-                                                        <option key={customer.id} value={customer.name}>{customer.name}</option>
-                                                    )) : <option value=''>No Customer&apos;s </option>}
-
-                                                </select>
-                                            )}
-                                        </div>
+                                        <Popover open={openCustomerPopover} onOpenChange={setOpenCustomerPopover}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    aria-expanded={open}
+                                                    className="w-[200px] justify-between"
+                                                >
+                                                    {customerValue
+                                                        ? customers.find((customer) => customer.name === customerValue)?.name
+                                                        : "Select customer..."}
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-[200px] p-0">
+                                                <Command>
+                                                    <CommandInput placeholder="Search customers..." />
+                                                    <CommandEmpty>No customers found.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {/* TODO: The name of the partner and company in the popover is not fully shown because of the width */}
+                                                        {customers.map((customer) => (
+                                                            <CommandItem
+                                                                key={customer.id}
+                                                                onSelect={(currentValue: Partner) => {
+                                                                    setCustomerValue(currentValue === customerValue ? "" : currentValue)
+                                                                    setSelectedCustomer(customer)
+                                                                    setOpenCustomerPopover(false)
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        customerValue === customer.name ? "opacity-100" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                                {customer.name}
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
                                         <div className='mb-6'>
-
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customername">
                                                 Customer Name
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="name"
@@ -379,7 +450,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customeraddress">
                                                 Customer Address
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customeraddress"
@@ -392,7 +464,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customerzip">
                                                 Customer Zip
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customerzip"
@@ -405,7 +478,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customercity">
                                                 Customer City
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customercity"
@@ -418,7 +492,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customercountry">
                                                 Customer Country
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customercountry"
@@ -433,7 +508,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customerphone">
                                                 Customer Phone
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customerphone"
@@ -446,7 +522,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customeremail">
                                                 Customer Email
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customeremail"
@@ -459,7 +536,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customerwebsite">
                                                 Customer Website
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customerwebsite"
@@ -472,7 +550,8 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customervat">
                                                 Customer VAT (Optional)
                                             </label>
-                                            <input
+                                            <Input
+                                                disabled
                                                 onChange={handleChange}
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customervat"

@@ -6,7 +6,7 @@ const HeaderNames = [
     "Date",
     "Due Date",
     "Status",
-    "Total",
+    "Amount",
 ]
 export default function TableHeader() {
     return (
