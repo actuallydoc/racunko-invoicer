@@ -29,7 +29,8 @@ import ServiceItem from './ServiceItem';
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from '@radix-ui/react-dialog';
 import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
+
 
 export default function InvoiceEditModal({ customers, companies, setShowModal }: {
     customers: Partner[], companies: Company[], setShowModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -45,7 +46,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
 
     const handleGenerateInvoice = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         //Create a Blob and open it in a new window
-        //!TODO This is curently not working the template is broken
+        // TODO This is curently not working the template is broken
         e.preventDefault();
         const blob = generatePDFInvoice(invoiceSelector);
         console.log("Blob is: ",);
@@ -126,36 +127,6 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
 
     return (
         <div className=" bg-gray-100">
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="outline">Edit Profile</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit profile</DialogTitle>
-                        <DialogDescription>
-                            Make changes to your profile here. Click save when you&apos;re done.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">
-                                Name
-                            </Label>
-                            <Input id="name" value="Pedro Duarte" className="col-span-3" />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="username" className="text-right">
-                                Username
-                            </Label>
-                            <Input id="username" value="@peduarte" className="col-span-3" />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="submit">Save changes</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
             <div className="flex items-center justify-center h-full">
                 <div className="w-full ">
 
@@ -286,359 +257,99 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
 
                             <div className='flex space-x-32'>
 
-                                <div className='flex space-x-8 bg-b'>
-                                    <div className='flex-col'>
-                                        <Popover open={openCompanyPopover} onOpenChange={setOpenCompanyPopover}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    role="combobox"
 
-                                                    className="w-[200px] justify-between"
-                                                >
-                                                    {companyValue
-                                                        ? companies.find((company) => company.name === companyValue)?.name
-                                                        : "Select company..."}
-                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-[200px] p-0">
-                                                <Command>
-                                                    <CommandInput placeholder="Search companies..." />
-                                                    <CommandEmpty>No companies found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {companies.map((company) => (
-                                                            <CommandItem
-                                                                key={company.id}
+                                <Popover open={openCompanyPopover} onOpenChange={setOpenCompanyPopover}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            role="combobox"
 
-                                                                onSelect={(currentValue) => {
-                                                                    setCompanyValue(currentValue === companyValue ? "" : currentValue)
-                                                                    setSelectedCompany(company)
-                                                                    handleCompanyChange(company);
-                                                                    setOpenCompanyPopover(false)
-                                                                }}
-                                                            >
-                                                                <Check
-                                                                    className={cn(
-                                                                        "mr-2 h-4 w-4",
-                                                                        companyValue === company.name ? "opacity-100" : "opacity-0"
-                                                                    )}
-                                                                />
-                                                                {company.name}
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
+                                            className="w-[200px] justify-between"
+                                        >
+                                            {companyValue
+                                                ? companies.find((company) => company.name === companyValue)?.name
+                                                : "Select company..."}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[200px] p-0">
+                                        <Command>
+                                            <CommandInput placeholder="Search companies..." />
+                                            <CommandEmpty>No companies found.</CommandEmpty>
+                                            <CommandGroup>
+                                                {companies.map((company) => (
+                                                    <CommandItem
+                                                        key={company.id}
 
-                                        <div className='mb-6'>
+                                                        onSelect={(currentValue) => {
+                                                            setCompanyValue(currentValue === companyValue ? "" : currentValue)
+                                                            setSelectedCompany(company)
+                                                            handleCompanyChange(company);
+                                                            setOpenCompanyPopover(false)
+                                                        }}
+                                                    >
+                                                        <Check
+                                                            className={cn(
+                                                                "mr-2 h-4 w-4",
+                                                                companyValue === company.name ? "opacity-100" : "opacity-0"
+                                                            )}
+                                                        />
+                                                        {company.name}
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
 
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyname">
-                                                Company Name
-                                            </label>
-                                            <Input
-                                                disabled
 
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyname"
-                                                type="name"
-                                                placeholder="Company name"
-                                                value={selectedCompany?.name}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyaddress">
-                                                Company Address
-                                            </label>
-                                            <Input
-                                                disabled
-                                                value={selectedCompany?.address}
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyaddress"
-                                                type="text"
-                                                placeholder="Company Address"
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyzip">
-                                                Company Zip
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyzip"
-                                                type="text"
-                                                placeholder="Company Zip"
-                                                value={selectedCompany?.zip}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companycity">
-                                                Company City
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companycity"
-                                                type="text"
-                                                placeholder="Company City"
-                                                value={selectedCompany?.city}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companycountry">
-                                                Company Country
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companycountry"
-                                                type="text"
-                                                placeholder="Company Country"
-                                                value={selectedCompany?.country}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyphone">
-                                                Company Phone
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyphone"
-                                                type="text"
-                                                placeholder="Company Phone"
-                                                value={selectedCompany?.phone}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyemail">
-                                                Company Email
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyemail"
-                                                type="text"
-                                                placeholder="Company Email"
-                                                value={selectedCompany?.email}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companywebsite">
-                                                Company Website
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companywebsite"
-                                                type="text"
-                                                placeholder="Company Website"
-                                                value={selectedCompany?.website as string}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyvat">
-                                                Company VAT
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyvat"
-                                                type="text"
-                                                placeholder="Company Vat"
-                                                value={selectedCompany?.vat}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
                                 <div className='flex space-x-2'>
-                                    <div className='flex-col'>
-                                        <Popover open={openCustomerPopover} onOpenChange={setOpenCustomerPopover}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    role="combobox"
+                                    <Popover open={openCustomerPopover} onOpenChange={setOpenCustomerPopover}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
 
-                                                    className="w-[200px] justify-between"
-                                                >
-                                                    {customerValue
-                                                        ? customers.find((customer) => customer.name === customerValue)?.name
-                                                        : "Select customer..."}
-                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-[200px] p-0">
-                                                <Command>
-                                                    <CommandInput placeholder="Search customers..." />
-                                                    <CommandEmpty>No customers found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {/* TODO: The name of the partner and company in the popover is not fully shown because of the width */}
-                                                        {customers.map((customer) => (
-                                                            <CommandItem
-                                                                key={customer.id}
-                                                                onSelect={(currentValue: string) => {
-                                                                    setCustomerValue(currentValue === customerValue ? "" : currentValue)
-                                                                    setSelectedCustomer(customer)
-                                                                    handleCustomerChange(customer)
-                                                                    setOpenCustomerPopover(false)
-                                                                }}
-                                                            >
-                                                                <Check
-                                                                    className={cn(
-                                                                        "mr-2 h-4 w-4",
-                                                                        customerValue === customer.name ? "opacity-100" : "opacity-0"
-                                                                    )}
-                                                                />
-                                                                {customer.name}
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
-                                        <div className='mb-6'>
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customername">
-                                                Customer Name
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="name"
-                                                type="Customername"
-                                                placeholder="Customer name"
-                                                value={selectedCustomer?.name}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customeraddress">
-                                                Customer Address
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customeraddress"
-                                                type="text"
-                                                placeholder="Customer Address"
-                                                value={selectedCustomer?.address}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customerzip">
-                                                Customer Zip
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customerzip"
-                                                type="text"
-                                                placeholder="Customer Zip"
-                                                value={selectedCustomer?.zip}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customercity">
-                                                Customer City
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customercity"
-                                                type="text"
-                                                placeholder="Customer City"
-                                                value={selectedCustomer?.city}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customercountry">
-                                                Customer Country
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customercountry"
-                                                type="text"
-                                                placeholder="Customer Country"
-                                                value={selectedCustomer?.country}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customerphone">
-                                                Customer Phone
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customerphone"
-                                                type="text"
-                                                placeholder="Customer Phone"
-                                                value={selectedCustomer?.phone}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customeremail">
-                                                Customer Email
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customeremail"
-                                                type="text"
-                                                placeholder="Customer Email"
-                                                value={selectedCustomer?.email}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customerwebsite">
-                                                Customer Website
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customerwebsite"
-                                                type="text"
-                                                placeholder="Customer Website"
-                                                value={selectedCustomer?.website as string}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customervat">
-                                                Customer VAT (Optional)
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customervat"
-                                                type="text"
-                                                placeholder="Customer Vat"
-                                                value={selectedCustomer?.vat as string}
-                                            />
-                                        </div>
-                                    </div>
+                                                className="w-[200px] justify-between"
+                                            >
+                                                {customerValue
+                                                    ? customers.find((customer) => customer.name === customerValue)?.name
+                                                    : "Select customer..."}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[200px] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Search customers..." />
+                                                <CommandEmpty>No customers found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {/* TODO: The name of the partner and company in the popover is not fully shown because of the width */}
+                                                    {customers.map((customer) => (
+                                                        <CommandItem
+                                                            key={customer.id}
+                                                            onSelect={(currentValue: string) => {
+                                                                setCustomerValue(currentValue === customerValue ? "" : currentValue)
+                                                                setSelectedCustomer(customer)
+                                                                handleCustomerChange(customer)
+                                                                setOpenCustomerPopover(false)
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    customerValue === customer.name ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            {customer.name}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
                                 </div>
                             </div>
+
                             <div className='pb-10'>
                                 {/* Pretty fascinating that u can do that so easily(scroll) */}
                                 <div className='max-h-[200px] overflow-y-scroll'>

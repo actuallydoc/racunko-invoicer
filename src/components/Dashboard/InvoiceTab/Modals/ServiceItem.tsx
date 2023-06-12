@@ -66,7 +66,7 @@ export default function ServiceItem({ service }: { service: Service }) {
             <input onChange={(e) => {
               handleInputChange(e);
 
-            }} type="number" name='price' className="w-1/4 border  border-gray-300 rounded-md px-2 py-1" defaultValue={service.price} />
+            }} type="number" name='price' className="w-2/4 border  border-gray-300 rounded-md px-2 py-1" defaultValue={service.price} />
           </div>
         </div>
         <div>

@@ -22,19 +22,19 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import ServiceCreateItem from './ServiceCreateItem';
-// import ServiceAddModal from './ServiceAddModal';
-export default function InvoiceCreateModal({ customers, companies, invoiceData, setShowModal }: { invoiceData: Invoice, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<Invoice>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>> }) {
+import { format } from 'date-fns';
+
+// TODO: All invoice modals should not have input's only dropdowns with search for data that already exists in the database
+export default function InvoiceCreateModal({ customers, companies, setShowModal }: { customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<Invoice>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>> }) {
     const createInvoice = api.invoice.createInvoice.useMutation();
 
     const createInvoiceSelector = useSelector((state: RootState) => state.createItem);
     const createInvoiceDispatch = useDispatch();
-    const [invoiceDate, setInvoiceDate] = React.useState<Date>(new Date());
-    const [dueDate, setDueDate] = React.useState<Date>(new Date());
-    const [serviceDate, setServiceDate] = React.useState<Date>(new Date());
     const [selectedCustomer, setSelectedCustomer] = React.useState<Partner>();
     // const [emptyServices, setEmptyServices] = React.useState<Service[]>([]);
     const [selectedCompany, setSelectedCompany] = React.useState<Company>();
@@ -134,13 +134,28 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                         </label>
                                     </div>
                                     <div className='border-4  rounded-lg'>
-                                        <Flatpickr
-                                            id='invoiceDate'
-                                            value={invoiceDate.toString()}
-                                            onChange={([date]) => {
-                                                handleInvoiceDate(date as Date);
-                                            }}
-                                        />
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-[280px] justify-start text-left font-normal",
+                                                        !createInvoiceSelector.invoiceDate && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {createInvoiceSelector.invoiceDate ? format(createInvoiceSelector.invoiceDate, "PPP") : <span>Pick a date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={createInvoiceSelector.invoiceDate}
+                                                    onSelect={(e) => handleInvoiceDate(e as Date)}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
                                 </div>
 
@@ -152,13 +167,28 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                         </label>
                                     </div>
                                     <div className='border-4  rounded-lg'>
-                                        <Flatpickr
-                                            id='serviceDate'
-                                            value={serviceDate?.toString()}
-                                            onChange={([date]) => {
-                                                handleServiceDate(date as Date);
-                                            }}
-                                        />
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-[280px] justify-start text-left font-normal",
+                                                        !createInvoiceSelector.invoiceServiceDate && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {createInvoiceSelector.invoiceServiceDate ? format(createInvoiceSelector.invoiceServiceDate, "PPP") : <span>Pick a date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={createInvoiceSelector.invoiceServiceDate}
+                                                    onSelect={(e) => handleServiceDate(e as Date)}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
                                 </div>
                                 <div className='flex-col'>
@@ -169,13 +199,28 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                         </label>
                                     </div>
                                     <div className='border-4  rounded-lg'>
-                                        <Flatpickr
-                                            id='dueDate'
-                                            value={dueDate?.toString()}
-                                            onChange={([date]) => {
-                                                handleDueDate(date as Date);
-                                            }}
-                                        />
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-[280px] justify-start text-left font-normal",
+                                                        !createInvoiceSelector.dueDate && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {createInvoiceSelector.dueDate ? format(createInvoiceSelector.dueDate, "PPP") : <span>Pick a date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={createInvoiceSelector.dueDate}
+                                                    onSelect={(e) => handleDueDate(e as Date)}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
                                 </div>
 
@@ -197,181 +242,50 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                             </div>
 
                             <div className='flex space-x-32'>
-                                <div className='flex space-x-8 bg-b'>
-                                    <div className='flex-col'>
-                                        <Popover open={openCompanyPopover} onOpenChange={setOpenCompanyPopover}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    role="combobox"
+                                <div className='flex-col'>
+                                    <Popover open={openCompanyPopover} onOpenChange={setOpenCompanyPopover}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
 
-                                                    className="w-[200px] justify-between"
-                                                >
-                                                    {companyValue
-                                                        ? companies.find((company) => company.name === companyValue)?.name
-                                                        : "Select company..."}
-                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-[200px] p-0">
-                                                <Command>
-                                                    <CommandInput placeholder="Search companies..." />
-                                                    <CommandEmpty>No companies found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {companies.map((company) => (
-                                                            <CommandItem
-                                                                key={company.id}
-                                                                onSelect={(currentValue) => {
-                                                                    setCompanyValue(currentValue === companyValue ? "" : currentValue)
-                                                                    setSelectedCompany(company)
-                                                                    handleCompanySelect(company)
-                                                                    setOpenCompanyPopover(false)
-                                                                }}
-                                                            >
-                                                                <Check
-                                                                    className={cn(
-                                                                        "mr-2 h-4 w-4",
-                                                                        companyValue === company.name ? "opacity-100" : "opacity-0"
-                                                                    )}
-                                                                />
-                                                                {company.name}
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
+                                                className="w-[200px] justify-between"
+                                            >
+                                                {companyValue
+                                                    ? companies.find((company) => company.name === companyValue)?.name
+                                                    : "Select company..."}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[200px] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Search companies..." />
+                                                <CommandEmpty>No companies found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {companies?.map((company) => (
+                                                        <CommandItem
+                                                            key={company.id}
+                                                            onSelect={(currentValue) => {
+                                                                setCompanyValue(currentValue === companyValue ? "" : currentValue)
+                                                                setSelectedCompany(company)
+                                                                handleCompanySelect(company)
+                                                                setOpenCompanyPopover(false)
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    companyValue === company.name ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            {company.name}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
 
-                                        <div className='mb-6'>
-
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyname">
-                                                Company Name
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyname"
-                                                type="name"
-                                                placeholder="Company name"
-                                                defaultValue={selectedCompany?.name}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyaddress">
-                                                Company Address
-                                            </label>
-                                            <Input
-                                                disabled
-                                                defaultValue={selectedCompany?.address}
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyaddress"
-                                                type="text"
-                                                placeholder="Company Address"
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyzip">
-                                                Company Zip
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyzip"
-                                                type="text"
-                                                placeholder="Company Zip"
-                                                defaultValue={selectedCompany?.zip}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companycity">
-                                                Company City
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companycity"
-                                                type="text"
-                                                placeholder="Company City"
-                                                defaultValue={selectedCompany?.city}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companycountry">
-                                                Company Country
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companycountry"
-                                                type="text"
-                                                placeholder="Company Country"
-                                                defaultValue={selectedCompany?.country}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyphone">
-                                                Company Phone
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyphone"
-                                                type="text"
-                                                placeholder="Company Phone"
-                                                defaultValue={selectedCompany?.phone}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyemail">
-                                                Company Email
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyemail"
-                                                type="text"
-                                                placeholder="Company Email"
-                                                defaultValue={selectedCompany?.email}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companywebsite">
-                                                Company Website
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companywebsite"
-                                                type="text"
-                                                placeholder="Company Website"
-                                                defaultValue={selectedCompany?.website as string}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Companyvat">
-                                                Company VAT
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Companyvat"
-                                                type="text"
-                                                placeholder="Company Vat"
-                                                defaultValue={selectedCompany?.vat}
-                                            />
-                                        </div>
-                                    </div>
                                 </div>
                                 <div className='flex'>
                                     <div className='flex-col'>
@@ -418,134 +332,6 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                                 </Command>
                                             </PopoverContent>
                                         </Popover>
-                                        <div className='mb-6'>
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customername">
-                                                Customer Name
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="name"
-                                                type="Customername"
-                                                placeholder="Customer name"
-                                                value={selectedCustomer?.name}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customeraddress">
-                                                Customer Address
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customeraddress"
-                                                type="text"
-                                                placeholder="Customer Address"
-                                                value={selectedCustomer?.address}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customerzip">
-                                                Customer Zip
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customerzip"
-                                                type="text"
-                                                placeholder="Customer Zip"
-                                                value={selectedCustomer?.zip}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customercity">
-                                                Customer City
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customercity"
-                                                type="text"
-                                                placeholder="Customer City"
-                                                value={selectedCustomer?.city}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customercountry">
-                                                Customer Country
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customercountry"
-                                                type="text"
-                                                placeholder="Customer Country"
-                                                value={selectedCustomer?.country}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customerphone">
-                                                Customer Phone
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customerphone"
-                                                type="text"
-                                                placeholder="Customer Phone"
-                                                value={selectedCustomer?.phone}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customeremail">
-                                                Customer Email
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customeremail"
-                                                type="text"
-                                                placeholder="Customer Email"
-                                                value={selectedCustomer?.email as string}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customerwebsite">
-                                                Customer Website
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customerwebsite"
-                                                type="text"
-                                                placeholder="Customer Website"
-                                                value={selectedCustomer?.website as string}
-                                            />
-                                        </div>
-                                        <div className="mb-6">
-                                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Customervat">
-                                                Customer VAT (Optional)
-                                            </label>
-                                            <Input
-                                                disabled
-
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                id="Customervat"
-                                                type="text"
-                                                placeholder="Customer Vat"
-                                                value={selectedCustomer?.vat as string}
-                                            />
-                                        </div>
                                     </div>
                                 </div>
                             </div>

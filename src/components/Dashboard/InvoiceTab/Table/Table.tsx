@@ -13,11 +13,16 @@ import {
 } from "@/components/ui/table";
 import { useSelector } from 'react-redux';
 import { type RootState } from '@/stores/invoiceSlice';
+import { Service } from 'types';
 export default function TableComponent({ handleInvoiceClick }: { handleInvoiceClick: (invoice: Invoice) => void }) {
   const invoiceSelector = useSelector((state: RootState) => state.items);
   useEffect(() => {
     console.log(invoiceSelector)
   }, [invoiceSelector])
+  useEffect(() => {
+    // Calculate total invoice amount
+
+  })
   return (
     <div>
       <Table className='text-white' >
@@ -34,15 +39,23 @@ export default function TableComponent({ handleInvoiceClick }: { handleInvoiceCl
           </TableRow>
         </TableHeader>
         <TableBody>
-          {invoiceSelector?.map((invoice) => (
-            <TableRow key={invoice.id} onClick={() => handleInvoiceClick(invoice)} className='hover:cursor-pointer'>
+          {invoiceSelector?.map((invoice, index) => (
+            <TableRow key={index} onClick={() => handleInvoiceClick(invoice)} className='hover:cursor-pointer'>
               <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
               <TableCell>{invoice.Partner.name}</TableCell>
               <TableCell>{invoice.Company.name}</TableCell>
               <TableCell>{invoice.invoiceDate.toISOString().toString()}</TableCell>
               <TableCell>{invoice.dueDate.toISOString().toString()}</TableCell>
               <TableCell>{invoice.status}</TableCell>
-              <TableCell className="text-right">{invoice.id}</TableCell>
+              <TableCell className="text-right">
+                {invoice.Services?.reduce((total: number, service: Service) => {
+                  if (service.price) {
+                    return total + Number(service.price);
+                  }
+                  return total;
+                }, 0)} $
+                {/* TODO: Get the currency */}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

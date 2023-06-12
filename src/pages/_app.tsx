@@ -7,6 +7,13 @@ import { Provider } from 'react-redux'
 import "@/styles/globals.css";
 import invoice from "@/stores/invoiceSlice";
 import { ToastContainer } from "react-toastify";
+/* Main TODO: Make a design for the app
+// 
+//
+// ADD MORE TODOS HERE
+//
+//
+*/
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },

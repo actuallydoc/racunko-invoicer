@@ -7,7 +7,8 @@ import type { Company } from '@prisma/client';
 import { api } from '@/utils/api';
 
 import { useSession } from 'next-auth/react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
+
 
 export default function CustomersTab({ Companies }: { Companies: Company[] | undefined }) {
     //!TODO SCROLLABLE TABLE

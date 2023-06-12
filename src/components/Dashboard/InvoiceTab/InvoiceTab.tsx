@@ -11,7 +11,7 @@ import { invoiceSlice } from '@/stores/invoiceSlice';
 import { useDispatch } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverTrigger, PopoverContent } from '@radix-ui/react-popover';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
@@ -42,7 +42,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
         <div className="min-h-screen flex items-center ml-10">
             {showCreateModal && (
                 <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
-                    <InvoiceCreateModal invoiceData={invoiceState} companies={Companies} customers={Customers} invoiceState={setInvoiceState} setShowModal={setCreateShowModal} />
+                    <InvoiceCreateModal companies={Companies} customers={Customers} invoiceState={setInvoiceState} setShowModal={setCreateShowModal} />
                 </div>
             )}
             {editInvoice && (
@@ -62,7 +62,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                 <Button
                                     variant={"outline"}
                                     className={cn(
-                                        "w-[280px] justify-start text-left font-normal",
+                                        "w-[280px] dark justify-start text-left font-normal",
                                         !fromDate && "text-muted-foreground"
                                     )}
                                 >
@@ -70,7 +70,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                     {fromDate ? format(fromDate, "PPP") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
+                            <PopoverContent className="dark w-auto p-0">
                                 <Calendar
                                     mode="single"
                                     selected={fromDate}
@@ -89,7 +89,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                 <Button
                                     variant={"outline"}
                                     className={cn(
-                                        "w-[280px] justify-start text-left font-normal",
+                                        "w-[280px] justify-start dark text-left font-normal",
                                         !toDate && "text-muted-foreground"
                                     )}
                                 >
@@ -97,7 +97,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                     {toDate ? format(toDate, "PPP") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
+                            <PopoverContent className="w-auto p-0 dark">
                                 <Calendar
                                     mode="single"
                                     selected={toDate}
