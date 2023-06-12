@@ -14,16 +14,20 @@ export default function ServiceItem({ service }: { service: Service }) {
   // TODO: Implement this to change the service inside the parent "InvoiceEditTab"
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    console.log(name);
+    console.log(value);
     setServiceState({
       ...serviceState,
       [name]: value
     })
-  };
-  const handleChange = () => {
+    console.log('====================================');
+    console.log(serviceState);
+    console.log('====================================');
     invoiceDispatch(invoiceSlice.actions.updateService({
       service: serviceState,
     }))
-  }
+  };
+
   return (
     <div className=''>
       <hr className="border-gray-300 my-2 border-2" />
@@ -35,7 +39,7 @@ export default function ServiceItem({ service }: { service: Service }) {
           <div>
             <input onChange={(e) => {
               handleInputChange(e);
-              handleChange();
+
             }} name='name' type="text" className="w-1/2 border border-gray-300 rounded-md px-2 py-1" defaultValue={service.name} />
           </div>
         </div>
@@ -46,8 +50,8 @@ export default function ServiceItem({ service }: { service: Service }) {
             </div>
             <input onChange={(e) => {
               handleInputChange(e);
-              handleChange();
-            }} type="number" name='quantity' className="w-1/4 border border-gray-300 rounded-md px-2 py-1" defaultValue={1} />
+
+            }} type="number" name='quantity' min={1} className="w-1/4 border border-gray-300 rounded-md px-2 py-1" defaultValue={1} />
           </div>
         </div>
 
@@ -55,7 +59,7 @@ export default function ServiceItem({ service }: { service: Service }) {
           <label htmlFor="description" className="text-sm">Description</label>
           <textarea placeholder='Description' name='description' onChange={(e) => {
             handleInputChange(e);
-            handleChange();
+
           }} className="w-full border border-gray-300 rounded-md px-2 py-1" defaultValue={service.description} />
         </div>
         <div className='flex-col'>
@@ -65,7 +69,7 @@ export default function ServiceItem({ service }: { service: Service }) {
           <div className=''>
             <input onChange={(e) => {
               handleInputChange(e);
-              handleChange();
+
             }} type="number" name='price' className="w-1/4 border  border-gray-300 rounded-md px-2 py-1" defaultValue={service.price} />
           </div>
         </div>

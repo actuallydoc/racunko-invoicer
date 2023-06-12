@@ -1,15 +1,18 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
 import generatePDFInvoice from '@/utils/invoicer';
 import type { Company, Partner } from '@prisma/client';
 import { api } from '@/utils/api';
-import type { InvoiceType, Service } from 'types';
+import type { InvoiceSerialized, InvoiceType } from 'types';
 import { toast } from 'react-toastify';
 import { Input } from '@/components/ui/input';
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
 import {
     Command,
     CommandEmpty,
@@ -26,7 +29,6 @@ import { ChevronsUpDown, Check } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import ServiceItem from './ServiceItem';
-// TODO: Fix date input's they r trippin out
 
 export default function InvoiceEditModal({ customers, companies, setShowModal }: {
     customers: Partner[], companies: Company[], setShowModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -37,20 +39,8 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
     const deleteInvoice = api.invoice.deleteInvoice.useMutation();
     const [selectedCustomer, setSelectedCustomer] = useState<Partner>(invoiceSelector?.Partner as Partner);
     const [selectedCompany, setSelectedCompany] = useState<Company>(invoiceSelector?.Company as Company);
-    const [tempInvoice, setTempInvoice] = useState<InvoiceType>(invoiceSelector);
+    // const [tempInvoice, setTempInvoice] = useState<InvoiceSerialized>(invoiceSelector);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTempInvoice((prevState) => ({
-            ...prevState,
-            [e.target.id]: e.target.value,
-            Company: {
-                ...prevState.Company as Company,
-            },
-            Partner: {
-                ...prevState.Partner as Partner,
-            },
-        }))
-    }
     const handleGenerateInvoice = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         //Create a Blob and open it in a new window
         //!TODO This is curently not working the template is broken
@@ -60,18 +50,26 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
         window.open(blob, "_blank")
     }
     const handleEditInvoice = () => {
-        console.log("Invoice selector: ", invoiceSelector);
-        console.log("Temp invoice: ", tempInvoice);
         editInvoice.mutate({
             ...invoiceSelector,
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            companyId: invoiceSelector.Company?.id as string,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            partnerId: invoiceSelector.Partner?.id as string,
             services: JSON.stringify(invoiceSelector.Services as unknown as string),
         }, {
             onSuccess: () => {
-                setTempInvoice({} as InvoiceType)
+                invoiceDispatch(invoiceSlice.actions.reset)
                 toast.success("Invoice edited successfully")
                 setShowModal(false)
             }
         });
+    }
+    const handleInvoiceNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+        invoiceDispatch(invoiceSlice.actions.updateInvoiceNumber({
+            invoiceNumber: e.target.value
+        }))
     }
     const handleDeleteInvoice = () => {
         deleteInvoice.mutate({
@@ -109,14 +107,16 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
             }
         }))
     }
-
+    const handleCompanyChange = (e: Company) => {
+        invoiceDispatch(invoiceSlice.actions.updateCompany({
+            company: e
+        }))
+    }
     const [openCompanyPopover, setOpenCompanyPopover] = React.useState(false)
     const [companyValue, setCompanyValue] = React.useState("")
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
     const [customerValue, setCustomerValue] = React.useState("")
-    const handleCloseModal = () => {
-        setShowModal(false)
-    }
+
     return (
         <div className=" bg-gray-100">
 
@@ -126,7 +126,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                     <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <div className="mb-4">
                             <div className='pb-5'>
-                                <button onClick={handleCloseModal} className="text-3xl font-bold text-gray-500 hover:text-gray-400">&times;</button>
+                                <button onClick={() => setShowModal(false)} className="text-3xl font-bold text-gray-500 hover:text-gray-400">&times;</button>
                             </div>
 
                             <div className='flex pb-10 space-x-5'>
@@ -138,13 +138,28 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                         </label>
                                     </div>
                                     <div className='border-4  rounded-lg'>
-                                        <Flatpickr
-                                            id='invoiceDate'
-                                            value={invoiceSelector.invoiceDate?.toString()}
-                                            onChange={([date]) => {
-                                                handleInvoiceDate(date as Date);
-                                            }}
-                                        />
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-[280px] justify-start text-left font-normal",
+                                                        !invoiceSelector.invoiceDate && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {invoiceSelector.invoiceDate ? format(invoiceSelector.invoiceDate, "PPP") : <span>Pick a date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={invoiceSelector.invoiceDate}
+                                                    onSelect={(e) => handleInvoiceDate(e as Date)}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
                                 </div>
 
@@ -156,13 +171,28 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                         </label>
                                     </div>
                                     <div className='border-4  rounded-lg'>
-                                        <Flatpickr
-                                            id='serviceDate'
-                                            value={invoiceSelector.invoiceServiceDate?.toString()}
-                                            onChange={([date]) => {
-                                                handleServiceDate(date as Date);
-                                            }}
-                                        />
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-[280px] justify-start text-left font-normal",
+                                                        !invoiceSelector.invoiceServiceDate && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {invoiceSelector.invoiceServiceDate ? format(invoiceSelector.invoiceServiceDate, "PPP") : <span>Pick a date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={invoiceSelector.invoiceServiceDate}
+                                                    onSelect={(e) => handleServiceDate(e as Date)}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
                                 </div>
                                 <div className='flex-col'>
@@ -172,13 +202,28 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                         </label>
                                     </div>
                                     <div className='border-4  rounded-lg'>
-                                        <Flatpickr
-                                            id='dueDate'
-                                            value={invoiceSelector.dueDate?.toString()}
-                                            onChange={([date]) => {
-                                                handleDueDate(date as Date);
-                                            }}
-                                        />
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-[280px] justify-start text-left font-normal",
+                                                        !invoiceSelector.dueDate && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {invoiceSelector.dueDate ? format(invoiceSelector.dueDate, "PPP") : <span>Pick a date</span>}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={invoiceSelector.dueDate}
+                                                    onSelect={(e) => handleDueDate(e as Date)}
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
 
                                 </div>
@@ -193,7 +238,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                         Invoice Number
                                     </label>
                                     <Input
-                                        onChange={handleChange}
+                                        onChange={handleInvoiceNumber}
                                         className="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                         id="invoiceNumber"
                                         type="name"
@@ -229,9 +274,11 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                                         {companies.map((company) => (
                                                             <CommandItem
                                                                 key={company.id}
+
                                                                 onSelect={(currentValue) => {
                                                                     setCompanyValue(currentValue === companyValue ? "" : currentValue)
                                                                     setSelectedCompany(company)
+                                                                    handleCompanyChange(company);
                                                                     setOpenCompanyPopover(false)
                                                                 }}
                                                             >
@@ -256,7 +303,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyname"
                                                 type="name"
@@ -271,7 +318,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             <Input
                                                 disabled
                                                 value={selectedCompany?.address}
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyaddress"
                                                 type="text"
@@ -284,7 +331,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyzip"
                                                 type="text"
@@ -298,7 +345,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companycity"
                                                 type="text"
@@ -312,7 +359,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companycountry"
                                                 type="text"
@@ -328,7 +375,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyphone"
                                                 type="text"
@@ -342,7 +389,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyemail"
                                                 type="text"
@@ -356,7 +403,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companywebsite"
                                                 type="text"
@@ -370,7 +417,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyvat"
                                                 type="text"
@@ -430,7 +477,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="name"
                                                 type="Customername"
@@ -444,7 +491,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customeraddress"
                                                 type="text"
@@ -458,7 +505,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customerzip"
                                                 type="text"
@@ -472,7 +519,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customercity"
                                                 type="text"
@@ -486,7 +533,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customercountry"
                                                 type="text"
@@ -502,7 +549,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customerphone"
                                                 type="text"
@@ -516,7 +563,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customeremail"
                                                 type="text"
@@ -530,7 +577,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customerwebsite"
                                                 type="text"
@@ -544,12 +591,12 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customervat"
                                                 type="text"
                                                 placeholder="Customer Vat"
-                                                value={selectedCompany?.vat}
+                                                value={selectedCustomer?.vat as string}
                                             />
                                         </div>
                                     </div>
