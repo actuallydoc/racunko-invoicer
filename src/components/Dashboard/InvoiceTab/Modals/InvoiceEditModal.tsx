@@ -7,7 +7,6 @@ import type { Company, Partner } from '@prisma/client';
 import { api } from '@/utils/api';
 import type { InvoiceType, Service } from 'types';
 import { toast } from 'react-toastify';
-import ServiceItem from './ServiceItem';
 import { Input } from '@/components/ui/input';
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -24,17 +23,21 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { ChevronsUpDown, Check } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/stores/invoiceSlice';
+import ServiceItem from './ServiceItem';
 // TODO: Fix date input's they r trippin out
 
-export default function InvoiceEditModal({ customers, companies, invoiceData, setShowModal }: {
-    invoiceData: InvoiceType | undefined, customers: Partner[], companies: Company[], setShowModal: React.Dispatch<React.SetStateAction<boolean>>
+export default function InvoiceEditModal({ customers, companies, setShowModal }: {
+    customers: Partner[], companies: Company[], setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 }) {
+    const invoiceSelector = useSelector((state: RootState) => state.editItem);
     const editInvoice = api.invoice.editInvoice.useMutation();
     const deleteInvoice = api.invoice.deleteInvoice.useMutation();
-    const [selectedCustomer, setSelectedCustomer] = useState<Partner>(invoiceData?.Partner as Partner);
-    const [selectedCompany, setSelectedCompany] = useState<Company>(invoiceData?.Company as Company);
-    const [tempInvoice, setTempInvoice] = useState<InvoiceType>(invoiceData as InvoiceType);
-    const [services, setServices] = useState<Service[]>(JSON.parse(invoiceData?.services as string) as unknown as Service[]);
+    const [selectedCustomer, setSelectedCustomer] = useState<Partner>(invoiceSelector?.Partner as Partner);
+    const [selectedCompany, setSelectedCompany] = useState<Company>(invoiceSelector?.Company as Company);
+    const [tempInvoice, setTempInvoice] = useState<InvoiceType>(invoiceSelector);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTempInvoice((prevState) => ({
             ...prevState,
@@ -148,7 +151,7 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                     <div className='border-4  rounded-lg'>
                                         <Flatpickr
                                             id='invoiceDate'
-                                            value={tempInvoice.invoiceDate?.toString()}
+                                            value={invoiceSelector.invoiceDate?.toString()}
                                             onChange={([date]) => {
                                                 handleInvoiceDate(date as Date);
                                             }}
@@ -166,7 +169,7 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                     <div className='border-4  rounded-lg'>
                                         <Flatpickr
                                             id='serviceDate'
-                                            value={tempInvoice.invoiceServiceDate?.toString()}
+                                            value={invoiceSelector.invoiceServiceDate?.toString()}
                                             onChange={([date]) => {
                                                 handleServiceDate(date as Date);
                                             }}
@@ -182,7 +185,7 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                     <div className='border-4  rounded-lg'>
                                         <Flatpickr
                                             id='dueDate'
-                                            value={tempInvoice.dueDate?.toString()}
+                                            value={invoiceSelector.dueDate?.toString()}
                                             onChange={([date]) => {
                                                 handleDueDate(date as Date);
                                             }}
@@ -206,7 +209,7 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                         id="invoiceNumber"
                                         type="name"
                                         placeholder="Invoice Number"
-                                        defaultValue={invoiceData?.invoiceNumber}
+                                        defaultValue={invoiceSelector?.invoiceNumber}
                                     />
                                 </div>
                             </div>
@@ -220,7 +223,7 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                                 <Button
                                                     variant="outline"
                                                     role="combobox"
-                                                    aria-expanded={open}
+
                                                     className="w-[200px] justify-between"
                                                 >
                                                     {companyValue
@@ -395,7 +398,7 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                                 <Button
                                                     variant="outline"
                                                     role="combobox"
-                                                    aria-expanded={open}
+
                                                     className="w-[200px] justify-between"
                                                 >
                                                     {customerValue
@@ -413,7 +416,7 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                                         {customers.map((customer) => (
                                                             <CommandItem
                                                                 key={customer.id}
-                                                                onSelect={(currentValue: Partner) => {
+                                                                onSelect={(currentValue: string) => {
                                                                     setCustomerValue(currentValue === customerValue ? "" : currentValue)
                                                                     setSelectedCustomer(customer)
                                                                     setOpenCustomerPopover(false)
@@ -557,7 +560,7 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                                                 id="Customervat"
                                                 type="text"
                                                 placeholder="Customer Vat"
-                                                value={selectedCustomer?.vat as string}
+                                                value={selectedCompany?.vat}
                                             />
                                         </div>
                                     </div>
@@ -566,11 +569,10 @@ export default function InvoiceEditModal({ customers, companies, invoiceData, se
                             <div className='pb-10'>
                                 {/* Pretty fascinating that u can do that so easily(scroll) */}
                                 <div className='max-h-[200px] overflow-y-scroll'>
-
-                                    {services?.map((serviceEdit, index) => (
+                                    {invoiceSelector.Services?.map((service, index) => (
                                         <div key={index} className="flex items-center justify-between">
                                             <div className="mb-6">
-                                                <ServiceItem service={serviceEdit} />
+                                                <ServiceItem service={service} />
                                             </div>
                                         </div>
                                     ))}

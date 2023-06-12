@@ -7,24 +7,23 @@ import Flatpickr from "react-flatpickr";
 import InvoiceCreateModal from './Modals/InvoiceCreateModal';
 import InvoiceEditModal from './Modals/InvoiceEditModal';
 import type { InvoiceType } from 'types';
+import { type RootState, invoiceSlice } from '@/stores/invoiceSlice';
+import { useDispatch } from 'react-redux';
 interface InvoiceTabProps {
-    Invoices: (Invoice & {
-        Company: Company;
-        Partner: Partner;
-    })[] | undefined;
     Companies: Company[];
     Customers: Partner[];
 }
-export default function InvoiceTab({ Invoices, Companies, Customers }: InvoiceTabProps) {
+export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
     const [fromDate, setFromDate] = React.useState<Date | null>(new Date());
     const [toDate, setToDate] = React.useState<Date | null>(new Date());
 
+    const invoiceDispatch = useDispatch();
     const [invoiceState, setInvoiceState] = React.useState<Invoice>({} as Invoice)
-    const [invoiceTemp, setInvoiceTemp] = React.useState<Invoice | undefined>(undefined)
     const [editInvoice, setEditInvoice] = React.useState<boolean>(false)
     const handleInvoiceClick = (invoice: Invoice) => {
-
-        setInvoiceTemp(invoice)
+        invoiceDispatch(invoiceSlice.actions.editInvoice({
+            item: invoice as InvoiceType,
+        }))
         setEditInvoice(true);
     };
 
@@ -42,7 +41,7 @@ export default function InvoiceTab({ Invoices, Companies, Customers }: InvoiceTa
             )}
             {editInvoice && (
                 <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
-                    <InvoiceEditModal setShowModal={setEditInvoice} companies={Companies} customers={Customers} invoiceData={invoiceTemp as InvoiceType} />
+                    <InvoiceEditModal setShowModal={setEditInvoice} companies={Companies} customers={Customers} />
                 </div>
             )}
             <div className="w-10/12 h-[850px] mb-16 bg-white rounded-3xl p-4 border-4">
@@ -86,7 +85,7 @@ export default function InvoiceTab({ Invoices, Companies, Customers }: InvoiceTa
                     </div>
                 </div>
                 <div>
-                    <Table handleInvoiceClick={handleInvoiceClick} Invoices={Invoices} />
+                    <Table handleInvoiceClick={handleInvoiceClick} />
                 </div>
             </div>
         </div>

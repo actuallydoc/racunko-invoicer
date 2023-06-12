@@ -4,17 +4,19 @@ import { SessionProvider } from "next-auth/react";
 
 import 'react-toastify/dist/ReactToastify.css';
 import { api } from "@/utils/api";
-
+import { Provider } from 'react-redux'
 import "@/styles/globals.css";
-
+import invoice from "@/stores/invoiceSlice";
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
+    <Provider store={invoice}>
+      <SessionProvider session={session}>
+        <Component {...pageProps} />
+      </SessionProvider>
+    </Provider>
   );
 };
 

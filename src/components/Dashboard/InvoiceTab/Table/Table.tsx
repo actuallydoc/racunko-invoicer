@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import TableItem from './TableItem'
 // import TableHeader from './TableHeader'
 import type { Invoice } from '@prisma/client'
@@ -11,7 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-export default function TableComponent({ Invoices, handleInvoiceClick }: { Invoices: Invoice[] | undefined, handleInvoiceClick: (invoice: Invoice) => void }) {
+import { useSelector } from 'react-redux';
+import { type RootState } from '@/stores/invoiceSlice';
+export default function TableComponent({ handleInvoiceClick }: { handleInvoiceClick: (invoice: Invoice) => void }) {
+  const invoiceSelector = useSelector((state: RootState) => state.items);
+  useEffect(() => {
+    console.log(invoiceSelector)
+  }, [invoiceSelector])
   return (
     <div>
       <Table >
@@ -28,7 +34,7 @@ export default function TableComponent({ Invoices, handleInvoiceClick }: { Invoi
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Invoices?.map((invoice) => (
+          {invoiceSelector?.map((invoice) => (
             <TableRow key={invoice.id} onClick={() => handleInvoiceClick(invoice)} className='hover:cursor-pointer'>
               <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
               <TableCell>{invoice.Partner.name}</TableCell>
