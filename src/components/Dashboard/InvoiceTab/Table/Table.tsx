@@ -20,7 +20,7 @@ export default function TableComponent({ handleInvoiceClick }: { handleInvoiceCl
   }, [invoiceSelector])
   return (
     <div>
-      <Table >
+      <Table className='text-white' >
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
           <TableRow>

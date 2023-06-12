@@ -74,24 +74,24 @@ export default function Sidebar({ activeItemCallback }: { activeItemCallback: Re
 
     return (
         <div className="flex h-screen">
-            <div className="bg-[#D8FAD6] text-white py-6 px-4 w-48 rounded-3xl mb-28 content-center justify-center text-center drop-shadow-2xl ">
+            <div className="bg-[##030610] text-slate-400 py-6 px-4 w-48 rounded-3xl mb-28 content-center justify-center text-center drop-shadow-2xl ">
                 <div className='flex'>
-                    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="30" cy="30" r="29" fill="white" />
                         <circle cx="30" cy="30" r="29.5" stroke="#9A989C" strokeOpacity="0.23" />
                         <path d="M32.2817 55.3473C26.9124 34.0946 31.8404 27.657 53.2823 24.9056C39.9996 15.425 25.8866 12.6671 19.7908 20.6227C13.6949 28.5784 19.2243 45.0533 32.2817 55.3473Z" fill="#08D110" />
                         <path d="M6.31933 39.1347C28.0661 36.3806 32.2621 29.4436 27.0015 8.47585C40.6745 17.3844 48.391 29.5185 43.2075 38.0966C38.0241 46.6747 20.6674 47.5367 6.31933 39.1347Z" fill="#4F3CC0" />
-                    </svg>
+                    </svg> */}
                 </div>
                 {/* Sidebar content */}
-                <h1 className="text-2xl font-bold  text-black mb-24">Dashboard</h1>
-                <ul className="space-y-2 text-black">
+                <h1 className="text-2xl font-bold  mb-24">Dashboard</h1>
+                <ul className="space-y-2 border-slate-400">
                     {Items.map((item, index) => (
                         <li key={index}>
                             <a
                                 onClick={(e) => handleItemClick(e)}
                                 href="#"
-                                className={`block py-2 px-4 rounded-lg ${item === activeItem ? "bg-[#0F570A] duration-500 hover:text-white" : ""} `}
+                                className={`block py-2 px-4 rounded-lg hover:text-white ${item === activeItem ? "text-white font-bold " : ""} `}
                             >
                                 {item}
                             </a>
@@ -99,7 +99,7 @@ export default function Sidebar({ activeItemCallback }: { activeItemCallback: Re
                     )
 
                     )}
-                    {/* Add more sidebar items as needed */}
+
                 </ul>
             </div>
         </div >

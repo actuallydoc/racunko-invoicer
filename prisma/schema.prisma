@@ -60,6 +60,7 @@ model User {
   invoices      Invoice[]
   partners      Partner[]
   sessions      Session[]
+  Service       Service[]
 }
 
 model Invoice {
@@ -118,4 +119,16 @@ model Partner {
   invoices  Invoice[]
   User      User?     @relation(fields: [userId], references: [id])
   companies Company[] @relation("CompanyToPartner")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  price       Float
+  description String?
+  quantity    Int
+  userId      String?
+  User        User?    @relation(fields: [userId], references: [id])
 }

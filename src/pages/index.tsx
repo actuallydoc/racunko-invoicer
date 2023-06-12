@@ -1,17 +1,10 @@
 
 import { type NextPage } from "next";
 import Head from "next/head";
-
-import 'react-toastify/dist/ReactToastify.css';
 import QuickEasy from "@/components/Home/QuickEasy";
 import Navbar from "@/components/Navbar/Navbar";
 import GetStarted from "@/components/Buttons/GetStarted/GetStarted";
 
-{/* {login && (
-          <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-75">
-            <LoginForm setState={setLogin} />
-          </div>
-        )} */}
 const Home: NextPage = () => {
 
   return (

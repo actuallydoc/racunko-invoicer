@@ -5,8 +5,9 @@ import { IoIosCreate } from 'react-icons/io';
 import Table from './Table/Table';
 import type { Company } from '@prisma/client';
 import { api } from '@/utils/api';
-import { toast } from 'react-toastify';
+
 import { useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 export default function CustomersTab({ Companies }: { Companies: Company[] | undefined }) {
     //!TODO SCROLLABLE TABLE
@@ -39,7 +40,6 @@ export default function CustomersTab({ Companies }: { Companies: Company[] | und
             website: tempCompany.website as string,
         }, {
             onSuccess: () => {
-                toast.success('Company created successfully');
                 setCreateShowModal(false);
             }
         });

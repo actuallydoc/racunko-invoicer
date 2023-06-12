@@ -2,20 +2,36 @@ import React, { useState } from 'react'
 import "flatpickr/dist/themes/material_green.css";
 import Flatpickr from "react-flatpickr";
 import ServiceItem from './ServiceItem';
-import { Invoice, Company, Partner } from '@prisma/client';
-import { InvoiceType } from 'types';
+import type { Invoice, Company, Partner } from '@prisma/client';
+import type { InvoiceType, Service } from 'types';
 import { api } from '@/utils/api';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Popover, PopoverTrigger, PopoverContent } from '@radix-ui/react-popover';
-import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem } from 'cmdk';
-import { ChevronsUpDown, Check } from 'lucide-react';
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+} from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
+import ServiceCreateItem from './ServiceCreateItem';
 // import ServiceAddModal from './ServiceAddModal';
 export default function InvoiceCreateModal({ customers, companies, invoiceData, setShowModal }: { invoiceData: Invoice, customers: Partner[], companies: Company[], invoiceState: React.Dispatch<React.SetStateAction<Invoice>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>> }) {
     const createInvoice = api.invoice.createInvoice.useMutation();
+
+    const createInvoiceSelector = useSelector((state: RootState) => state.createItem);
+    const createInvoiceDispatch = useDispatch();
     const [invoiceDate, setInvoiceDate] = React.useState<Date>(new Date());
     const [dueDate, setDueDate] = React.useState<Date>(new Date());
     const [serviceDate, setServiceDate] = React.useState<Date>(new Date());
@@ -26,106 +42,75 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
     const [companyValue, setCompanyValue] = React.useState<string>("")
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
     const [customerValue, setCustomerValue] = React.useState<string>("")
-    // const [addService, setAddService] = React.useState(false);
-    const [tempInvoice, setTempInvoice] = useState<InvoiceType>();
-    //Use this for all the state and not the separate functions for each field
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTempInvoice((prevState) => ({
-            ...prevState,
-            [e.target.name]: e.target.value
-        }))
-    }
-    // const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: string) => {
-    //     console.log(e.target.name)
-    //     setEmptyServices((prevState) => {
-    //         return prevState.map((service) => {
-    //             if (service.id === id) {
-    //                 return {
-    //                     ...service,
-    //                     [e.target.name]: e.target.value
-    //                 }
-    //             }
-    //             return service
-    //         })
-    //     })
-    //     invoiceState((prevState) => ({
-    //         ...prevState,
-    //         services: JSON.stringify(emptyServices) as unknown as Service[],
-    //     }))
-
-    // }
-    //Dates for service
+    const { data: sessionData } = useSession();
     const handleDueDate = (e: Date) => {
-        setDueDate((prevState) => ({
-            ...prevState,
-            dueDate: e,
+        createInvoiceDispatch(invoiceSlice.actions.updateCreateInvoiceDueDate({
+            date: e
         }))
     }
     const handleInvoiceDate = (e: Date) => {
-        setInvoiceDate((prevState) => ({
-            ...prevState,
-            invoiceDate: e,
+        createInvoiceDispatch(invoiceSlice.actions.updateCreateInvoiceDate({
+            date: e
         }))
     }
     const handleServiceDate = (e: Date) => {
-        setServiceDate((prevState) => ({
-            ...prevState,
-            serviceDate: e,
+        createInvoiceDispatch(invoiceSlice.actions.updateCreateServiceDate({
+            date: e
+        }))
+    }
+    const handleInvoiceNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+        createInvoiceDispatch(invoiceSlice.actions.updateCreateInvoiceNumber({
+            invoiceNumber: e.target.value
         }))
     }
     const handleAddService = () => {
-        // setAddService(true)
-        //Initializes the empty services array with a blank service
-        // setEmptyServices((prevState) => ([
-        //     ...prevState,
-        //     {
-        //         id: Math.random().toString(),
-        //         name: null,
-        //         price: null,
-        //         description: null,
-        //         quantity: 1,
-        //     }
-        // ]))
+        createInvoiceDispatch(invoiceSlice.actions.addCreateService(
+            {
+                service: {
+                    id: Math.random().toString(36).substr(2, 9),
+                    description: "",
+                    name: "",
+                    price: 0,
+                    quantity: 1,
+                }
+            }
+        ))
     }
-    const { data: sessionData } = useSession();
-    const handleInvoiceCreate = () => {
+    const handleCompanySelect = (company: Company) => {
+        createInvoiceDispatch(invoiceSlice.actions.updateCreateCompany({
+            company: company
+        }))
+        setOpenCompanyPopover(false)
+    }
+    const handleCustomerSelect = (customer: Partner) => {
+        createInvoiceDispatch(invoiceSlice.actions.updateCreatePartner({
+            partner: customer
+        }))
+        setOpenCustomerPopover(false)
+    }
 
+    const handleInvoiceCreate = () => {
+        console.log(createInvoiceSelector)
         createInvoice.mutate({
             companyId: selectedCompany?.id as string,
             partnerId: selectedCustomer?.id as string,
-            invoiceDate: invoiceDate,
-            dueDate: dueDate,
-            invoiceNumber: tempInvoice?.invoiceNumber as string,
-            invoiceServiceDate: serviceDate,
-            services: tempInvoice?.services as string,
+            invoiceDate: createInvoiceSelector.invoiceDate,
+            dueDate: createInvoiceSelector.dueDate,
+            invoiceNumber: createInvoiceSelector?.invoiceNumber,
+            invoiceServiceDate: createInvoiceSelector.invoiceServiceDate,
+            services: JSON.stringify(createInvoiceSelector.Services),
             id: sessionData?.user?.id as string,
             status: "DRAFT",
         }, {
             onSuccess: () => {
-                toast.success('Invoice Created')
+                toast.success("Invoice Created")
+                createInvoiceDispatch(invoiceSlice.actions.resetCreate())
+                setShowModal(false)
             },
         })
-    }
-    //!WARNING Services are premade services that a user can add to the invoice
 
-    const handleCustomerDropDown = (e: React.FormEvent<HTMLSelectElement>) => {
-        setSelectedCustomer(customers?.filter((customer) => {
-            return customer.name === e.currentTarget.value
-        }
-        )
-        [0])
-    }
-    const handleCompanyDropDown = (e: React.FormEvent<HTMLSelectElement>) => {
-        setSelectedCompany(companies?.filter((company) => {
-            return company.name === e.currentTarget.value
-        }
-        )[0])
-    }
-    // const handleDeleteService = (id: string) => {
-    //     setEmptyServices((prevState) => (prevState.filter((service) => service.id !== id)))
-    // }
-    const handleCloseModal = () => {
-        setShowModal(false)
+
+
     }
 
     return (
@@ -137,7 +122,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                     <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <div className="mb-4">
                             <div className='pb-5'>
-                                <button onClick={handleCloseModal} className="text-3xl font-bold text-gray-500 hover:text-gray-400">&times;</button>
+                                <button onClick={() => setShowModal(false)} className="text-3xl font-bold text-gray-500 hover:text-gray-400">&times;</button>
                             </div>
 
                             <div className='flex pb-10 space-x-5'>
@@ -201,27 +186,25 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                         Invoice Number
                                     </label>
                                     <Input
-                                        onChange={handleChange}
+                                        onChange={handleInvoiceNumber}
                                         className="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                         id="invoiceNumber"
                                         type="name"
                                         placeholder="Invoice Number"
-                                        defaultValue={invoiceData?.invoiceNumber}
+                                        defaultValue={createInvoiceSelector?.invoiceNumber}
                                     />
                                 </div>
                             </div>
 
                             <div className='flex space-x-32'>
-
                                 <div className='flex space-x-8 bg-b'>
                                     <div className='flex-col'>
-
                                         <Popover open={openCompanyPopover} onOpenChange={setOpenCompanyPopover}>
                                             <PopoverTrigger asChild>
                                                 <Button
                                                     variant="outline"
                                                     role="combobox"
-                                                    aria-expanded={open}
+
                                                     className="w-[200px] justify-between"
                                                 >
                                                     {companyValue
@@ -241,6 +224,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                                                 onSelect={(currentValue) => {
                                                                     setCompanyValue(currentValue === companyValue ? "" : currentValue)
                                                                     setSelectedCompany(company)
+                                                                    handleCompanySelect(company)
                                                                     setOpenCompanyPopover(false)
                                                                 }}
                                                             >
@@ -265,7 +249,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyname"
                                                 type="name"
@@ -280,7 +264,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             <Input
                                                 disabled
                                                 defaultValue={selectedCompany?.address}
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyaddress"
                                                 type="text"
@@ -293,7 +277,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyzip"
                                                 type="text"
@@ -307,7 +291,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companycity"
                                                 type="text"
@@ -321,7 +305,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companycountry"
                                                 type="text"
@@ -337,7 +321,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyphone"
                                                 type="text"
@@ -351,7 +335,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyemail"
                                                 type="text"
@@ -365,7 +349,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companywebsite"
                                                 type="text"
@@ -379,7 +363,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Companyvat"
                                                 type="text"
@@ -417,6 +401,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                                                 onSelect={(currentValue: string) => {
                                                                     setCustomerValue(currentValue === customerValue ? "" : currentValue)
                                                                     setSelectedCustomer(customer)
+                                                                    handleCustomerSelect(customer)
                                                                     setOpenCustomerPopover(false)
                                                                 }}
                                                             >
@@ -439,7 +424,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="name"
                                                 type="Customername"
@@ -453,7 +438,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customeraddress"
                                                 type="text"
@@ -467,7 +452,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customerzip"
                                                 type="text"
@@ -481,7 +466,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customercity"
                                                 type="text"
@@ -495,7 +480,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customercountry"
                                                 type="text"
@@ -511,7 +496,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customerphone"
                                                 type="text"
@@ -525,7 +510,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customeremail"
                                                 type="text"
@@ -539,7 +524,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customerwebsite"
                                                 type="text"
@@ -553,7 +538,7 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                                             </label>
                                             <Input
                                                 disabled
-                                                onChange={handleChange}
+
                                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 id="Customervat"
                                                 type="text"
@@ -566,16 +551,15 @@ export default function InvoiceCreateModal({ customers, companies, invoiceData, 
                             </div>
                             <div className='pb-10'>
                                 {/* Pretty fascinating that u can do that so easily(scroll) */}
-                                {/* <div className='max-h-[200px] overflow-y-scroll'>
-                                    {emptyServices?.map((service, index) => (
+                                <div className='max-h-[200px] overflow-y-scroll'>
+                                    {createInvoiceSelector.Services?.map((service, index) => (
                                         <div key={index} className="flex items-center justify-between">
                                             <div className="mb-6">
-                                                <ServiceItem handleServiceChange={handleServiceChange} service={service} deleteCallBack={handleDeleteService} />
+                                                <ServiceCreateItem service={service} />
                                             </div>
                                         </div>
                                     ))}
-
-                                </div> */}
+                                </div>
                                 <div>
 
                                 </div>

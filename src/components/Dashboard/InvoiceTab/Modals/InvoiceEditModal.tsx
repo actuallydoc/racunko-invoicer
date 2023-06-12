@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import "flatpickr/dist/themes/material_green.css";
-import Flatpickr from "react-flatpickr";
 import generatePDFInvoice from '@/utils/invoicer';
 import type { Company, Partner } from '@prisma/client';
 import { api } from '@/utils/api';
-import type { InvoiceSerialized, InvoiceType } from 'types';
-import { toast } from 'react-toastify';
 import { Input } from '@/components/ui/input';
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -29,10 +26,15 @@ import { ChevronsUpDown, Check } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import ServiceItem from './ServiceItem';
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from '@radix-ui/react-dialog';
+import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { toast } from 'react-hot-toast';
 
 export default function InvoiceEditModal({ customers, companies, setShowModal }: {
     customers: Partner[], companies: Company[], setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 }) {
+
     const invoiceDispatch = useDispatch();
     const invoiceSelector = useSelector((state: RootState) => state.editItem);
     const editInvoice = api.invoice.editInvoice.useMutation();
@@ -45,7 +47,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
         //Create a Blob and open it in a new window
         //!TODO This is curently not working the template is broken
         e.preventDefault();
-        const blob = generatePDFInvoice(invoiceData);
+        const blob = generatePDFInvoice(invoiceSelector);
         console.log("Blob is: ",);
         window.open(blob, "_blank")
     }
@@ -73,10 +75,10 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
     }
     const handleDeleteInvoice = () => {
         deleteInvoice.mutate({
-            id: tempInvoice?.id,
+            id: invoiceSelector?.id,
         }, {
             onSuccess: () => {
-                toast.success("Invoice deleted successfully")
+
                 setShowModal(false)
             }
         })
@@ -124,7 +126,36 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
 
     return (
         <div className=" bg-gray-100">
-
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button variant="outline">Edit Profile</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Edit profile</DialogTitle>
+                        <DialogDescription>
+                            Make changes to your profile here. Click save when you&apos;re done.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="name" className="text-right">
+                                Name
+                            </Label>
+                            <Input id="name" value="Pedro Duarte" className="col-span-3" />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="username" className="text-right">
+                                Username
+                            </Label>
+                            <Input id="username" value="@peduarte" className="col-span-3" />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button type="submit">Save changes</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <div className="flex items-center justify-center h-full">
                 <div className="w-full ">
 

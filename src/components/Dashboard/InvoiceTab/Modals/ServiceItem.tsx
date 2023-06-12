@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { invoiceSlice } from '@/stores/invoiceSlice'
 import type { Service } from 'types'
+import { Textarea } from '@/components/ui/textarea'
 export default function ServiceItem({ service }: { service: Service }) {
   const invoiceDispatch = useDispatch()
   const [serviceState, setServiceState] = React.useState<Service>(service);
@@ -47,15 +48,14 @@ export default function ServiceItem({ service }: { service: Service }) {
             </div>
             <input onChange={(e) => {
               handleInputChange(e);
-            }} type="number" name='quantity' min={1} className="w-1/4 border border-gray-300 rounded-md px-2 py-1" defaultValue={service.quantity} />
+            }} required type="number" name='quantity' min={1} className="w-1/4 border border-gray-300 rounded-md px-2 py-1" defaultValue={service.quantity} />
           </div>
         </div>
 
         <div>
           <label htmlFor="description" className="text-sm">Description</label>
-          <textarea placeholder='Description' name='description' onChange={(e) => {
+          <Textarea placeholder='Description' name='description' onChange={(e) => {
             handleInputChange(e);
-
           }} className="w-full border border-gray-300 rounded-md px-2 py-1" defaultValue={service.description} />
         </div>
         <div className='flex-col'>

@@ -39,7 +39,7 @@ export default function Index() {
         }
     }, [isFetched, getInvoices, dispatch])
     return (
-        <div className='flex bg-[#90C28B]'>
+        <div className='flex bg-[#030610]'>
             <div>
                 <div className='ml-4 pt-5 '>
                     <Sidebar activeItemCallback={setActiveItem} />
