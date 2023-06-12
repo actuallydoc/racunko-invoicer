@@ -1,18 +1,28 @@
-import React, { useEffect } from 'react'
 
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { invoiceSlice } from '@/stores/invoiceSlice'
 import type { Service } from 'types'
 export default function ServiceItem({ service }: { service: Service }) {
-  const handleDelete = () => {
-    console.log('====================================');
-    console.log('Delete: ', service);
-    console.log('====================================');
+  const invoiceDispatch = useDispatch()
+  const [serviceState, setServiceState] = React.useState<Service>(service);
+  const handleDelete = (service: Service) => {
+    invoiceDispatch(invoiceSlice.actions.removeService({
+      service: service
+    }))
   }
   // TODO: Implement this to change the service inside the parent "InvoiceEditTab"
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    console.log('====================================');
-    console.log('Change: ', service);
-    console.log('====================================');
-
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setServiceState({
+      ...serviceState,
+      [name]: value
+    })
+  };
+  const handleChange = () => {
+    invoiceDispatch(invoiceSlice.actions.updateService({
+      service: serviceState,
+    }))
   }
   return (
     <div className=''>
@@ -24,7 +34,8 @@ export default function ServiceItem({ service }: { service: Service }) {
           </div>
           <div>
             <input onChange={(e) => {
-              handleChange(e)
+              handleInputChange(e);
+              handleChange();
             }} name='name' type="text" className="w-1/2 border border-gray-300 rounded-md px-2 py-1" defaultValue={service.name} />
           </div>
         </div>
@@ -34,7 +45,8 @@ export default function ServiceItem({ service }: { service: Service }) {
               <label htmlFor="quantity" className="text-sm">Quantity</label>
             </div>
             <input onChange={(e) => {
-              handleChange(e)
+              handleInputChange(e);
+              handleChange();
             }} type="number" name='quantity' className="w-1/4 border border-gray-300 rounded-md px-2 py-1" defaultValue={1} />
           </div>
         </div>
@@ -42,7 +54,8 @@ export default function ServiceItem({ service }: { service: Service }) {
         <div>
           <label htmlFor="description" className="text-sm">Description</label>
           <textarea placeholder='Description' name='description' onChange={(e) => {
-            handleChange(e)
+            handleInputChange(e);
+            handleChange();
           }} className="w-full border border-gray-300 rounded-md px-2 py-1" defaultValue={service.description} />
         </div>
         <div className='flex-col'>
@@ -51,12 +64,13 @@ export default function ServiceItem({ service }: { service: Service }) {
           </div>
           <div className=''>
             <input onChange={(e) => {
-              handleChange(e)
+              handleInputChange(e);
+              handleChange();
             }} type="number" name='price' className="w-1/4 border  border-gray-300 rounded-md px-2 py-1" defaultValue={service.price} />
           </div>
         </div>
         <div>
-          <button className="border border-gray-300 bg-red-600 text-white rounded-md px-2 py-1" onClick={handleDelete}>Delete</button>
+          <button className="border border-gray-300 bg-red-600 text-white rounded-md px-2 py-1" onClick={() => handleDelete(service)}>Delete</button>
         </div>
 
       </div>

@@ -13,8 +13,8 @@ export const invoiceSlice = createSlice({
         initInvoices(state, action: { payload: InvoiceType[]; }) {
             const invoicesSerialized = action.payload.map((invoice: InvoiceType) => {
                 const invoiceSerialized = invoice as InvoiceSerialized;
-                invoiceSerialized.Company = invoice.Company;
-                invoiceSerialized.Partner = invoice.Partner;
+                invoiceSerialized.Company = invoice.Company as unknown as Company;
+                invoiceSerialized.Partner = invoice.Partner as unknown as Company;
                 invoiceSerialized.Services = JSON.parse(invoice.services as string) as Service[];
                 return invoiceSerialized;
             });
@@ -26,6 +26,32 @@ export const invoiceSlice = createSlice({
             state.editItem = item;
             console.log(state.editItem);
         },
+        addService(state, action: { payload: { service: Service } }) {
+            const { service } = action.payload;
+            state.editItem.Services.push(service);
+        },
+        removeService(state, action: { payload: { service: Service } }) {
+            const { service } = action.payload;
+            state.editItem.Services = state.editItem.Services.filter((s) => s.id !== service.id);
+        },
+        updateService(state, action: { payload: { service: Service } }) {
+            const { service } = action.payload;
+            const index = state.editItem.Services.findIndex((s) => s.id === service.id);
+            state.editItem.Services[index] = service;
+        },
+        updateInvoiceDate(state, action: { payload: { date: Date } }) {
+            const { date } = action.payload;
+            state.editItem.invoiceDate = date;
+        },
+        updateServiceDate(state, action: { payload: { date: Date } }) {
+            const { date } = action.payload;
+            state.editItem.invoiceServiceDate = date;
+        },
+        updateInvoiceDueDate(state, action: { payload: { date: Date } }) {
+            const { date } = action.payload;
+            state.editItem.dueDate = date;
+        }
+
     },
 });
 
@@ -35,4 +61,4 @@ const invoice = configureStore({
 
 export type RootState = ReturnType<typeof invoice.getState>;
 export default invoice;
-export const { editInvoice, initInvoices } = invoiceSlice.actions;
+export const { editInvoice, initInvoices, addService, removeService } = invoiceSlice.actions;

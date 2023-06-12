@@ -23,14 +23,15 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { ChevronsUpDown, Check } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '@/stores/invoiceSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import ServiceItem from './ServiceItem';
 // TODO: Fix date input's they r trippin out
 
 export default function InvoiceEditModal({ customers, companies, setShowModal }: {
     customers: Partner[], companies: Company[], setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 }) {
+    const invoiceDispatch = useDispatch();
     const invoiceSelector = useSelector((state: RootState) => state.editItem);
     const editInvoice = api.invoice.editInvoice.useMutation();
     const deleteInvoice = api.invoice.deleteInvoice.useMutation();
@@ -59,15 +60,11 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
         window.open(blob, "_blank")
     }
     const handleEditInvoice = () => {
+        console.log("Invoice selector: ", invoiceSelector);
+        console.log("Temp invoice: ", tempInvoice);
         editInvoice.mutate({
-            companyId: selectedCompany?.id,
-            dueDate: tempInvoice.dueDate,
-            id: tempInvoice?.id,
-            invoiceDate: tempInvoice?.invoiceDate,
-            invoiceNumber: tempInvoice?.invoiceNumber,
-            invoiceServiceDate: tempInvoice?.invoiceServiceDate,
-            partnerId: selectedCustomer?.id,
-            services: tempInvoice?.services as string,
+            ...invoiceSelector,
+            services: JSON.stringify(invoiceSelector.Services as unknown as string),
         }, {
             onSuccess: () => {
                 setTempInvoice({} as InvoiceType)
@@ -87,40 +84,32 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
         })
     }
     const handleDueDate = (e: Date) => {
-        setTempInvoice((prevState) => ({
-            ...prevState,
-            dueDate: e,
+        invoiceDispatch(invoiceSlice.actions.updateInvoiceDueDate({
+            date: e
         }))
     }
     const handleServiceDate = (e: Date) => {
-        setTempInvoice((prevState) => ({
-            ...prevState,
-            invoiceServiceDate: e,
+        invoiceDispatch(invoiceSlice.actions.updateServiceDate({
+            date: e
         }))
     }
     const handleInvoiceDate = (e: Date) => {
-        setTempInvoice((prevState) => ({
-            ...prevState,
-            invoiceDate: e,
+        invoiceDispatch(invoiceSlice.actions.updateInvoiceDate({
+            date: e
         }))
     }
     const handleAddService = () => {
-        // setAddService(true)
-        // setEmptyServices((prevState) => ([
-        //     ...prevState,
-        //     {
-        //         id: Math.random().toString(),
-        //         name: null,
-        //         price: null,
-        //         description: null,
-        //         quantity: 1,
-        //     }
-        // ]))
+        invoiceDispatch(invoiceSlice.actions.addService({
+            service: {
+                description: "",
+                id: Math.random().toString(),
+                name: "",
+                price: 0,
+                quantity: 1,
+            }
+        }))
     }
 
-    // const handleDeleteService = (id: string) => {
-    //     setEmptyServices((prevState) => (prevState.filter((service) => service.id !== id)))
-    // }
     const [openCompanyPopover, setOpenCompanyPopover] = React.useState(false)
     const [companyValue, setCompanyValue] = React.useState("")
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
