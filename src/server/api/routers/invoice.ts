@@ -63,6 +63,7 @@ export const invoiceRouter = createTRPCRouter({
         return createdInvoice;
     }),
     editInvoice: protectedProcedure.input(z.object({ id: z.string(), invoiceNumber: z.string(), partnerId: z.string(), companyId: z.string(), services: z.string(), invoiceDate: z.date(), invoiceServiceDate: z.date(), dueDate: z.date(), })).mutation(async ({ ctx, input }) => {
+        console.log(input.services);
         const updatedInvoice = await ctx.prisma.invoice.update({
             where: {
                 id: input.id,

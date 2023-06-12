@@ -17,6 +17,11 @@ export const invoiceSlice = createSlice({
                 invoiceSerialized.Company = invoice.Company as unknown as Company;
                 invoiceSerialized.Partner = invoice.Partner as unknown as Company;
                 invoiceSerialized.Services = JSON.parse(invoice.services as string) as Service[];
+                //Change service fields quantity type to number type
+                // invoiceSerialized.Services = invoiceSerialized.Services.map((service) => {
+                //     service.quantity = Number(service.quantity);
+                //     return service;
+                // });
                 return invoiceSerialized;
             });
             state.items = invoicesSerialized as unknown as InvoiceSerialized[];
@@ -41,9 +46,7 @@ export const invoiceSlice = createSlice({
         updateService(state, action: { payload: { service: Service } }) {
             const { service } = action.payload;
             const index = state.editItem.Services.findIndex((s) => s.id === service.id);
-
             state.editItem.Services[index] = service;
-            console.log(state.editItem.Services[index]);
         },
         updateInvoiceDate(state, action: { payload: { date: Date } }) {
             const { date } = action.payload;

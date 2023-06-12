@@ -11,7 +11,7 @@ export default function ServiceItem({ service }: { service: Service }) {
       service: service
     }))
   }
-  // TODO: Implement this to change the service inside the parent "InvoiceEditTab"
+  // FIXME: This is broken the quantity doesnt get updated
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     console.log(name);
@@ -20,13 +20,13 @@ export default function ServiceItem({ service }: { service: Service }) {
       ...serviceState,
       [name]: value
     })
-    console.log('====================================');
-    console.log(serviceState);
-    console.log('====================================');
+
+  };
+  useEffect(() => {
     invoiceDispatch(invoiceSlice.actions.updateService({
       service: serviceState,
     }))
-  };
+  }, [serviceState, invoiceDispatch])
 
   return (
     <div className=''>
@@ -50,8 +50,7 @@ export default function ServiceItem({ service }: { service: Service }) {
             </div>
             <input onChange={(e) => {
               handleInputChange(e);
-
-            }} type="number" name='quantity' min={1} className="w-1/4 border border-gray-300 rounded-md px-2 py-1" defaultValue={1} />
+            }} type="number" name='quantity' min={1} className="w-1/4 border border-gray-300 rounded-md px-2 py-1" defaultValue={service.quantity} />
           </div>
         </div>
 
