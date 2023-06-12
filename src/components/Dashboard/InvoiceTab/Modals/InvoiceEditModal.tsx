@@ -112,6 +112,11 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
             company: e
         }))
     }
+    const handleCustomerChange = (e: Partner) => {
+        invoiceDispatch(invoiceSlice.actions.updatePartner({
+            partner: e
+        }))
+    }
     const [openCompanyPopover, setOpenCompanyPopover] = React.useState(false)
     const [companyValue, setCompanyValue] = React.useState("")
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
@@ -455,6 +460,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                                                 onSelect={(currentValue: string) => {
                                                                     setCustomerValue(currentValue === customerValue ? "" : currentValue)
                                                                     setSelectedCustomer(customer)
+                                                                    handleCustomerChange(customer)
                                                                     setOpenCustomerPopover(false)
                                                                 }}
                                                             >

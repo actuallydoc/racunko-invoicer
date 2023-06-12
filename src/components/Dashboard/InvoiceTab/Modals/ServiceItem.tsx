@@ -11,11 +11,8 @@ export default function ServiceItem({ service }: { service: Service }) {
       service: service
     }))
   }
-  // FIXME: This is broken the quantity doesnt get updated
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    console.log(name);
-    console.log(value);
     setServiceState({
       ...serviceState,
       [name]: value
