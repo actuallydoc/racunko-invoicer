@@ -10,6 +10,7 @@ export const invoiceSlice = createSlice({
         editItem: {} as InvoiceSerialized,
         createItem: {
             Services: [] as Service[],
+
         } as InvoiceSerialized,
 
     },

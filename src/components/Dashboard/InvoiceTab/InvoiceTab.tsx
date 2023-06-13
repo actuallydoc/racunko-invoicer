@@ -3,7 +3,7 @@ import Table from './Table/Table'
 import type { Invoice, Company, Partner } from 'prisma/prisma-client'
 import "flatpickr/dist/themes/material_green.css";
 import { IoIosCreate } from 'react-icons/io';
-import Flatpickr from "react-flatpickr";
+
 import InvoiceCreateModal from './Modals/InvoiceCreateModal';
 import InvoiceEditModal from './Modals/InvoiceEditModal';
 import type { InvoiceSerialized } from 'types';
@@ -13,8 +13,18 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 interface InvoiceTabProps {
     Companies: Company[];
     Customers: Partner[];
@@ -22,9 +32,9 @@ interface InvoiceTabProps {
 export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
     const [fromDate, setFromDate] = React.useState<Date>(new Date());
     const [toDate, setToDate] = React.useState<Date>(new Date());
-
+    const [open, setOpen] = React.useState(false)
+    const [value, setValue] = React.useState("")
     const invoiceDispatch = useDispatch();
-    const [invoiceState, setInvoiceState] = React.useState<Invoice>({} as Invoice)
     const [editInvoice, setEditInvoice] = React.useState<boolean>(false)
     const handleInvoiceClick = (invoice: Invoice) => {
         invoiceDispatch(invoiceSlice.actions.editInvoice({
@@ -32,37 +42,31 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
         }))
         setEditInvoice(true);
     };
-
-    //Create modal for creating new invoice
-    const [showCreateModal, setCreateShowModal] = React.useState(false);
-    const handleOpenCreateModal = () => {
-        setCreateShowModal(true);
-    };
     return (
-        <div className="min-h-screen flex items-center ml-10">
-            {showCreateModal && (
+        <div className="mt-10 flex justify-center items-center">
+            {/* {showCreateModal && (
                 <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
                     <InvoiceCreateModal companies={Companies} customers={Customers} invoiceState={setInvoiceState} setShowModal={setCreateShowModal} />
                 </div>
-            )}
+            )} */}
             {editInvoice && (
                 <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
                     <InvoiceEditModal setShowModal={setEditInvoice} companies={Companies} customers={Customers} />
                 </div>
             )}
-            <div className="w-10/12 h-[850px] mb-16 bg-[#030610] rounded-3xl p-4 border-slate-400 border">
-                <div className='flex space-x-5 '>
-                    <div className='flex space-x-5'>
-                        <div>
-                            {/* <input type="text" onChange={handleFilter} placeholder="Search" className="w-[150px] h-10 border-2 border-gray-300 rounded-lg p-2" /> */}
-                        </div>
-
+            <Card>
+                <CardHeader>
+                    <CardTitle>Invoice Table</CardTitle>
+                    <CardDescription>Manage your invoices here.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-6 w-full">
+                    <div className='flex space-x-2'>
                         <Popover>
-                            <PopoverTrigger asChild className='dark text-slate-400'>
+                            <PopoverTrigger asChild >
                                 <Button
                                     variant={"outline"}
                                     className={cn(
-                                        "w-[280px] dark justify-start text-left font-normal",
+                                        "w-[280px] justify-start text-left font-normal",
                                         !fromDate && "text-muted-foreground"
                                     )}
                                 >
@@ -70,7 +74,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                     {fromDate ? format(fromDate, "PPP") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="dark w-auto p-0">
+                            <PopoverContent className=" w-auto p-0">
                                 <Calendar
                                     mode="single"
                                     selected={fromDate}
@@ -79,17 +83,15 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                 />
                             </PopoverContent>
                         </Popover>
-
-
-                        <div className='pt-2 text-slate-400'>
+                        <div className='pt-2'>
                             <p>to</p>
                         </div>
                         <Popover>
-                            <PopoverTrigger asChild className='dark text-slate-400'>
+                            <PopoverTrigger asChild >
                                 <Button
                                     variant={"outline"}
                                     className={cn(
-                                        "w-[280px] justify-start dark text-left font-normal",
+                                        "w-[280px] justify-start  text-left font-normal",
                                         !toDate && "text-muted-foreground"
                                     )}
                                 >
@@ -97,7 +99,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                     {toDate ? format(toDate, "PPP") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 dark">
+                            <PopoverContent className="w-auto p-0 ">
                                 <Calendar
                                     mode="single"
                                     selected={toDate}
@@ -106,27 +108,64 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                 />
                             </PopoverContent>
                         </Popover>
-
-                        <div className='w-auto flex space-x-3'>
-                            <div>
-                                <Button variant={'outline'} onClick={handleOpenCreateModal} className='flex space-x-5 text-slate-400  p-3 '>
-                                    <div>
-                                        <p>Create</p>
-                                    </div>
-                                    <div className='pt-1'>
-                                        <IoIosCreate />
-                                    </div>
-
-                                </Button>
-                            </div>
-                        </div>
                     </div>
-                </div>
-                <div className='mt-5'>
-                    <Table handleInvoiceClick={handleInvoiceClick} />
-                </div>
-            </div>
-        </div>
+                    <Dialog>
+                        <DialogTrigger className='w-fit'>
+                            <Button variant={'outline'} className='flex space-x-5 '>
+                                Create
+                            </Button>
+                        </DialogTrigger>
+                        <InvoiceCreateModal companies={Companies} customers={Customers} />
+                    </Dialog>
+                    <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={open}
+                                className="w-[200px] justify-between"
+                            >
+                                {value
+                                    ? Companies.find((company) => company.name === value)?.name
+                                    : "Select company..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        {/* TODO: Filter the invoices by the selected company */}
+                        <PopoverContent className="w-[200px] p-0 ">
+                            <Command className=''>
+                                <CommandInput placeholder="Search Company..." />
+                                <CommandEmpty>No companies found.</CommandEmpty>
+                                <CommandGroup>
+                                    {Companies.map((company, index) => (
+                                        <CommandItem
+                                            key={index}
+                                            onSelect={(currentValue) => {
+                                                setValue(currentValue === value ? "" : currentValue)
+                                                setOpen(false)
+                                            }}
+                                        >
+                                            <Check
+                                                className={cn(
+                                                    "mr-2 h-4 w-4",
+                                                    value === company.name ? "opacity-100" : "opacity-0"
+                                                )}
+                                            />
+                                            {company.name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+
+                    <div className='mt-5'>
+                        <Table handleInvoiceClick={handleInvoiceClick} />
+                    </div>
+                </CardContent>
+            </Card>
+        </div >
+
     )
 }
 

@@ -1,8 +1,6 @@
 import HomeTab from '@/components/Dashboard/HomeTab/HomeTab'
-import Sidebar from '@/components/Dashboard/Sidebar/Sidebar'
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
-import { ToastContainer } from 'react-toastify'
 import { api } from '@/utils/api'
 import InvoiceTab from '@/components/Dashboard/InvoiceTab/InvoiceTab'
 import CustomersTab from '@/components/Dashboard/CustomersTab/CustomersTab'
@@ -24,7 +22,7 @@ const Items = [
     "Logout",
 
 ]
-
+import Navbar from '@/components/Dashboard/InvoiceTab/Navbar'
 export default function Index() {
     const [activeItem, setActiveItem] = useState<string>(Items[0] as string);
     const { data: sessionData, status } = useSession({ required: true })
@@ -38,22 +36,22 @@ export default function Index() {
             dispatch(invoiceSlice.actions.initInvoices(getInvoices));
         }
     }, [isFetched, getInvoices, dispatch])
+
     return (
-        <div className='flex bg-[#030610]'>
+        <div>
             <div>
-                <div className='ml-4 pt-5 '>
-                    <Sidebar activeItemCallback={setActiveItem} />
+                <Navbar activeItemCallback={setActiveItem} />
+            </div>
+            <div className='flex'>
+                <div className='justify-center text-center content-center'>
+                    {/* <HomeTab /> */}
+                    {activeItem === "Home" ? <HomeTab Companies={getCompanies} Invoices={getInvoices} /> : null}
+                    {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies as Company[]} Customers={getCustomers as Partner[]} /> : null}
+                    {activeItem === "Customers" ? <CustomersTab Customers={getCustomers} /> : null}
+                    {activeItem === "Companies" ? <CompaniesTab Companies={getCompanies as Company[]} /> : null}
+                    {/* {activeItem === "Services" ? <ServicesTab Services={getServices} handleDeleteServiceCb={handleDeleteService} handleUpdateServiceCb={handleUpdateService} handleCreateServiceCb={handleCreateService} /> : null} */}
                 </div>
-            </div>
-            <div className='w-full h-full'>
-                {/* <HomeTab /> */}
-                {activeItem === "Home" ? <HomeTab Companies={getCompanies} Invoices={getInvoices} /> : null}
-                {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies as Company[]} Customers={getCustomers as Partner[]} /> : null}
-                {activeItem === "Customers" ? <CustomersTab Customers={getCustomers} /> : null}
-                {activeItem === "Companies" ? <CompaniesTab Companies={getCompanies as Company[]} /> : null}
-                {/* {activeItem === "Services" ? <ServicesTab Services={getServices} handleDeleteServiceCb={handleDeleteService} handleUpdateServiceCb={handleUpdateService} handleCreateServiceCb={handleCreateService} /> : null} */}
-            </div>
-            <ToastContainer />
-        </div>
+            </div >
+        </div >
     )
 }

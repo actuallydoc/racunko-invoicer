@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { useSelector } from 'react-redux';
 import { type RootState } from '@/stores/invoiceSlice';
-import { Service } from 'types';
+import type { Service } from 'types';
 export default function TableComponent({ handleInvoiceClick }: { handleInvoiceClick: (invoice: Invoice) => void }) {
   const invoiceSelector = useSelector((state: RootState) => state.items);
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function TableComponent({ handleInvoiceClick }: { handleInvoiceCl
   })
   return (
     <div>
-      <Table className='text-white' >
+      <Table >
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
           <TableRow>

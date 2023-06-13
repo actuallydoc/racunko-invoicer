@@ -6,26 +6,26 @@ import { api } from "@/utils/api";
 import { Provider } from 'react-redux'
 import "@/styles/globals.css";
 import invoice from "@/stores/invoiceSlice";
-import { ToastContainer } from "react-toastify";
-/* Main TODO: Make a design for the app
-// 
-//
-// ADD MORE TODOS HERE
-//
-//
-*/
+
+import { ThemeProvider } from "next-themes";
+
+import { Toaster } from "@/components/ui/toaster";
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <Provider store={invoice}>
-      <SessionProvider session={session}>
+    <ThemeProvider>
 
-        <Component {...pageProps} />
-        <ToastContainer />
-      </SessionProvider>
-    </Provider>
+      <Provider store={invoice}>
+        <SessionProvider session={session}>
+          <Component {...pageProps} />
+          <Toaster />
+        </SessionProvider>
+      </Provider>
+
+    </ThemeProvider >
+
   );
 };
 

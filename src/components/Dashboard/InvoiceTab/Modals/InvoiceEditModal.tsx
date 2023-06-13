@@ -235,7 +235,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
 
                                 </div>
                                 <div className='flex content-center '>
-                                    <button onClick={handleGenerateInvoice} className="bg-green-500 hover:bg-green-700 text-white font-bold px-4 rounded focus:outline-none focus:shadow-outline">View PDF</button>
+                                    <Button onClick={handleGenerateInvoice} asChild>View PDF</Button>
                                 </div>
                             </div>
 
@@ -380,24 +380,23 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                             </div>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <button
-
+                                    <Button
                                         onClick={handleEditInvoice}
-                                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                        variant={"default"}
                                         type="button"
                                     >
                                         Edit
-                                    </button>
+                                    </Button>
                                 </div>
                                 <div>
-                                    <button
+                                    <Button
 
                                         onClick={handleDeleteInvoice}
-                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                        variant={"destructive"}
                                         type="button"
                                     >
                                         Delete
-                                    </button>
+                                    </Button>
                                 </div>
 
                             </div>

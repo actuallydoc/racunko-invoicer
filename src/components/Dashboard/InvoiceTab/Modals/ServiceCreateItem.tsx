@@ -4,6 +4,9 @@ import { useDispatch } from 'react-redux'
 import { invoiceSlice } from '@/stores/invoiceSlice'
 import type { Service } from 'types'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 export default function ServiceCreateItem({ service }: { service: Service }) {
     const invoiceDispatch = useDispatch()
     const [serviceState, setServiceState] = React.useState<Service>(service);
@@ -28,52 +31,51 @@ export default function ServiceCreateItem({ service }: { service: Service }) {
     }, [serviceState, invoiceDispatch])
 
     return (
-        <div className=''>
-            <hr className="border-gray-300 my-2 border-2" />
-            <div className="flex items-center justify-between space-x-3">
+        <div>
+            <hr className=" my-2 border-2 mt-3 mb-3" />
+            <div className="grid grid-cols-5 gap-4">
                 <div>
                     <div>
-                        <label htmlFor="name" className="text-sm">Service Name</label>
+                        <Label htmlFor="name">Service Name</Label>
                     </div>
                     <div>
-                        <input onChange={(e) => {
+                        <Input onChange={(e) => {
                             handleInputChange(e);
 
-                        }} name='name' type="text" className="w-1/2 border border-gray-300 rounded-md px-2 py-1" defaultValue={service.name} />
+                        }} name='name' type="text" defaultValue={service.name} />
                     </div>
                 </div>
                 <div>
                     <div className='flex-col'>
                         <div>
-                            <label htmlFor="quantity" className="text-sm">Quantity</label>
+                            <Label htmlFor="quantity" >Quantity</Label>
                         </div>
-                        <input onChange={(e) => {
+                        <Input onChange={(e) => {
                             handleInputChange(e);
-                        }} type="number" name='quantity' min={1} className="w-1/4 border border-gray-300 rounded-md px-2 py-1" defaultValue={service.quantity} />
+                        }} type="number" name='quantity' min={1} defaultValue={service.quantity} />
                     </div>
                 </div>
 
                 <div>
-                    <label htmlFor="description" className="text-sm">Description</label>
+                    <Label htmlFor="description">Description</Label>
                     <Textarea placeholder='Description' name='description' onChange={(e) => {
                         handleInputChange(e);
 
-                    }} className="w-full border border-gray-300 rounded-md px-2 py-1" defaultValue={service.description} />
+                    }} defaultValue={service.description} />
                 </div>
                 <div className='flex-col'>
                     <div>
-                        <label htmlFor="price" className="text-sm">Price</label>
+                        <Label htmlFor="price" >Price</Label>
                     </div>
                     <div className=''>
-                        <input onChange={(e) => {
+                        <Input onChange={(e) => {
                             handleInputChange(e);
 
-                        }} type="number" name='price' className="w-1/4 border  border-gray-300 rounded-md px-2 py-1" defaultValue={service.price} />
+                        }} type="number" name='price' defaultValue={service.price} />
                     </div>
                 </div>
-                <div>
-                    <button className="border border-gray-300 bg-red-600 text-white rounded-md px-2 py-1" onClick={() => handleDelete(service)}>Delete</button>
-                </div>
+
+                <Button variant={"destructive"} onClick={() => handleDelete(service)}>Delete</Button>
 
             </div>
         </div>
