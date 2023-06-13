@@ -34,26 +34,12 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
     const [toDate, setToDate] = React.useState<Date>(new Date());
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
-    const invoiceDispatch = useDispatch();
     const [editInvoice, setEditInvoice] = React.useState<boolean>(false)
-    const handleInvoiceClick = (invoice: Invoice) => {
-        invoiceDispatch(invoiceSlice.actions.editInvoice({
-            item: invoice as InvoiceSerialized,
-        }))
-        setEditInvoice(true);
-    };
+
     return (
         <div className="mt-10 flex justify-center items-center">
-            {/* {showCreateModal && (
-                <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
-                    <InvoiceCreateModal companies={Companies} customers={Customers} invoiceState={setInvoiceState} setShowModal={setCreateShowModal} />
-                </div>
-            )} */}
-            {editInvoice && (
-                <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
-                    <InvoiceEditModal setShowModal={setEditInvoice} companies={Companies} customers={Customers} />
-                </div>
-            )}
+
+
             <Card>
                 <CardHeader>
                     <CardTitle>Invoice Table</CardTitle>
@@ -116,6 +102,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                             </Button>
                         </DialogTrigger>
                         <InvoiceCreateModal companies={Companies} customers={Customers} />
+
                     </Dialog>
                     <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger asChild>
@@ -160,7 +147,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                     </Popover>
 
                     <div className='mt-5'>
-                        <Table handleInvoiceClick={handleInvoiceClick} />
+                        <Table Companies={Companies} Customers={Customers} />
                     </div>
                 </CardContent>
             </Card>

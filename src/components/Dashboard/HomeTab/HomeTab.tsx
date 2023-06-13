@@ -368,7 +368,7 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
                         <CardHeader>
                             <CardTitle>Recent Invoices</CardTitle>
                             <CardDescription>
-                                You made {totalInvoicesThisMonth} this month.
+                                You made {totalInvoicesThisMonth} this month for {selectedCompanyName}.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>

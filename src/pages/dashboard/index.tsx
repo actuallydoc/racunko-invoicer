@@ -23,6 +23,7 @@ const Items = [
 
 ]
 import Navbar from '@/components/Dashboard/InvoiceTab/Navbar'
+import { InvoiceSerialized } from 'types'
 export default function Index() {
     const [activeItem, setActiveItem] = useState<string>(Items[0] as string);
     const { data: sessionData, status } = useSession({ required: true })
@@ -45,7 +46,7 @@ export default function Index() {
             <div className='flex'>
                 <div className='justify-center text-center content-center'>
                     {/* <HomeTab /> */}
-                    {activeItem === "Home" ? <HomeTab Companies={getCompanies} Invoices={getInvoices} /> : null}
+                    {activeItem === "Home" ? <HomeTab Companies={getCompanies as Company[]} /> : null}
                     {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies as Company[]} Customers={getCustomers as Partner[]} /> : null}
                     {activeItem === "Customers" ? <CustomersTab Customers={getCustomers} /> : null}
                     {activeItem === "Companies" ? <CompaniesTab Companies={getCompanies as Company[]} /> : null}

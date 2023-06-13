@@ -32,8 +32,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'react-toastify';
 
 
-export default function InvoiceEditModal({ customers, companies, setShowModal }: {
-    customers: Partner[], companies: Company[], setShowModal: React.Dispatch<React.SetStateAction<boolean>>
+export default function InvoiceEditModal({ Customers, Companies }: {
+    Customers: Partner[], Companies: Company[]
 }) {
 
     const invoiceDispatch = useDispatch();
@@ -65,7 +65,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
             onSuccess: () => {
                 invoiceDispatch(invoiceSlice.actions.reset)
                 toast.success("Invoice edited successfully")
-                setShowModal(false)
+
             }
         });
     }
@@ -78,10 +78,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
         deleteInvoice.mutate({
             id: invoiceSelector?.id,
         }, {
-            onSuccess: () => {
 
-                setShowModal(false)
-            }
         })
     }
     const handleDueDate = (e: Date) => {
@@ -132,9 +129,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
 
                     <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <div className="mb-4">
-                            <div className='pb-5'>
-                                <button onClick={() => setShowModal(false)} className="text-3xl font-bold text-gray-500 hover:text-gray-400">&times;</button>
-                            </div>
+
 
                             <div className='flex pb-10 space-x-5'>
                                 <div className='flex-col'>
@@ -267,7 +262,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             className="w-[200px] justify-between"
                                         >
                                             {companyValue
-                                                ? companies.find((company) => company.name === companyValue)?.name
+                                                ? Companies.find((company) => company.name === companyValue)?.name
                                                 : "Select company..."}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
@@ -277,7 +272,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                             <CommandInput placeholder="Search companies..." />
                                             <CommandEmpty>No companies found.</CommandEmpty>
                                             <CommandGroup>
-                                                {companies.map((company) => (
+                                                {Companies.map((company) => (
                                                     <CommandItem
                                                         key={company.id}
 
@@ -313,7 +308,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                                 className="w-[200px] justify-between"
                                             >
                                                 {customerValue
-                                                    ? customers.find((customer) => customer.name === customerValue)?.name
+                                                    ? Customers.find((customer) => customer.name === customerValue)?.name
                                                     : "Select customer..."}
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
@@ -324,7 +319,7 @@ export default function InvoiceEditModal({ customers, companies, setShowModal }:
                                                 <CommandEmpty>No customers found.</CommandEmpty>
                                                 <CommandGroup>
                                                     {/* TODO: The name of the partner and company in the popover is not fully shown because of the width */}
-                                                    {customers.map((customer) => (
+                                                    {Customers.map((customer) => (
                                                         <CommandItem
                                                             key={customer.id}
                                                             onSelect={(currentValue: string) => {
