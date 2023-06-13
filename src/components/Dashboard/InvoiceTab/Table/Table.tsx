@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import TableItem from './TableItem'
 // import TableHeader from './TableHeader'
 import type { Invoice } from '@prisma/client'
 import {
@@ -50,7 +49,7 @@ export default function TableComponent({ handleInvoiceClick }: { handleInvoiceCl
               <TableCell className="text-right">
                 {invoice.Services?.reduce((total: number, service: Service) => {
                   if (service.price) {
-                    return total + Number(service.price);
+                    return total + Number(service.price) * Number(service.quantity);
                   }
                   return total;
                 }, 0)} $
