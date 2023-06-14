@@ -30,6 +30,7 @@ import ServiceCreateItem from './ServiceCreateItem';
 import { format } from 'date-fns';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 export default function InvoiceCreateModal({ customers, companies }: { customers: Partner[], companies: Company[] }) {
     const createInvoice = api.invoice.createInvoice.useMutation();
     const { toast } = useToast()
@@ -115,8 +116,8 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
     }
 
     return (
-        <DialogContent>
-            <DialogHeader >
+        <DialogContent className='flex-col'>
+            <DialogHeader>
                 <DialogTitle>Create invoice</DialogTitle>
                 <DialogDescription>
                     After pressing Create button you will create a new invoice for your company.
@@ -124,7 +125,7 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
             </DialogHeader>
             <Card>
                 <CardContent>
-                    <div className="  p-10 rounded-lg">
+                    <div className="centered-container  p-10 rounded-lg">
                         <div className='flex pb-10 space-x-5'>
                             <div className='flex-col'>
                                 <div>
@@ -226,12 +227,12 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                         </div>
                         <div>
                             <div className='mb-6'>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="invoiceNumber">
+                                <Label className="block text-sm font-bold mb-2" htmlFor="invoiceNumber">
                                     Invoice Number
-                                </label>
+                                </Label>
                                 <Input
                                     onChange={handleInvoiceNumber}
-                                    className="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
                                     id="invoiceNumber"
                                     type="name"
                                     placeholder="Invoice Number"
@@ -277,6 +278,7 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                                                                 companyValue === company.name ? "opacity-100" : "opacity-0"
                                                             )}
                                                         />
+
                                                         {company.name}
                                                     </CommandItem>
                                                 ))}

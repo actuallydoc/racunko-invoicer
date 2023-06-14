@@ -95,57 +95,58 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                             </PopoverContent>
                         </Popover>
                     </div>
-                    <Dialog>
-                        <DialogTrigger className='w-fit'>
-                            <Button variant={'outline'} className='flex space-x-5 '>
-                                Create
-                            </Button>
-                        </DialogTrigger>
-                        <InvoiceCreateModal companies={Companies} customers={Customers} />
+                    <div className='space-x-10'>
+                        <Dialog>
+                            <DialogTrigger className='w-fit'>
+                                <Button variant={'outline'} className='flex space-x-5 '>
+                                    Create
+                                </Button>
+                            </DialogTrigger>
+                            <InvoiceCreateModal companies={Companies} customers={Customers} />
 
-                    </Dialog>
-                    <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={open}
-                                className="w-[200px] justify-between"
-                            >
-                                {value
-                                    ? Companies.find((company) => company.name === value)?.name
-                                    : "Select company..."}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                        </PopoverTrigger>
-                        {/* TODO: Filter the invoices by the selected company */}
-                        <PopoverContent className="w-[200px] p-0 ">
-                            <Command className=''>
-                                <CommandInput placeholder="Search Company..." />
-                                <CommandEmpty>No companies found.</CommandEmpty>
-                                <CommandGroup>
-                                    {Companies.map((company, index) => (
-                                        <CommandItem
-                                            key={index}
-                                            onSelect={(currentValue) => {
-                                                setValue(currentValue === value ? "" : currentValue)
-                                                setOpen(false)
-                                            }}
-                                        >
-                                            <Check
-                                                className={cn(
-                                                    "mr-2 h-4 w-4",
-                                                    value === company.name ? "opacity-100" : "opacity-0"
-                                                )}
-                                            />
-                                            {company.name}
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
-
+                        </Dialog>
+                        <Popover open={open} onOpenChange={setOpen}>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={open}
+                                    className="w-[200px] justify-between"
+                                >
+                                    {value
+                                        ? Companies.find((company) => company.name === value)?.name
+                                        : "Select company..."}
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            {/* TODO: Filter the invoices by the selected company */}
+                            <PopoverContent className="w-[200px] p-0 ">
+                                <Command className=''>
+                                    <CommandInput placeholder="Search Company..." />
+                                    <CommandEmpty>No companies found.</CommandEmpty>
+                                    <CommandGroup>
+                                        {Companies.map((company, index) => (
+                                            <CommandItem
+                                                key={index}
+                                                onSelect={(currentValue) => {
+                                                    setValue(currentValue === value ? "" : currentValue)
+                                                    setOpen(false)
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        value === company.name ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                {company.name}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
                     <div className='mt-5'>
                         <Table Companies={Companies} Customers={Customers} />
                     </div>

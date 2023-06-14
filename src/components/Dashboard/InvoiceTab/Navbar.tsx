@@ -91,8 +91,8 @@ export default function Navbar({ activeItemCallback }: { activeItemCallback: Rea
         activeItemCallback(item)
     }
     return (
-        <NavigationMenu>
-            <NavigationMenuList>
+        <NavigationMenu className=''>
+            <NavigationMenuList className='space-x-12 '>
 
                 {Items.map((item) => (
                     <NavigationMenuItem key={item.title}>
@@ -105,7 +105,7 @@ export default function Navbar({ activeItemCallback }: { activeItemCallback: Rea
                         <DropdownMenuTrigger>
                             <Avatar>
                                 <AvatarImage src={sessionData?.user.image as string} />
-                                <AvatarFallback>{sessionData?.user?.name[0]}</AvatarFallback>
+                                <AvatarFallback>{sessionData?.user?.name}</AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
@@ -113,7 +113,7 @@ export default function Navbar({ activeItemCallback }: { activeItemCallback: Rea
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>Profile</DropdownMenuItem>
                             <DropdownMenuItem>Billing</DropdownMenuItem>
-                            <DropdownMenuItem>Company</DropdownMenuItem>
+                            <DropdownMenuItem>Settings</DropdownMenuItem>
                             <DropdownMenuItem onClick={handleSignout}>Logout</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

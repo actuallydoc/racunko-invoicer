@@ -1,6 +1,18 @@
 import React, { useEffect } from 'react'
 // import TableHeader from './TableHeader'
 import type { Invoice } from '@prisma/client'
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Table,
   TableBody,
@@ -26,8 +38,8 @@ export default function TableComponent() {
     }))
     setEditInvoice(invoice);
   }
+  // TODO: Make the popup when clicking on the invoice currently not working
   return (
-
     <Table >
       <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
@@ -43,7 +55,6 @@ export default function TableComponent() {
       </TableHeader>
       <TableBody>
         {invoiceSelector?.map((invoice, index) => (
-          // FIXME: When you click on the table row, it should open the edit modal
           <TableRow key={index} onClick={() => handleInvoiceClick(invoice)} className='hover:cursor-pointer'>
             <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
             <TableCell>{invoice.Partner.name}</TableCell>

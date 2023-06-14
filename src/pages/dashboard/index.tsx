@@ -33,11 +33,11 @@ export default function Index() {
     }, [isFetched, getInvoices, dispatch])
 
     return (
-        <div className='middle-container'>
+        <div className=''>
             <div>
                 <Navbar activeItemCallback={setActiveItem} />
             </div>
-            <div className='flex pt-10'>
+            <div className='flex pt-10 middle-container'>
                 <div className=''>
                     {/* <HomeTab /> */}
                     {activeItem === "Home" ? <HomeTab Companies={getCompanies as Company[]} /> : null}
