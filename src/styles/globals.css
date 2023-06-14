@@ -77,8 +77,14 @@
     @apply border-border;
   }
 
+  .middle-container {
+    @apply flex flex-col items-center justify-center;
+  }
+
   body {
     @apply bg-background text-foreground;
+
+
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

@@ -16,14 +16,8 @@ const Items = [
     "Companies",
     "Services",
     "Storage",
-    "Folders",
-    "Trash",
-    "Settings",
-    "Logout",
-
 ]
 import Navbar from '@/components/Dashboard/InvoiceTab/Navbar'
-import { InvoiceSerialized } from 'types'
 export default function Index() {
     const [activeItem, setActiveItem] = useState<string>(Items[0] as string);
     const { data: sessionData, status } = useSession({ required: true })
@@ -39,12 +33,12 @@ export default function Index() {
     }, [isFetched, getInvoices, dispatch])
 
     return (
-        <div>
+        <div className='middle-container'>
             <div>
                 <Navbar activeItemCallback={setActiveItem} />
             </div>
-            <div className='flex'>
-                <div className='justify-center text-center content-center'>
+            <div className='flex pt-10'>
+                <div className=''>
                     {/* <HomeTab /> */}
                     {activeItem === "Home" ? <HomeTab Companies={getCompanies as Company[]} /> : null}
                     {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies as Company[]} Customers={getCustomers as Partner[]} /> : null}
