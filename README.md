@@ -52,4 +52,4 @@
 - jsPdf (for PDF generation and template creation)
 - ReactPDF (for displaying PDF documents and templates in the browser) 
 ![alt text](https://i.imgur.com/Neheqsz.png "Dashboard")
-![alt text](https://i.imgur.com/ieWB1Oh.png "Title")
+)
