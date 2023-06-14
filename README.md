@@ -1,5 +1,4 @@
-# Racunko Invoicer
-
+# Racunko Invoicer based of Shadcn UI components
 ## Description
 
 #### The app is currently in development and it is not working yet. I will update this README when the app is finished.
@@ -48,8 +47,9 @@
 - PostgreSQL
 - NextAuth.js
 - TRPC
+- Shadcn UI (Components)
 ## Upcoming Technologies
 - jsPdf (for PDF generation and template creation)
 - ReactPDF (for displaying PDF documents and templates in the browser) 
 ![alt text](https://i.imgur.com/Neheqsz.png "Dashboard")
-)
+
