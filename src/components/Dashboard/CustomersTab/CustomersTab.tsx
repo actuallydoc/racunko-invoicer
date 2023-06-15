@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { IoIosCreate } from 'react-icons/io';
 import CustomerCreateModal from './Modals/CustomerCreateModal';
 import { api } from '@/utils/api';
 import CustomerEditModal from './Modals/CustomerEditModal';
@@ -9,9 +8,9 @@ import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TableBody, TableCell, TableCaption, TableHead, TableHeader, TableRow, Table } from '@/components/ui/table';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/stores/invoiceSlice';
-import { Dialog } from '@radix-ui/react-dialog';
-import { DialogHeader, DialogTrigger } from '@/components/ui/dialog';
+import { type RootState } from '@/stores/invoiceSlice';
+
+import { DialogHeader, DialogTrigger, Dialog, DialogContent } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
@@ -113,21 +112,17 @@ export default function CustomersTab({ Customers }: { Customers: Partner[] | und
                     <CardDescription>Manage your customers</CardDescription>
                 </CardHeader>
                 <CardContent className='grid gap-6 w-full'>
-                    <div>
-                        <Dialog modal={true}>
-                            <DialogHeader>
-                                <Label>Create Customer</Label>
-                            </DialogHeader>
-                            <CustomerCreateModal />
-                            <DialogTrigger>
-                                <Button onClick={handleOpenCreateModal} className='flex items-center space-x-2'>
-                                    Create
-                                </Button>
-                            </DialogTrigger>
-                        </Dialog>
-                    </div>
-
-
+                    <Dialog modal={true}>
+                        <DialogHeader>
+                            <Label>Create Customer</Label>
+                        </DialogHeader>
+                        <DialogTrigger className='w-fit'>
+                            <Button onClick={handleOpenCreateModal} className='flex items-center space-x-2'>
+                                Create
+                            </Button>
+                        </DialogTrigger>
+                        <CustomerCreateModal />
+                    </Dialog>
                     <div className='flex space-x-2'>
                         <Table >
                             <TableCaption>A list of your recent customers.</TableCaption>
@@ -155,6 +150,6 @@ export default function CustomersTab({ Customers }: { Customers: Partner[] | und
                     </div>
                 </CardContent>
             </Card>
-        </div>
+        </div >
     )
 }

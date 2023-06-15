@@ -109,7 +109,6 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                 </Button>
                             </DialogTrigger>
                             <InvoiceCreateModal companies={Companies} customers={Customers} />
-
                         </Dialog>
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
@@ -121,7 +120,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                 >
                                     {/* Some how this is undefined */}
                                     {value.length
-                                        ? Companies.find((company) => company.name === value)?.name : "Select company..."}
+                                        ? Companies?.find((company) => company.name === value)?.name : "Select company..."}
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
@@ -131,7 +130,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                     <CommandInput placeholder="Search Company..." />
                                     <CommandEmpty>No companies found.</CommandEmpty>
                                     <CommandGroup>
-                                        {Companies.map((company, index) => (
+                                        {Companies?.map((company, index) => (
                                             <CommandItem
                                                 key={index}
                                                 onSelect={(currentValue) => {
