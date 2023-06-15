@@ -1,8 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import QuickEasy from "@/components/Home/QuickEasy";
-import Navbar from "@/components/Navbar/Navbar";
-import GetStarted from "@/components/Buttons/GetStarted/GetStarted";
+import Navbar from "@/components/Navbar";
+
 // Fix the design here
 const Home: NextPage = () => {
   return (
@@ -13,31 +12,21 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex">
-
-        <div className="relative">
-          <div className="ml-[120px] relative z-10">
+        <div className="flex-col">
+          <div className="flex items-center content-center justify-center w-auto">
             <Navbar />
           </div>
-          <div className="flex-col">
+          <div className="flex-col space-y-3 flex-wrap">
             <div>
-              <div>
-                <div className="ml-72 mt-[150px] flex-col text-center w-[600px] space-y-5">
-                  <div>
-                    <h1 className="text-6xl font-bold text-[#161D1B] content-center">Professional</h1>
-                  </div>
-                  <div>
-                    <h1 className="text-6xl font-bold text-[#161D1B] content-center">Invoicing Solution</h1>
-                  </div>
-                </div>
-              </div>
+              <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+                Racunko
+              </h1>
+              <p className="leading-7 [&:not(:first-child)]:mt-6">
+                Racunko is a simple and easy to use invoice management system.
+              </p>
             </div>
-            <div className="ml-auto mr-auto relative">
-              <div className="ml-64 mt-[200px]">
-                <QuickEasy />
-              </div>
-              <div className="">
-                <GetStarted />
-              </div>
+            <div>
+
             </div>
           </div>
         </div>

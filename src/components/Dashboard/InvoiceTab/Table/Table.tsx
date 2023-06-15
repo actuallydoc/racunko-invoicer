@@ -25,7 +25,8 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { type RootState, invoiceSlice } from '@/stores/invoiceSlice';
 import type { InvoiceSerialized, Service } from 'types';
-export default function TableComponent() {
+import InvoiceEditModal from '../Modals/InvoiceEditModal'
+export default function TableComponent({ setOpenEditModal }: { setOpenEditModal: React.Dispatch<React.SetStateAction<boolean>> }) {
   const [editInvoice, setEditInvoice] = React.useState<InvoiceSerialized | null>(null);
   const invoiceSelector = useSelector((state: RootState) => state.items);
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function TableComponent() {
       item: invoice,
     }))
     setEditInvoice(invoice);
+    setOpenEditModal(true);
   }
   // TODO: Make the popup when clicking on the invoice currently not working
   return (

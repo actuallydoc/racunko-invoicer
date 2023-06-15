@@ -28,9 +28,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import ServiceCreateItem from './ServiceCreateItem';
 import { format } from 'date-fns';
-import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { DialogClose } from '@radix-ui/react-dialog';
 export default function InvoiceCreateModal({ customers, companies }: { customers: Partner[], companies: Company[] }) {
     const createInvoice = api.invoice.createInvoice.useMutation();
     const { toast } = useToast()
@@ -116,23 +117,21 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
     }
 
     return (
-        <DialogContent className=''>
+        <DialogContent className='p-10'>
             <DialogHeader>
                 <DialogTitle>Create invoice</DialogTitle>
                 <DialogDescription>
                     After pressing Create button you will create a new invoice for your company.
                 </DialogDescription>
             </DialogHeader>
-            <Card>
+            <Card className='pt-4'>
                 <CardContent>
 
-                    <div className='space-y-3'>
+                    <div className='space-y-3 flex space-x-5'>
                         <div className='flex-col'>
-                            <Label className="block text-sm font-bold mb-2" htmlFor="date">
+                            <Label className="block text-sm font-bold mb-5" htmlFor="date">
                                 Invoice Date
                             </Label>
-
-
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -146,7 +145,7 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                                         {createInvoiceSelector.invoiceDate ? format(createInvoiceSelector.invoiceDate, "PPP") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
+                                <PopoverContent className="">
                                     <Calendar
                                         mode="single"
                                         selected={createInvoiceSelector.invoiceDate}
@@ -159,13 +158,11 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                         </div>
 
                         <div className='flex-col'>
-
                             <div>
-                                <label className="block text-sm font-bold mb-2" htmlFor="date">
+                                <Label className="block text-sm font-bold mb-2" htmlFor="date">
                                     Invoice Service Date
-                                </label>
+                                </Label>
                             </div>
-
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -224,8 +221,8 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
 
                     </div>
                     <div>
-                        <div className='mb-10'>
-                            <Label className="block text-sm font-bold mb-2" htmlFor="invoiceNumber">
+                        <div className='flex-col mb-5'>
+                            <Label className="text-sm font-bold mb-2" htmlFor="invoiceNumber">
                                 Invoice Number
                             </Label>
                             <Input
@@ -361,18 +358,15 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                     <div>
 
                     </div>
-                    <div className="flex items-center justify-between">
-                        <Button
-                            onClick={handleInvoiceCreate}
-                            className=""
-                            variant={'outline'}
-                        >
-                            Create
-                        </Button>
-                    </div>
+
 
                 </CardContent>
             </Card>
+            <DialogFooter>
+                <DialogClose asChild>
+                    <Button onClick={handleInvoiceCreate}>Create</Button>
+                </DialogClose>
+            </DialogFooter>
         </DialogContent>
     )
 }

@@ -35,6 +35,13 @@ export default function ServiceCreateItem({ service }: { service: Service }) {
             <hr className=" my-2 border-2 mt-3 mb-3" />
             <div className="grid grid-cols-5 gap-4">
                 <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea placeholder='Description' name='description' onChange={(e) => {
+                        handleInputChange(e);
+
+                    }} defaultValue={service.description} />
+                </div>
+                <div>
                     <div className='flex-col'>
                         <div>
                             <Label htmlFor="quantity" >Quantity</Label>
@@ -43,14 +50,6 @@ export default function ServiceCreateItem({ service }: { service: Service }) {
                             handleInputChange(e);
                         }} type="number" name='quantity' min={1} defaultValue={service.quantity} />
                     </div>
-                </div>
-
-                <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea placeholder='Description' name='description' onChange={(e) => {
-                        handleInputChange(e);
-
-                    }} defaultValue={service.description} />
                 </div>
                 <div className='flex-col'>
                     <div>
@@ -63,8 +62,9 @@ export default function ServiceCreateItem({ service }: { service: Service }) {
                         }} type="number" name='price' defaultValue={service.price} />
                     </div>
                 </div>
-
-                <Button variant={"destructive"} onClick={() => handleDelete(service)}>Delete</Button>
+                <div>
+                    <Button className='mt-6' variant={"destructive"} onClick={() => handleDelete(service)}>Delete</Button>
+                </div>
 
             </div>
         </div>

@@ -30,6 +30,8 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } 
 import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { toast } from 'react-toastify';
+import ServiceCreateItem from './ServiceCreateItem';
+import { Card, CardContent } from '@/components/ui/card';
 
 
 export default function InvoiceEditModal({ Customers, Companies }: {
@@ -117,143 +119,193 @@ export default function InvoiceEditModal({ Customers, Companies }: {
             partner: e
         }))
     }
+    const createInvoiceSelector = useSelector((state: RootState) => state.createItem);
+    const createInvoiceDispatch = useDispatch();
     const [openCompanyPopover, setOpenCompanyPopover] = React.useState(false)
     const [companyValue, setCompanyValue] = React.useState("")
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
     const [customerValue, setCustomerValue] = React.useState("")
-
+    const handleCompanySelect = (company: Company) => {
+        createInvoiceDispatch(invoiceSlice.actions.updateCreateCompany({
+            company: company
+        }))
+        setOpenCompanyPopover(false)
+    }
+    const handleCustomerSelect = (customer: Partner) => {
+        createInvoiceDispatch(invoiceSlice.actions.updateCreatePartner({
+            partner: customer
+        }))
+        setOpenCustomerPopover(false)
+    }
     return (
-        <div className=" bg-gray-100">
-            <div className="flex items-center justify-center h-full">
-                <div className="w-full ">
+        <DialogContent className='p-10'>
+            <DialogHeader>
+                <DialogTitle>Create invoice</DialogTitle>
+                <DialogDescription>
+                    After pressing Create button you will create a new invoice for your company.
+                </DialogDescription>
+            </DialogHeader>
+            <Card className='pt-4'>
+                <CardContent>
+                    <div className='space-y-3 flex space-x-5'>
+                        <div className='flex-col'>
+                            <Label className="block text-sm font-bold mb-5" htmlFor="date">
+                                Invoice Date
+                            </Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-[280px] justify-start text-left font-normal",
+                                            !createInvoiceSelector.invoiceDate && "text-muted-foreground"
+                                        )}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {createInvoiceSelector.invoiceDate ? format(createInvoiceSelector.invoiceDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="">
+                                    <Calendar
+                                        mode="single"
+                                        selected={createInvoiceSelector.invoiceDate}
+                                        onSelect={(e) => handleInvoiceDate(e as Date)}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
 
-                    <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <div className="mb-4">
+                        </div>
 
-
-                            <div className='flex pb-10 space-x-5'>
-                                <div className='flex-col'>
-
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="date">
-                                            Invoice Date
-                                        </label>
-                                    </div>
-                                    <div className='border-4  rounded-lg'>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-[280px] justify-start text-left font-normal",
-                                                        !invoiceSelector.invoiceDate && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {invoiceSelector.invoiceDate ? format(invoiceSelector.invoiceDate, "PPP") : <span>Pick a date</span>}
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={invoiceSelector.invoiceDate}
-                                                    onSelect={(e) => handleInvoiceDate(e as Date)}
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div>
-                                </div>
-
-                                <div className='flex-col'>
-
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="date">
-                                            Invoice Service Date
-                                        </label>
-                                    </div>
-                                    <div className='border-4  rounded-lg'>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-[280px] justify-start text-left font-normal",
-                                                        !invoiceSelector.invoiceServiceDate && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {invoiceSelector.invoiceServiceDate ? format(invoiceSelector.invoiceServiceDate, "PPP") : <span>Pick a date</span>}
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={invoiceSelector.invoiceServiceDate}
-                                                    onSelect={(e) => handleServiceDate(e as Date)}
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div>
-                                </div>
-                                <div className='flex-col'>
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="date">
-                                            Invoice Due Date
-                                        </label>
-                                    </div>
-                                    <div className='border-4  rounded-lg'>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-[280px] justify-start text-left font-normal",
-                                                        !invoiceSelector.dueDate && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {invoiceSelector.dueDate ? format(invoiceSelector.dueDate, "PPP") : <span>Pick a date</span>}
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={invoiceSelector.dueDate}
-                                                    onSelect={(e) => handleDueDate(e as Date)}
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div>
-
-                                </div>
-                                <div className='flex content-center '>
-                                    <Button onClick={handleGenerateInvoice} asChild>View PDF</Button>
-                                </div>
+                        <div className='flex-col'>
+                            <div>
+                                <Label className="block text-sm font-bold mb-2" htmlFor="date">
+                                    Invoice Service Date
+                                </Label>
                             </div>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-[280px] justify-start text-left font-normal",
+                                            !createInvoiceSelector.invoiceServiceDate && "text-muted-foreground"
+                                        )}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {createInvoiceSelector.invoiceServiceDate ? format(createInvoiceSelector.invoiceServiceDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="">
+                                    <Calendar
+                                        mode="single"
+                                        selected={createInvoiceSelector.invoiceServiceDate}
+                                        onSelect={(e) => handleServiceDate(e as Date)}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                        <div className='flex-col mb-10'>
 
                             <div>
-                                <div className='mb-6'>
-                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="invoiceNumber">
-                                        Invoice Number
-                                    </label>
-                                    <Input
-                                        onChange={handleInvoiceNumber}
-                                        className="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                        id="invoiceNumber"
-                                        type="name"
-                                        placeholder="Invoice Number"
-                                        defaultValue={invoiceSelector?.invoiceNumber}
-                                    />
-                                </div>
+                                <Label className="block text-sm font-bold mb-2" htmlFor="date">
+                                    Invoice Due Date
+                                </Label>
                             </div>
 
-                            <div className='flex space-x-32'>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-[250px] justify-start text-left font-normal",
+                                            !createInvoiceSelector.dueDate && "text-muted-foreground"
+                                        )}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {createInvoiceSelector.dueDate ? format(createInvoiceSelector.dueDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="">
+                                    <Calendar
+                                        mode="single"
+                                        selected={createInvoiceSelector.dueDate}
+                                        onSelect={(e) => handleDueDate(e as Date)}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
 
+                        </div>
 
-                                <Popover open={openCompanyPopover} onOpenChange={setOpenCompanyPopover}>
+                    </div>
+                    <div>
+                        <div className='flex-col mb-5'>
+                            <Label className="text-sm font-bold mb-2" htmlFor="invoiceNumber">
+                                Invoice Number
+                            </Label>
+                            <Input
+                                onChange={handleInvoiceNumber}
+                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                id="invoiceNumber"
+                                type="name"
+                                placeholder="Invoice Number"
+                                defaultValue={createInvoiceSelector?.invoiceNumber}
+                            />
+                        </div>
+                    </div>
+
+                    <div className='flex space-x-10'>
+                        <div className='flex-col'>
+                            <Popover open={openCompanyPopover} onOpenChange={setOpenCompanyPopover}>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        role="combobox"
+
+                                        className="w-[200px] justify-between"
+                                    >
+                                        {companyValue
+                                            ? Companies.find((company) => company.name === companyValue)?.name
+                                            : "Select company..."}
+                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[200px] p-0">
+                                    <Command>
+                                        <CommandInput placeholder="Search companies..." />
+                                        <CommandEmpty>No companies found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {Companies?.map((company) => (
+                                                <CommandItem
+                                                    key={company.id}
+                                                    onSelect={(currentValue) => {
+                                                        setCompanyValue(currentValue === companyValue ? "" : currentValue)
+                                                        setSelectedCompany(company)
+                                                        handleCompanySelect(company)
+                                                        setOpenCompanyPopover(false)
+                                                    }}
+                                                >
+                                                    <Check
+                                                        className={cn(
+                                                            "mr-2 h-4 w-4",
+                                                            companyValue === company.name ? "opacity-100" : "opacity-0"
+                                                        )}
+                                                    />
+
+                                                    {company.name}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+
+                        </div>
+                        <div className='flex'>
+                            <div className='flex-col'>
+                                <Popover open={openCustomerPopover} onOpenChange={setOpenCustomerPopover}>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
@@ -261,146 +313,84 @@ export default function InvoiceEditModal({ Customers, Companies }: {
 
                                             className="w-[200px] justify-between"
                                         >
-                                            {companyValue
-                                                ? Companies.find((company) => company.name === companyValue)?.name
-                                                : "Select company..."}
+                                            {customerValue
+                                                ? Customers.find((customer) => customer.name === customerValue)?.name
+                                                : "Select customer..."}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-[200px] p-0">
                                         <Command>
-                                            <CommandInput placeholder="Search companies..." />
-                                            <CommandEmpty>No companies found.</CommandEmpty>
+                                            <CommandInput placeholder="Search customers..." />
+                                            <CommandEmpty>No customers found.</CommandEmpty>
                                             <CommandGroup>
-                                                {Companies.map((company) => (
+                                                {/* TODO: The name of the partner and company in the popover is not fully shown because of the width */}
+                                                {Customers.map((customer) => (
                                                     <CommandItem
-                                                        key={company.id}
-
-                                                        onSelect={(currentValue) => {
-                                                            setCompanyValue(currentValue === companyValue ? "" : currentValue)
-                                                            setSelectedCompany(company)
-                                                            handleCompanyChange(company);
-                                                            setOpenCompanyPopover(false)
+                                                        key={customer.id}
+                                                        onSelect={(currentValue: string) => {
+                                                            setCustomerValue(currentValue === customerValue ? "" : currentValue)
+                                                            setSelectedCustomer(customer)
+                                                            handleCustomerSelect(customer)
+                                                            setOpenCustomerPopover(false)
                                                         }}
                                                     >
                                                         <Check
                                                             className={cn(
                                                                 "mr-2 h-4 w-4",
-                                                                companyValue === company.name ? "opacity-100" : "opacity-0"
+                                                                customerValue === customer.name ? "opacity-100" : "opacity-0"
                                                             )}
                                                         />
-                                                        {company.name}
+                                                        {customer.name}
                                                     </CommandItem>
                                                 ))}
                                             </CommandGroup>
                                         </Command>
                                     </PopoverContent>
                                 </Popover>
-
-
-                                <div className='flex space-x-2'>
-                                    <Popover open={openCustomerPopover} onOpenChange={setOpenCustomerPopover}>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                role="combobox"
-
-                                                className="w-[200px] justify-between"
-                                            >
-                                                {customerValue
-                                                    ? Customers.find((customer) => customer.name === customerValue)?.name
-                                                    : "Select customer..."}
-                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-[200px] p-0">
-                                            <Command>
-                                                <CommandInput placeholder="Search customers..." />
-                                                <CommandEmpty>No customers found.</CommandEmpty>
-                                                <CommandGroup>
-                                                    {/* TODO: The name of the partner and company in the popover is not fully shown because of the width */}
-                                                    {Customers.map((customer) => (
-                                                        <CommandItem
-                                                            key={customer.id}
-                                                            onSelect={(currentValue: string) => {
-                                                                setCustomerValue(currentValue === customerValue ? "" : currentValue)
-                                                                setSelectedCustomer(customer)
-                                                                handleCustomerChange(customer)
-                                                                setOpenCustomerPopover(false)
-                                                            }}
-                                                        >
-                                                            <Check
-                                                                className={cn(
-                                                                    "mr-2 h-4 w-4",
-                                                                    customerValue === customer.name ? "opacity-100" : "opacity-0"
-                                                                )}
-                                                            />
-                                                            {customer.name}
-                                                        </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            </Command>
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
-                            </div>
-
-                            <div className='pb-10'>
-                                {/* Pretty fascinating that u can do that so easily(scroll) */}
-                                <div className='max-h-[200px] overflow-y-scroll'>
-                                    {invoiceSelector.Services?.map((service, index) => (
-                                        <div key={index} className="flex items-center justify-between">
-                                            <div className="mb-6">
-                                                <ServiceItem service={service} />
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                </div>
-                                <div>
-
-                                </div>
-                                <div>
-                                    <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                        onClick={handleAddService}
-                                        type="button"
-                                    >
-                                        Add Service
-                                    </button>
-                                </div>
-
-                            </div>
-                            <div>
-
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <Button
-                                        onClick={handleEditInvoice}
-                                        variant={"default"}
-                                        type="button"
-                                    >
-                                        Edit
-                                    </Button>
-                                </div>
-                                <div>
-                                    <Button
-
-                                        onClick={handleDeleteInvoice}
-                                        variant={"destructive"}
-                                        type="button"
-                                    >
-                                        Delete
-                                    </Button>
-                                </div>
-
                             </div>
                         </div>
-                    </form>
+                    </div>
+                    <div className='pb-10'>
+                        {/* Pretty fascinating that u can do that so easily(scroll) */}
+                        <div className='max-h-[200px] overflow-y-scroll'>
+                            {invoiceSelector.Services?.map((service, index) => (
+                                <div key={index} className="flex items-center">
+                                    <div className="mb-6">
+                                        <ServiceCreateItem service={service} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div>
 
-                </div>
-            </div >
-        </div >
+                        </div>
+                        <div className='pt-3'>
+                            <Button className=" font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                onClick={handleAddService}
+                                type="button"
+                                variant={"outline"}
+                            >
+                                Add Service
+                            </Button>
+                        </div>
+                    </div>
+                    <div>
+
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <Button
+                            onClick={handleEditInvoice}
+                            className=""
+                            variant={'outline'}
+                        >
+                            Create
+                        </Button>
+                    </div>
+
+                </CardContent>
+            </Card>
+        </DialogContent>
     )
 }
 

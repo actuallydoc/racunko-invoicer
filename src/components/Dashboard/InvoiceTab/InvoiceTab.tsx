@@ -16,7 +16,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
-import BlurModal from './Modals/BlurModal';
+import InvoiceEditModal from './Modals/InvoiceEditModal';
+
 interface InvoiceTabProps {
     Companies: Company[];
     Customers: Partner[];
@@ -95,6 +96,13 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                             <InvoiceCreateModal companies={Companies} customers={Customers} />
 
                         </Dialog>
+
+                        <Dialog modal={true} >
+                            {editInvoice &&
+                                <InvoiceEditModal Companies={Companies} Customers={Customers} />
+                            }
+                        </Dialog>
+
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                                 <Button
@@ -138,7 +146,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                         </Popover>
                     </div>
                     <div className='mt-5'>
-                        <Table Companies={Companies} Customers={Customers} />
+                        <Table setOpenEditModal={setEditInvoice} Companies={Companies} Customers={Customers} />
                     </div>
                 </CardContent>
             </Card>
