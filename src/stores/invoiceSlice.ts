@@ -8,6 +8,7 @@ export const invoiceSlice = createSlice({
         //Get the items from local storage if there are any
         items: [] as InvoiceSerialized[],
         editItem: {} as InvoiceSerialized,
+        partners: [] as Partner[],
         createItem: {
             Services: [] as Service[],
 
@@ -59,13 +60,13 @@ export const invoiceSlice = createSlice({
             const { date } = action.payload;
             state.editItem.dueDate = date;
         },
-        updateCompany(state, action: { payload: { company: Company } }) {
+        updateInvoiceCompany(state, action: { payload: { company: Company } }) {
             const { company } = action.payload;
             state.editItem.Company = company;
             console.log(company);
             console.log(state.editItem.Company)
         },
-        updatePartner(state, action: { payload: { partner: Partner } }) {
+        updateInvoicePartner(state, action: { payload: { partner: Partner } }) {
             const { partner } = action.payload;
             state.editItem.Partner = partner;
         },
@@ -117,6 +118,23 @@ export const invoiceSlice = createSlice({
             state.createItem = {
                 Services: [] as Service[],
             } as InvoiceSerialized;
+        },
+        initPartners(state, action: { payload: { partners: Partner[] } }) {
+            const { partners } = action.payload;
+            state.partners = partners;
+        },
+        addPartner(state, action: { payload: { partner: Partner } }) {
+            const { partner } = action.payload;
+            state.partners.push(partner);
+        },
+        removePartner(state, action: { payload: { partner: Partner } }) {
+            const { partner } = action.payload;
+            state.partners = state.partners.filter((p) => p.id !== partner.id);
+        },
+        updatePartner(state, action: { payload: { partner: Partner } }) {
+            const { partner } = action.payload;
+            const index = state.partners.findIndex((p) => p.id === partner.id);
+            state.partners[index] = partner;
         }
 
     },
@@ -128,4 +146,4 @@ const invoice = configureStore({
 
 export type RootState = ReturnType<typeof invoice.getState>;
 export default invoice;
-export const { editInvoice, initInvoices, reset, addService, removeService, updateCompany, addCreateService, removeCreateService, resetCreate, updateCreateCompany, updateCreateInvoiceDate, updateCreateInvoiceDueDate, updateCreateInvoiceNumber, updateCreatePartner, updateCreateService, updateCreateServiceDate, updateInvoiceDate, updateInvoiceDueDate, updateInvoiceNumber, updatePartner, updateService, updateServiceDate } = invoiceSlice.actions;
+export const { editInvoice, initInvoices, reset, addService, removeService, updateInvoiceCompany, addCreateService, removeCreateService, resetCreate, updateCreateCompany, updateCreateInvoiceDate, updateCreateInvoiceDueDate, updateCreateInvoiceNumber, updateCreatePartner, updateCreateService, updateCreateServiceDate, updateInvoiceDate, updateInvoiceDueDate, updateInvoiceNumber, updateInvoicePartner, updateService, updateServiceDate, updatePartner, addPartner, initPartners, removePartner } = invoiceSlice.actions;

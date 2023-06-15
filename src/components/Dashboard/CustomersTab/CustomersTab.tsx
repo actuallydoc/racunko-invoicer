@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import { IoIosCreate } from 'react-icons/io';
 import CustomerCreateModal from './Modals/CustomerCreateModal';
-import Table from './Table/Table';
 import { api } from '@/utils/api';
 import CustomerEditModal from './Modals/CustomerEditModal';
 import type { Partner } from '@prisma/client';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { TableBody, TableCell, TableCaption, TableHead, TableHeader, TableRow, Table } from '@/components/ui/table';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/stores/invoiceSlice';
+import { Dialog } from '@radix-ui/react-dialog';
+import { DialogHeader, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export default function CustomersTab({ Customers }: { Customers: Partner[] | undefined }) {
-    //!TODO SCROLLABLE TABLE
+
+
+
+    const partnerSelector = useSelector((state: RootState) => state.partners);
     const { data: sessionData } = useSession();
     const createCustomer = api.partner.createPartner.useMutation();
     const updateCustomer = api.partner.updatePartner.useMutation();
@@ -96,44 +106,55 @@ export default function CustomersTab({ Customers }: { Customers: Partner[] | und
     }, [Customers]);
 
     return (
-        <div className="min-h-screen flex items-center ml-10">
-            {showCreateModal && (
-                <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
-                    <CustomerCreateModal customerState={setTempCustomer} handleCreateCustomer={handleCreateCustomer} setShowModal={setCreateShowModal} />
-                </div>
-            )}
-            {showUpdateModal && (
-                <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50 bg-gray-100 bg-opacity-40">
-                    <CustomerEditModal handleDeleteCustomer={handleDeleteCustomer} handleUpdateCustomer={handleUpdateCustomer} setShowModal={setUpdateShowModal} customerState={selectedCustomer} />
-                </div>
-            )}
-            <div className="w-10/12 h-[850px] mb-16 bg-white rounded-3xl p-4 border-4">
-                <div className='flex space-x-5 '>
-                    <div className='flex space-x-5'>
-                        <div>
-                            <input type="text" onChange={handleFilter} placeholder="Search" className="w-[150px] h-10 border-2 border-gray-300 rounded-lg p-2" />
-                        </div>
-                        <div className='w-auto flex space-x-3'>
-                            <div>
-                                <button onClick={handleOpenCreateModal} className='flex space-x-5 text-black bg-[#D8FAD6] hover:bg-[#0F570A] hover:text-white p-3 rounded-xl'>
-                                    <div>
-                                        <p>Create</p>
-                                    </div>
-                                    <div className='pt-1'>
-                                        <IoIosCreate />
-                                    </div>
-
-                                </button>
-                            </div>
-
-
-                        </div>
+        <div>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Customer Management</CardTitle>
+                    <CardDescription>Manage your customers</CardDescription>
+                </CardHeader>
+                <CardContent className='grid gap-6 w-full'>
+                    <div>
+                        <Dialog modal={true}>
+                            <DialogHeader>
+                                <Label>Create Customer</Label>
+                            </DialogHeader>
+                            <CustomerCreateModal />
+                            <DialogTrigger>
+                                <Button onClick={handleOpenCreateModal} className='flex items-center space-x-2'>
+                                    Create
+                                </Button>
+                            </DialogTrigger>
+                        </Dialog>
                     </div>
-                </div>
-                <div>
-                    <Table Partners={filteredCustomers} editPartner={handleUpdateCustomerModal} />
-                </div>
-            </div>
+
+
+                    <div className='flex space-x-2'>
+                        <Table >
+                            <TableCaption>A list of your recent customers.</TableCaption>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[100px]">Customer name</TableHead>
+                                    <TableHead>Customer Address</TableHead>
+                                    <TableHead>Customer Country</TableHead>
+                                    <TableHead>Customer VAT</TableHead>
+                                    <TableHead>Customer Phone</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {partnerSelector?.map((partner: Partner, index) => (
+                                    <TableRow key={index} className='hover:cursor-pointer'>
+                                        <TableCell className="font-medium">{partner.name}</TableCell>
+                                        <TableCell>{partner.address}</TableCell>
+                                        <TableCell>{partner.country}</TableCell>
+                                        <TableCell>{partner.vat}</TableCell>
+                                        <TableCell>{partner.phone}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }

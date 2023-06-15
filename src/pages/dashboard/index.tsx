@@ -30,6 +30,11 @@ export default function Index() {
         if (getInvoices) {
             dispatch(invoiceSlice.actions.initInvoices(getInvoices));
         }
+        if (getCustomers) {
+            dispatch(invoiceSlice.actions.initPartners({
+                partners: getCustomers
+            }));
+        }
     }, [isFetched, getInvoices, dispatch])
 
     return (
@@ -42,7 +47,7 @@ export default function Index() {
                     {/* <HomeTab /> */}
                     {activeItem === "Home" ? <HomeTab Companies={getCompanies as Company[]} /> : null}
                     {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies as Company[]} Customers={getCustomers as Partner[]} /> : null}
-                    {activeItem === "Customers" ? <CustomersTab Customers={getCustomers} /> : null}
+                    {activeItem === "Customers" ? <CustomersTab Customers={getCustomers as Partner[]} /> : null}
                     {activeItem === "Companies" ? <CompaniesTab Companies={getCompanies as Company[]} /> : null}
                     {/* {activeItem === "Services" ? <ServicesTab Services={getServices} handleDeleteServiceCb={handleDeleteService} handleUpdateServiceCb={handleUpdateService} handleCreateServiceCb={handleCreateService} /> : null} */}
                 </div>

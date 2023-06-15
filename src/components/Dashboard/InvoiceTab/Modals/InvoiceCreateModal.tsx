@@ -358,11 +358,9 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                     <div>
 
                     </div>
-
-
                 </CardContent>
             </Card>
-            <DialogFooter>
+            <DialogFooter className='mr-auto'>
                 <DialogClose asChild>
                     <Button onClick={handleInvoiceCreate}>Create</Button>
                 </DialogClose>

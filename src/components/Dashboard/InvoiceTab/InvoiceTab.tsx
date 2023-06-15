@@ -1,5 +1,5 @@
-import React from 'react'
-import Table from './Table/Table'
+import React, { useEffect } from 'react'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Company, Partner } from 'prisma/prisma-client'
 import "flatpickr/dist/themes/material_green.css";
 
@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/dialog"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 import InvoiceEditModal from './Modals/InvoiceEditModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
+import { Service, type InvoiceSerialized } from 'types';
 
 interface InvoiceTabProps {
     Companies: Company[];
@@ -27,10 +30,22 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
     const [toDate, setToDate] = React.useState<Date>(new Date());
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
-    const [editInvoice, setEditInvoice] = React.useState<boolean>(false)
-
+    const [editInvoice, setEditInvoice] = React.useState<InvoiceSerialized | null>(null);
+    const [edit, setEdit] = React.useState(false)
+    const invoiceSelector = useSelector((state: RootState) => state.items);
+    useEffect(() => {
+        console.log(invoiceSelector)
+    }, [invoiceSelector])
+    const invoiceDispatch = useDispatch();
+    const handleInvoiceClick = (invoice: InvoiceSerialized) => {
+        invoiceDispatch(invoiceSlice.actions.editInvoice({
+            item: invoice,
+        }))
+        setEditInvoice(invoice);
+        setEdit(true);
+    }
     return (
-        <div className="mt-10 flex justify-center items-center">
+        <div className="">
             <Card>
                 <CardHeader>
                     <CardTitle>Invoice Table</CardTitle>
@@ -96,13 +111,6 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                             <InvoiceCreateModal companies={Companies} customers={Customers} />
 
                         </Dialog>
-
-                        <Dialog modal={true} >
-                            {editInvoice &&
-                                <InvoiceEditModal Companies={Companies} Customers={Customers} />
-                            }
-                        </Dialog>
-
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                                 <Button
@@ -146,9 +154,48 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                         </Popover>
                     </div>
                     <div className='mt-5'>
-                        <Table setOpenEditModal={setEditInvoice} Companies={Companies} Customers={Customers} />
+                        {/* <Table setOpenEditModal={setEditInvoice} Companies={Companies} Customers={Customers} /> */}
+
+
+                        <Table >
+                            <TableCaption>A list of your recent invoices.</TableCaption>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[100px]">Invoice Number</TableHead>
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Company</TableHead>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Due Date</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Amount</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {invoiceSelector?.map((invoice, index) => (
+                                    <TableRow key={index} onClick={() => handleInvoiceClick(invoice)} className='hover:cursor-pointer'>
+                                        <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
+                                        <TableCell>{invoice.Partner.name as string}</TableCell>
+                                        <TableCell>{invoice.Company.name as string}</TableCell>
+                                        <TableCell>{invoice.invoiceDate.toISOString().toString()}</TableCell>
+                                        <TableCell>{invoice.dueDate.toISOString().toString()}</TableCell>
+                                        <TableCell>{invoice.status}</TableCell>
+                                        <TableCell className="text-right">
+                                            {invoice.Services?.reduce((total: number, service: Service) => {
+                                                if (service.price) {
+                                                    return total + Number(service.price) * Number(service.quantity);
+                                                }
+                                                return total;
+                                            }, 0)} $
+                                            {/* TODO: Get the currency */}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+
                     </div>
                 </CardContent>
+
             </Card>
         </div >
 
