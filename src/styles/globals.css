@@ -81,6 +81,10 @@
     @apply flex flex-col items-center justify-center;
   }
 
+  .centered-container {
+    @apply flex items-center justify-center;
+  }
+
   .modal-container {
     @apply w-auto h-auto bg-background rounded-lg shadow-lg;
   }

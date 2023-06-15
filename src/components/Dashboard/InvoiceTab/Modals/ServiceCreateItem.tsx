@@ -35,17 +35,6 @@ export default function ServiceCreateItem({ service }: { service: Service }) {
             <hr className=" my-2 border-2 mt-3 mb-3" />
             <div className="grid grid-cols-5 gap-4">
                 <div>
-                    <div>
-                        <Label htmlFor="name">Service Name</Label>
-                    </div>
-                    <div>
-                        <Input onChange={(e) => {
-                            handleInputChange(e);
-
-                        }} name='name' type="text" defaultValue={service.name} />
-                    </div>
-                </div>
-                <div>
                     <div className='flex-col'>
                         <div>
                             <Label htmlFor="quantity" >Quantity</Label>

@@ -15,8 +15,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <ThemeProvider>
-
+    <ThemeProvider defaultTheme="system">
       <Provider store={invoice}>
         <SessionProvider session={session}>
           <Component {...pageProps} />

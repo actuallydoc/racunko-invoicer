@@ -1,14 +1,9 @@
 import React from 'react'
 import Table from './Table/Table'
-import type { Invoice, Company, Partner } from 'prisma/prisma-client'
+import type { Company, Partner } from 'prisma/prisma-client'
 import "flatpickr/dist/themes/material_green.css";
-import { IoIosCreate } from 'react-icons/io';
 
 import InvoiceCreateModal from './Modals/InvoiceCreateModal';
-import InvoiceEditModal from './Modals/InvoiceEditModal';
-import type { InvoiceSerialized } from 'types';
-import { invoiceSlice } from '@/stores/invoiceSlice';
-import { useDispatch } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
@@ -18,13 +13,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import BlurModal from './Modals/BlurModal';
 interface InvoiceTabProps {
     Companies: Company[];
     Customers: Partner[];
@@ -38,8 +30,6 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
 
     return (
         <div className="mt-10 flex justify-center items-center">
-
-
             <Card>
                 <CardHeader>
                     <CardTitle>Invoice Table</CardTitle>
@@ -96,8 +86,8 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                         </Popover>
                     </div>
                     <div className='space-x-10'>
-                        <Dialog>
-                            <DialogTrigger className='w-fit'>
+                        <Dialog modal={true}>
+                            <DialogTrigger className=''>
                                 <Button variant={'outline'} className='flex space-x-5 '>
                                     Create
                                 </Button>
@@ -113,9 +103,9 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                     aria-expanded={open}
                                     className="w-[200px] justify-between"
                                 >
-                                    {value
-                                        ? Companies.find((company) => company.name === value)?.name
-                                        : "Select company..."}
+                                    {/* Some how this is undefined */}
+                                    {value.length
+                                        ? Companies.find((company) => company.name === value)?.name : "Select company..."}
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
