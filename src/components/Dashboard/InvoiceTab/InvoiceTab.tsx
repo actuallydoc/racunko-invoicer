@@ -153,8 +153,6 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                         </Popover>
                     </div>
                     <div className='mt-5'>
-                        {/* <Table setOpenEditModal={setEditInvoice} Companies={Companies} Customers={Customers} /> */}
-
 
                         <Table >
                             <TableCaption>A list of your recent invoices.</TableCaption>
@@ -175,8 +173,8 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                         <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
                                         <TableCell>{invoice.Partner.name as string}</TableCell>
                                         <TableCell>{invoice.Company.name as string}</TableCell>
-                                        <TableCell>{invoice.invoiceDate.toISOString().toString()}</TableCell>
-                                        <TableCell>{invoice.dueDate.toISOString().toString()}</TableCell>
+                                        <TableCell>{invoice.invoiceDate.toLocaleDateString().toString()}</TableCell>
+                                        <TableCell>{invoice.dueDate.toLocaleDateString().toString()}</TableCell>
                                         <TableCell>{invoice.status}</TableCell>
                                         <TableCell className="text-right">
                                             {invoice.Services?.reduce((total: number, service: Service) => {
@@ -185,7 +183,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                                 }
                                                 return total;
                                             }, 0)} $
-                                            {/* TODO: Get the currency */}
+                                            {/* TODO: Get the currency you have to implement it in schema for the invoice , service */}
                                         </TableCell>
                                     </TableRow>
                                 ))}

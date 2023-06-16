@@ -32,9 +32,6 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { DialogClose } from '@radix-ui/react-dialog';
-
-// TODO: Use this here https://ui.shadcn.com/docs/components/date-picker#react-hook-form AND ALL OTHER FORMS
-
 export default function InvoiceCreateModal({ customers, companies }: { customers: Partner[], companies: Company[] }) {
     const createInvoice = api.invoice.createInvoice.useMutation();
     const { toast } = useToast()
@@ -48,7 +45,6 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
     const [customerValue, setCustomerValue] = React.useState<string>("")
     const { data: sessionData } = useSession();
-
     const handleDueDate = (e: Date) => {
         createInvoiceDispatch(invoiceSlice.actions.updateCreateInvoiceDueDate({
             date: e
@@ -217,7 +213,6 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                                         selected={createInvoiceSelector.dueDate}
                                         onSelect={(e) => handleDueDate(e as Date)}
                                         initialFocus
-
                                     />
                                 </PopoverContent>
                             </Popover>

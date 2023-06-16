@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/label'
 import { DialogContent } from '@/components/ui/dialog'
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { DevTool } from "@hookform/devtools";
 import { Button } from '@/components/ui/button'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,10 +24,7 @@ const FormData = z.object({
     customerVat: z.string().optional(),
     customerWebsite: z.string(),
 })
-
 type FormData = z.infer<typeof FormData>
-
-
 const ValidationSchema = z.object({
     customerName: z.string().min(3, { message: "Customer name has to be longer" }).max(255),
     customerAddress: z.string().min(3, { message: "Customer Address has to be valid" }).max(255),
@@ -41,7 +37,7 @@ const ValidationSchema = z.object({
     customerWebsite: z.string().min(3).max(255).optional(),
 })
 type ValidationSchema = z.infer<typeof ValidationSchema>
-// Use this here https://ui.shadcn.com/docs/components/date-picker#react-hook-form
+
 export default function CustomerCreateModal() {
     const { data: sessionData } = useSession();
     const customerCreate = api.partner.createPartner.useMutation();
@@ -76,23 +72,23 @@ export default function CustomerCreateModal() {
             reset();
         }
     }, [formState, reset]);
-
     return (
-        <DialogContent>
+
+        <DialogContent className='w-fit'>
             <DialogHeader>
                 <DialogTitle>Create Customer</DialogTitle>
                 <DialogDescription>
                     After pressing Create button you will create a new Customer for your company.
                 </DialogDescription>
             </DialogHeader>
-            <div className="grid grid-cols-2 gap-4">
-                <Card>
+            <div className="grid">
+                <Card className='w-fit p-2'>
                     <CardContent>
-                        <form className='space-y-8' onSubmit={handleSubmit(onSubmit)}>
-                            <div className='flex space-x-10'>
-                                <div className='flex-col'>
+                        <form className='' onSubmit={handleSubmit(onSubmit)}>
+                            <div className='flex-col space-y-5'>
+                                <div className='flex space-x-5'>
                                     <div>
-                                        <Label className="text-sm font-bold mb-2" htmlFor="customerName">
+                                        <Label className="text-sm font-bold " htmlFor="customerName">
                                             Customer Name
                                         </Label>
                                         <Input
@@ -147,7 +143,7 @@ export default function CustomerCreateModal() {
                                         />
                                     </div>
                                 </div>
-                                <div className='flex-col'>
+                                <div className='flex space-x-5'>
                                     <div>
                                         <Label className="text-sm font-bold mb-2" htmlFor="customerPhone">
                                             Customer Phone
@@ -194,12 +190,11 @@ export default function CustomerCreateModal() {
                                     </div>
                                 </div>
                             </div>
-
-                            <Button type='submit'>
-                                Create
-                            </Button>
-
-
+                            <DialogClose asChild>
+                                <Button type='submit' className='mt-5'>
+                                    Create
+                                </Button>
+                            </DialogClose>
                         </form>
                     </CardContent>
                 </Card>

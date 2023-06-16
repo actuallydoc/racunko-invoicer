@@ -111,13 +111,13 @@ export default function CustomersTab({ Customers }: { Customers: Partner[] | und
                     <CardTitle>Customer Management</CardTitle>
                     <CardDescription>Manage your customers</CardDescription>
                 </CardHeader>
-                <CardContent className='grid gap-6 w-full'>
+                <CardContent className='grid gap-6 w-auto'>
                     <Dialog modal={true}>
                         <DialogHeader>
                             <Label>Create Customer</Label>
                         </DialogHeader>
                         <DialogTrigger className='w-fit'>
-                            <Button onClick={handleOpenCreateModal} className='flex items-center space-x-2'>
+                            <Button onClick={handleOpenCreateModal} variant={"outline"} className='flex items-center space-x-2'>
                                 Create
                             </Button>
                         </DialogTrigger>
