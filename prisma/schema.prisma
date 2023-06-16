@@ -54,13 +54,12 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  services      String?
   accounts      Account[]
   companies     Company[]
   invoices      Invoice[]
   partners      Partner[]
   sessions      Session[]
-  Service       Service[]
+  Services      Service[]
 }
 
 model Invoice {

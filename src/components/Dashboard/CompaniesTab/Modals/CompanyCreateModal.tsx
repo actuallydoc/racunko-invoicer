@@ -1,156 +1,189 @@
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { api } from '@/utils/api';
+import { useSession } from 'next-auth/react';
 import React from 'react'
-import type { Company } from 'types'
+import { useForm } from 'react-hook-form';
+import { DevTool } from '@hookform/devtools';
+import { useToast } from '@/components/ui/use-toast';
 
-export default function CompanyCreateModal({ companyState, setShowModal, handleCreateCompany }: { companyState: React.Dispatch<React.SetStateAction<Company>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateCompany: () => void }) {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        companyState((prevState) => ({
-            ...prevState,
-            [e.target.id]: e.target.value
-        }))
+type Company = {
+    companyName: string;
+    companyAddress: string;
+    companyCity: string;
+    companyZip: string;
+    companyCountry: string;
+    companyEmail: string;
+    companyPhone: string;
+    companyVat: string;
+    companyWebsite?: string | null;
+};
 
-        console.log(e.target.id + ' ' + e.target.value)
-    }
+
+export default function CompanyCreateModal() {
+    const createCompany = api.company.createCompany.useMutation();
+    const { register, control, handleSubmit, reset } = useForm();
+    const { toast } = useToast();
+    const { data: sessionData } = useSession({ required: true });
+    const onSubmit = (data: Company) => {
+        createCompany.mutate({
+            address: data.companyAddress,
+            city: data.companyCity,
+            name: data.companyName,
+            zip: data.companyZip,
+            country: data.companyCountry,
+            email: data.companyEmail,
+            phone: data.companyPhone,
+            vat: data.companyVat,
+            website: data.companyWebsite as string,
+            user_id: sessionData?.user?.id as string
+        }, {
+            onSuccess: () => {
+                toast({
+                    title: 'Company created',
+                    description: 'Company has been created successfully',
+                })
+                reset();
+            },
+            onError: (error) => {
+                toast({
+                    title: 'Error',
+                    description: error.message,
+                })
+            }
+        });
+    };
 
     return (
-        <div className=" bg-gray-100">
-            <div className="flex items-center justify-center h-full">
-                <div className="w-full max-w-md">
-                    <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <div className="mb-4">
-                            <div className='pb-5'>
-                                <button onClick={() => setShowModal(false)} className="text-3xl font-bold text-gray-500 hover:text-gray-400">&times;</button>
-                            </div>
-                            <div className='flex space-x-8'>
-
-                                <div className='flex-col'>
-                                    <div className='mb-6'>
-
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+        <DialogContent className='w-fit'>
+            <DialogHeader>
+                <DialogTitle>Create Company</DialogTitle>
+                <DialogDescription>
+                    After pressing Create button you will create a new Company.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="grid">
+                <Card className='w-fit p-2'>
+                    <CardContent>
+                        <form className='flex-col' onSubmit={handleSubmit(onSubmit)}>
+                            <div className='flex-col space-y-5'>
+                                <div className='flex space-x-5'>
+                                    <div>
+                                        <Label className="text-sm font-bold " htmlFor="companyName">
                                             Company Name
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="name"
-                                            type="name"
-                                            placeholder="Company name"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('companyName')}
+                                            type="text"
+                                            placeholder="Company Name"
                                         />
                                     </div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="address">
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="companyAddress">
                                             Company Address
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="address"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('companyAddress')}
                                             type="text"
                                             placeholder="Company Address"
                                         />
                                     </div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="zip">
-                                            Company Zip
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="zip"
-                                            type="text"
-                                            placeholder="Company Zip"
-                                        />
-                                    </div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="city">
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="companyCity">
                                             Company City
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="city"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('companyCity')}
                                             type="text"
                                             placeholder="Company City"
                                         />
                                     </div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="country">
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="companyZip">
+                                            Company Zip
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('companyZip')}
+                                            type="text"
+                                            placeholder="Company Zip"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="companyCountry">
                                             Company Country
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="country"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('companyCountry')}
                                             type="text"
                                             placeholder="Company Country"
                                         />
                                     </div>
                                 </div>
-                                <div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="phone">
+                                <div className='flex space-x-5'>
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="companyPhone">
                                             Company Phone
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="phone"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('companyPhone')}
                                             type="text"
                                             placeholder="Company Phone"
                                         />
                                     </div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="companyEmail">
                                             Company Email
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="email"
-                                            type="text"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('companyEmail')}
+                                            type="email"
                                             placeholder="Company Email"
                                         />
                                     </div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="website">
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="companyWebsite">
                                             Company Website
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="website"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('companyWebsite')}
                                             type="text"
                                             placeholder="Company Website"
                                         />
                                     </div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="vat">
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="companyVat">
                                             Company VAT
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="vat"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('companyVat')}
                                             type="text"
-                                            placeholder="Company Vat"
+                                            placeholder="Company VAT"
                                         />
                                     </div>
-
                                 </div>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <button
-                                    onClick={handleCreateCompany}
-                                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                    type="button"
-                                >
-                                    Create
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+
+                            <DialogFooter>
+                                <Button className='mr-auto mt-5' type="submit">Create</Button>
+                            </DialogFooter>
+                        </form>
+                    </CardContent>
+                </Card>
             </div>
-        </div>
+        </DialogContent >
+
     )
 }
 

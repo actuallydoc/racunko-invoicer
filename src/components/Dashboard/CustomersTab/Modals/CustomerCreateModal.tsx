@@ -41,8 +41,7 @@ type ValidationSchema = z.infer<typeof ValidationSchema>
 export default function CustomerCreateModal() {
     const { data: sessionData } = useSession();
     const customerCreate = api.partner.createPartner.useMutation();
-    const { register, control, handleSubmit, reset, formState,
-        formState: { isSubmitSuccessful }
+    const { register, handleSubmit, reset, formState,
     } = useForm<ValidationSchema>({
         resolver: zodResolver(ValidationSchema),
     });
@@ -63,6 +62,12 @@ export default function CustomerCreateModal() {
                 toast({
                     title: "Customer Created",
                     description: "Customer has been created successfully",
+                })
+            },
+            onError: (error) => {
+                toast({
+                    title: "Error",
+                    description: error.message,
                 })
             }
         });
@@ -190,16 +195,15 @@ export default function CustomerCreateModal() {
                                     </div>
                                 </div>
                             </div>
-                            <DialogClose asChild>
-                                <Button type='submit' className='mt-5'>
-                                    Create
-                                </Button>
-                            </DialogClose>
+
+                            <Button type='submit' className='mt-5'>
+                                Create
+                            </Button>
+
                         </form>
                     </CardContent>
                 </Card>
             </div>
-            {/* <DevTool control={control} /> */}
         </DialogContent >
     )
 }

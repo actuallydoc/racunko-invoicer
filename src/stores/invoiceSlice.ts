@@ -11,9 +11,8 @@ export const invoiceSlice = createSlice({
         partners: [] as Partner[],
         createItem: {
             Services: [] as Service[],
-
         } as InvoiceSerialized,
-
+        companies: [] as Company[],
     },
     reducers: {
         initInvoices(state, action: { payload: InvoiceType[]; }) {

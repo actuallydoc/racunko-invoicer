@@ -1,82 +1,124 @@
 import React from 'react'
-import type { Service } from 'types'
+import { Service } from '@prisma/client'
+import { Card, CardContent } from '@/components/ui/card'
+import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { DialogContent } from '@/components/ui/dialog'
+import { toast } from '@/components/ui/use-toast'
+import { api } from '@/utils/api'
+import { useSession } from 'next-auth/react'
+import { useForm } from 'react-hook-form'
+import { Button } from '@/components/ui/button'
 
-export default function ServiceCreateModal({ serviceState, setShowModal, handleCreateService }: { serviceState: React.Dispatch<React.SetStateAction<Service>>, setShowModal: React.Dispatch<React.SetStateAction<boolean>>, handleCreateService: () => void }) {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        serviceState((prevState) => ({
-            ...prevState,
-            [e.target.id]: e.target.value,
-            price: parseInt(e.target.value),
-        }))
+type ServiceForm = {
+    serviceName: string;
+    serviceDescription: string;
+    serviceQuantity: number;
+    servicePrice: number;
+}
 
-        console.log(e.target.id + ' ' + e.target.value)
-    }
+export default function ServiceCreateModal() {
+    const { data: sessionData } = useSession();
+    const createService = api.service.create.useMutation();
+    const { register, handleSubmit, reset,
+    } = useForm<ServiceForm>();
+    const onSubmit = (data: ServiceForm) => {
+        console.log(data);
+        createService.mutate({
+            description: data.serviceDescription,
+            name: data.serviceName,
+            price: parseInt(data.servicePrice),
+            quantity: parseInt(data.serviceQuantity),
+            id: sessionData?.user?.id as string
+        }, {
+            onSuccess: () => {
+                toast({
+                    title: "Service Created",
+                    description: "Service has been created successfully",
+                })
+                reset();
+            },
+            onError: (error) => {
+                toast({
+                    title: "Service Creation Failed",
+                    description: error.message,
 
+                })
+            }
+
+        })
+    };
     return (
-        <div className=" bg-gray-100">
-            <div className="flex items-center justify-center h-full">
-                <div className="w-full max-w-md">
-                    <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <div className="mb-4">
-                            <div className='pb-5'>
-                                <button onClick={() => setShowModal(false)} className="text-3xl font-bold text-gray-500 hover:text-gray-400">&times;</button>
-                            </div>
-                            <div className='flex space-x-8'>
-
-                                <div className='flex-col'>
-                                    <div className='mb-6'>
-
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+        <DialogContent className='w-fit'>
+            <DialogHeader>
+                <DialogTitle>Create Customer</DialogTitle>
+                <DialogDescription>
+                    After pressing Create button you will create a new Customer for your company.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="grid">
+                <Card className='w-fit p-2'>
+                    <CardContent>
+                        <form className='' onSubmit={handleSubmit(onSubmit)}>
+                            <div className='flex-col space-y-5'>
+                                <div className='flex space-x-5'>
+                                    <div>
+                                        <Label className="text-sm font-bold " htmlFor="serviceName">
                                             Service Name
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="name"
-                                            type="name"
-                                            placeholder="Service name"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('serviceName')}
+                                            type="text"
+                                            placeholder="Service Name"
                                         />
                                     </div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="serviceDescription">
                                             Service Description
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="description"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('serviceDescription')}
                                             type="text"
                                             placeholder="Service Description"
                                         />
                                     </div>
-                                    <div className="mb-6">
-                                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="serviceQuantity">
+                                            Service Quantity
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('serviceQuantity')}
+                                            type="number"
+                                            placeholder="Service Quantity"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label className="text-sm font-bold mb-2" htmlFor="servicePrice">
                                             Service Price
-                                        </label>
-                                        <input
-                                            onChange={handleChange}
-                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                            id="price"
+                                        </Label>
+                                        <Input
+                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                            {...register('servicePrice')}
                                             type="number"
                                             placeholder="Service Price"
                                         />
                                     </div>
+
                                 </div>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <button
-                                    onClick={handleCreateService}
-                                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                    type="button"
-                                >
-                                    Create
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                            <Button type='submit' className='mt-5'>
+                                Create
+                            </Button>
+
+                        </form>
+                    </CardContent>
+                </Card>
             </div>
-        </div>
+        </DialogContent >
     )
 }
 

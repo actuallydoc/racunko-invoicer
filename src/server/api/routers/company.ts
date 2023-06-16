@@ -33,6 +33,7 @@ export const companyRouter = createTRPCRouter({
         website: z.undefined().or(z.string()),
         vat: z.string(),
     })).mutation(async ({ ctx, input }) => {
+        console.log(input);
         const company = await ctx.prisma.company.create({
             data: {
                 userId: input.user_id,

@@ -305,7 +305,7 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                                             <CommandEmpty>No customers found.</CommandEmpty>
                                             <CommandGroup>
                                                 {/* TODO: The name of the partner and company in the popover is not fully shown because of the width */}
-                                                {customers.map((customer) => (
+                                                {customers?.map((customer) => (
                                                     <CommandItem
                                                         key={customer.id}
                                                         onSelect={(currentValue: string) => {

@@ -2,17 +2,12 @@ import React from 'react'
 import { cn } from "@/lib/utils"
 import {
     NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuIndicator,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
-    NavigationMenuViewport,
-    navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { signOut, useSession } from 'next-auth/react'
-import { toast } from 'react-toastify'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
@@ -26,7 +21,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from 'react-day-picker'
+import { toast } from '@/components/ui/use-toast'
 type Item = {
     title: string;
     description: string;
@@ -81,9 +76,15 @@ export default function Navbar({ activeItemCallback }: { activeItemCallback: Rea
     }
     const handleSignout = () => {
         signOut().then(() => {
-            toast.success("Signed out successfully")
+            toast({
+                "title": "Success",
+                "description": "You have been logged out",
+            })
         }).catch(() => {
-            toast.error("Error signing out")
+            toast({
+                "title": "Error",
+                "description": "Something went wrong",
+            })
         }
         )
     }

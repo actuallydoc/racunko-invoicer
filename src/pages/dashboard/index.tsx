@@ -18,6 +18,7 @@ const Items = [
     "Storage",
 ]
 import Navbar from '@/components/Dashboard/InvoiceTab/Navbar'
+import ServicesTab from '@/components/Dashboard/ServicesTab/ServicesTab'
 export default function Index() {
     const [activeItem, setActiveItem] = useState<string>(Items[0] as string);
     const { data: sessionData, status } = useSession({ required: true })
@@ -25,6 +26,9 @@ export default function Index() {
     const { data: getInvoices, isFetched } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
     const { data: getCustomers } = api.partner.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
     const { data: getCompanies } = api.company.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
+    const { data: getServices } = api.service.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, {
+        enabled: status === 'authenticated'
+    })
     useEffect(() => {
         // Set the initial state of the invoices to the reducer with dispatching the action
         if (getInvoices) {
@@ -35,7 +39,7 @@ export default function Index() {
                 partners: getCustomers
             }));
         }
-    }, [isFetched, getInvoices, dispatch])
+    }, [isFetched, getInvoices, dispatch, getCustomers])
 
     return (
         <div className=''>
@@ -49,7 +53,7 @@ export default function Index() {
                     {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies as Company[]} Customers={getCustomers as Partner[]} /> : null}
                     {activeItem === "Customers" ? <CustomersTab Customers={getCustomers as Partner[]} /> : null}
                     {activeItem === "Companies" ? <CompaniesTab Companies={getCompanies as Company[]} /> : null}
-                    {/* {activeItem === "Services" ? <ServicesTab Services={getServices} handleDeleteServiceCb={handleDeleteService} handleUpdateServiceCb={handleUpdateService} handleCreateServiceCb={handleCreateService} /> : null} */}
+                    {activeItem === "Services" ? <ServicesTab Services={getServices} /> : null}
                 </div>
             </div >
         </div >

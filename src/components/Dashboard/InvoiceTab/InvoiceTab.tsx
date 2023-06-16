@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { Company, Partner } from 'prisma/prisma-client'
+import type { Company, Partner } from '@prisma/client'
 import "flatpickr/dist/themes/material_green.css";
 
 import InvoiceCreateModal from './Modals/InvoiceCreateModal';
@@ -16,10 +16,10 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
-import InvoiceEditModal from './Modals/InvoiceEditModal';
+// import InvoiceEditModal from './Modals/InvoiceEditModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
-import { Service, type InvoiceSerialized } from 'types';
+import { type Service, type InvoiceSerialized } from 'types';
 
 interface InvoiceTabProps {
     Companies: Company[];
@@ -30,8 +30,6 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
     const [toDate, setToDate] = React.useState<Date>(new Date());
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
-    const [editInvoice, setEditInvoice] = React.useState<InvoiceSerialized | null>(null);
-    const [edit, setEdit] = React.useState(false)
     const invoiceSelector = useSelector((state: RootState) => state.items);
     useEffect(() => {
         console.log(invoiceSelector)
@@ -41,8 +39,6 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
         invoiceDispatch(invoiceSlice.actions.editInvoice({
             item: invoice,
         }))
-        setEditInvoice(invoice);
-        setEdit(true);
     }
     return (
         <div className="">
