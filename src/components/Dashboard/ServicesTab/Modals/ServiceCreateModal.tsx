@@ -17,7 +17,6 @@ type ServiceForm = {
     serviceQuantity: number;
     servicePrice: number;
 }
-
 export default function ServiceCreateModal() {
     const { data: sessionData } = useSession();
     const createService = api.service.create.useMutation();
@@ -28,6 +27,7 @@ export default function ServiceCreateModal() {
         createService.mutate({
             description: data.serviceDescription,
             name: data.serviceName,
+            // Fix this even though the input is number it is string in the form
             price: parseInt(data.servicePrice),
             quantity: parseInt(data.serviceQuantity),
             id: sessionData?.user?.id as string

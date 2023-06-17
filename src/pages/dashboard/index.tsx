@@ -35,6 +35,7 @@ export default function Index() {
             dispatch(invoiceSlice.actions.initInvoices(getInvoices));
         }
         if (getCustomers) {
+
             dispatch(invoiceSlice.actions.initPartners({
                 partners: getCustomers
             }));
