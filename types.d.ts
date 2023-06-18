@@ -17,8 +17,9 @@ export interface Service {
 }
 
 // This type is the final type that we will use in the app
-type InvoiceSerialized = Invoice & {
+interface InvoiceSerialized extends Invoice {
     Company: Company;
     Partner: Partner;
     Services: Service[];
 }
+

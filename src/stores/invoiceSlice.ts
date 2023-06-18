@@ -17,10 +17,12 @@ export const invoiceSlice = createSlice({
     reducers: {
         initInvoices(state, action: { payload: InvoiceType[]; }) {
             const invoicesSerialized = action.payload.map((invoice: InvoiceType) => {
-                const invoiceSerialized = invoice as InvoiceSerialized;
-                invoiceSerialized.Company = invoice.Company as unknown as Company;
-                invoiceSerialized.Partner = invoice.Partner as unknown as Company;
-                invoiceSerialized.Services = JSON.parse(invoice.services as string) as Service[];
+                const invoiceSerialized: InvoiceSerialized = {
+                    ...invoice, // Copy all properties from the original invoice
+                    Company: invoice.Company as unknown as Company,
+                    Partner: invoice.Partner as unknown as Company,
+                    Services: JSON.parse(invoice.services as string) as Service[]
+                };
                 return invoiceSerialized;
             });
             state.items = invoicesSerialized as unknown as InvoiceSerialized[];
