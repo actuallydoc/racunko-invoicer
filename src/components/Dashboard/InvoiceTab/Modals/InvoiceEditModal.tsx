@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 
 import "flatpickr/dist/themes/material_green.css";
-import generatePDFInvoice from '@/utils/invoicer';
 import type { Company, Partner } from '@prisma/client';
 import { api } from '@/utils/api';
 import { Input } from '@/components/ui/input';
@@ -49,9 +48,9 @@ export default function InvoiceEditModal({ Customers, Companies }: {
         //Create a Blob and open it in a new window
         // TODO This is curently not working the template is broken
         e.preventDefault();
-        const blob = generatePDFInvoice(invoiceSelector);
-        console.log("Blob is: ",);
-        window.open(blob, "_blank")
+        // const blob = generatePDFInvoice(invoiceSelector);
+        // console.log("Blob is: ",);
+        // window.open(blob, "_blank")
     }
     const handleEditInvoice = () => {
         editInvoice.mutate({
