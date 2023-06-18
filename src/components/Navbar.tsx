@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button'
 import { toast } from './ui/use-toast'
+import Link from 'next/link'
 type Item = {
     title: string;
     description: string;
@@ -92,7 +93,10 @@ export default function Navbar() {
                 ))}
                 {sessionData?.user?.image && (
                     <NavigationMenuItem className=''>
-                        <Button variant={"link"}>Dashboard</Button>
+                        <Link href={'/dashboard'}>
+                            <Button variant={"link"}>Dashboard</Button>
+                        </Link>
+
                     </NavigationMenuItem>)}
                 {sessionData?.user?.image ? (
                     <NavigationMenuItem className=''>

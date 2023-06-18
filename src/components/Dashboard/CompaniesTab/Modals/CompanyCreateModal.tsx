@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -7,55 +8,81 @@ import { api } from '@/utils/api';
 import { useSession } from 'next-auth/react';
 import React from 'react'
 import { useForm } from 'react-hook-form';
-import { DevTool } from '@hookform/devtools';
 import { useToast } from '@/components/ui/use-toast';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+const FormData = z.object({
+    companyName: z.string(),
+    companyAddress: z.string(),
+    companyCity: z.string(),
+    companyZip: z.string(),
+    companyCountry: z.string(),
+    companyEmail: z.string(),
+    companyPhone: z.string(),
+    companyVat: z.string(),
+    companyWebsite: z.string().nullable().optional(),
+})
+type FormData = z.infer<typeof FormData>
+const ValidationSchema = z.object({
+    companyName: z.string().nonempty({ message: 'Company name is required' }),
+    companyAddress: z.string().nonempty({ message: 'Company address is required' }),
+    companyCity: z.string().nonempty({ message: 'Company city is required' }),
+    companyZip: z.string().nonempty({ message: 'Company zip is required' }),
+    companyCountry: z.string().nonempty({ message: 'Company country is required' }),
+    companyEmail: z.string().nonempty({ message: 'Company email is required' }),
+    companyPhone: z.string().nonempty({ message: 'Company phone is required' }),
+    companyVat: z.string().nonempty({ message: 'Company vat is required' }),
+    companyWebsite: z.string().nullable().optional(),
+})
+type ValidationSchema = z.infer<typeof ValidationSchema>
 
-type Company = {
-    companyName: string;
-    companyAddress: string;
-    companyCity: string;
-    companyZip: string;
-    companyCountry: string;
-    companyEmail: string;
-    companyPhone: string;
-    companyVat: string;
-    companyWebsite?: string | null;
-};
+
+
 
 
 export default function CompanyCreateModal() {
     const createCompany = api.company.createCompany.useMutation();
-    const { register, control, handleSubmit, reset } = useForm();
+    const { register, handleSubmit, reset } = useForm<ValidationSchema>({
+        resolver: zodResolver(ValidationSchema),
+    });
     const { toast } = useToast();
     const { data: sessionData } = useSession({ required: true });
-    const onSubmit = (data: Company) => {
-        createCompany.mutate({
-            address: data.companyAddress,
-            city: data.companyCity,
-            name: data.companyName,
-            zip: data.companyZip,
-            country: data.companyCountry,
-            email: data.companyEmail,
-            phone: data.companyPhone,
-            vat: data.companyVat,
-            website: data.companyWebsite as string,
-            user_id: sessionData?.user?.id as string
-        }, {
-            onSuccess: () => {
-                toast({
-                    title: 'Company created',
-                    description: 'Company has been created successfully',
-                })
-                reset();
-            },
-            onError: (error) => {
-                toast({
-                    title: 'Error',
-                    description: error.message,
-                })
-            }
-        });
-    };
+    const onSubmit = async (data: FormData) => {
+
+        try {
+            await createCompany.mutateAsync({
+                address: data.companyAddress,
+                city: data.companyCity,
+                name: data.companyName,
+                zip: data.companyZip,
+                country: data.companyCountry,
+                email: data.companyEmail,
+                phone: data.companyPhone,
+                vat: data.companyVat,
+                website: data.companyWebsite as string,
+                user_id: sessionData?.user?.id as string
+            }, {
+                onSuccess: () => {
+                    toast({
+                        title: 'Company created',
+                        description: 'Company has been created successfully',
+                    })
+                    reset();
+                },
+                onError: (error) => {
+                    toast({
+                        title: 'Error',
+                        description: error.message,
+                    })
+                }
+            });
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description: 'Something went wrong',
+            })
+        }
+    }
 
     return (
         <DialogContent className='w-fit'>

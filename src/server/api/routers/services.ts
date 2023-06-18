@@ -25,7 +25,6 @@ export const serviceRouter = createTRPCRouter({
         price: z.number(),
         quantity: z.number(),
     })).mutation(async ({ ctx, input }) => {
-
         const user = await ctx.prisma.user.findUnique({
             where: {
                 id: input.id

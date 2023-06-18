@@ -1,4 +1,4 @@
-import { RootState } from '@/stores/invoiceSlice';
+import { type RootState } from '@/stores/invoiceSlice';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
@@ -55,7 +55,7 @@ export default function CompanyRevenue() {
                 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
             ];
-            return monthNames[month];
+            return monthNames[month] as string;
         };
 
         const updatedMonthlyData = calculateMonthlyData();

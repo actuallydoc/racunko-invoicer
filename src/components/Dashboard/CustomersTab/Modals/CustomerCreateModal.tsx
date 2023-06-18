@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { Card, CardContent } from '@/components/ui/card'
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -11,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from '@/components/ui/use-toast'
 import { api } from '@/utils/api'
 import { useSession } from 'next-auth/react'
-import { DialogClose } from '@radix-ui/react-dialog'
+
 
 const FormData = z.object({
     customerName: z.string(),
@@ -22,7 +23,7 @@ const FormData = z.object({
     customerEmail: z.string(),
     customerPhone: z.string(),
     customerVat: z.string().optional(),
-    customerWebsite: z.string(),
+    customerWebsite: z.string().optional(),
 })
 type FormData = z.infer<typeof FormData>
 const ValidationSchema = z.object({
@@ -45,32 +46,40 @@ export default function CustomerCreateModal() {
     } = useForm<ValidationSchema>({
         resolver: zodResolver(ValidationSchema),
     });
-    const onSubmit = (data: FormData) => {
-        customerCreate.mutate({
-            name: data.customerName,
-            address: data.customerAddress,
-            city: data.customerCity,
-            zip: data.customerZip,
-            country: data.customerCountry,
-            email: data.customerEmail,
-            phone: data.customerPhone,
-            vat: data.customerVat as string,
-            user_id: sessionData?.user?.id as string,
-            website: data.customerWebsite,
-        }, {
-            onSuccess: () => {
-                toast({
-                    title: "Customer Created",
-                    description: "Customer has been created successfully",
-                })
-            },
-            onError: (error) => {
-                toast({
-                    title: "Error",
-                    description: error.message,
-                })
-            }
-        });
+    const onSubmit = async (data: FormData) => {
+        try {
+            await customerCreate.mutateAsync({
+                name: data.customerName,
+                address: data.customerAddress,
+                city: data.customerCity,
+                zip: data.customerZip,
+                country: data.customerCountry,
+                email: data.customerEmail,
+                phone: data.customerPhone,
+                vat: data.customerVat as string,
+                user_id: sessionData?.user?.id as string,
+                website: data.customerWebsite,
+            }, {
+                onSuccess: () => {
+                    toast({
+                        title: "Customer Created",
+                        description: "Customer has been created successfully",
+                    })
+                },
+                onError: (error) => {
+                    toast({
+                        title: "Error",
+                        description: error.message,
+                    })
+                }
+            });
+        }
+        catch (error) {
+            toast({
+                title: "Error",
+                description: "Something went wrong"
+            })
+        }
     }
     useEffect(() => {
         if (formState.isSubmitSuccessful) {

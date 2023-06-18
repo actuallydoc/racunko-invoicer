@@ -25,11 +25,10 @@ import {
 import { ChevronsUpDown, Check } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
-import ServiceItem from './ServiceItem';
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from '@radix-ui/react-dialog';
-import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
+import { DialogContent, DialogTitle, DialogDescription } from '@radix-ui/react-dialog';
+import { DialogHeader } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { toast } from 'react-toastify';
+import { useToast } from '@/components/ui/use-toast';
 import ServiceCreateItem from './ServiceCreateItem';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -37,7 +36,7 @@ import { Card, CardContent } from '@/components/ui/card';
 export default function InvoiceEditModal({ Customers, Companies }: {
     Customers: Partner[], Companies: Company[]
 }) {
-
+    const { toast } = useToast();
     const invoiceDispatch = useDispatch();
     const invoiceSelector = useSelector((state: RootState) => state.editItem);
     const editInvoice = api.invoice.editInvoice.useMutation();
@@ -66,7 +65,10 @@ export default function InvoiceEditModal({ Customers, Companies }: {
         }, {
             onSuccess: () => {
                 invoiceDispatch(invoiceSlice.actions.reset)
-                toast.success("Invoice edited successfully")
+                toast({
+                    title: "Invoice edited",
+                    description: "Invoice was edited successfully",
+                })
 
             }
         });
@@ -109,16 +111,16 @@ export default function InvoiceEditModal({ Customers, Companies }: {
             }
         }))
     }
-    const handleCompanyChange = (e: Company) => {
-        invoiceDispatch(invoiceSlice.actions.updateCompany({
-            company: e
-        }))
-    }
-    const handleCustomerChange = (e: Partner) => {
-        invoiceDispatch(invoiceSlice.actions.updatePartner({
-            partner: e
-        }))
-    }
+    // const handleCompanyChange = (e: Company) => {
+    //     invoiceDispatch(invoiceSlice.actions.updateCompany({
+    //         company: e
+    //     }))
+    // }
+    // const handleCustomerChange = (e: Partner) => {
+    //     invoiceDispatch(invoiceSlice.actions.updatePartner({
+    //         partner: e
+    //     }))
+    // }
     const createInvoiceSelector = useSelector((state: RootState) => state.createItem);
     const createInvoiceDispatch = useDispatch();
     const [openCompanyPopover, setOpenCompanyPopover] = React.useState(false)

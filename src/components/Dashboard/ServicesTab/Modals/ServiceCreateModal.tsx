@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
-import { Service } from '@prisma/client'
 import { Card, CardContent } from '@/components/ui/card'
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -22,33 +22,37 @@ export default function ServiceCreateModal() {
     const createService = api.service.create.useMutation();
     const { register, handleSubmit, reset,
     } = useForm<ServiceForm>();
-    const onSubmit = (data: ServiceForm) => {
-        console.log(data);
-        createService.mutate({
-            description: data.serviceDescription,
-            name: data.serviceName,
-            // Fix this even though the input is number it is string in the form
-            price: parseInt(data.servicePrice),
-            quantity: parseInt(data.serviceQuantity),
-            id: sessionData?.user?.id as string
-        }, {
-            onSuccess: () => {
-                toast({
-                    title: "Service Created",
-                    description: "Service has been created successfully",
-                })
-                reset();
-            },
-            onError: (error) => {
-                toast({
-                    title: "Service Creation Failed",
-                    description: error.message,
-
-                })
-            }
-
-        })
-    };
+    const onSubmit = async (data: ServiceForm) => {
+        try {
+            console.log(data);
+            await createService.mutateAsync({
+                description: data.serviceDescription,
+                name: data.serviceName,
+                price: data.servicePrice,
+                quantity: data.serviceQuantity,
+                id: sessionData?.user?.id as string
+            }, {
+                onSuccess: () => {
+                    toast({
+                        title: "Service Created",
+                        description: "Service has been created successfully",
+                    })
+                    reset();
+                },
+                onError: (error) => {
+                    toast({
+                        title: "Service Creation Failed",
+                        description: error.message,
+                    })
+                }
+            });
+        } catch (error) {
+            toast({
+                title: "Service Creation Failed",
+                description: "Something went wrong",
+            })
+        }
+    }
     return (
         <DialogContent className='w-fit'>
             <DialogHeader>

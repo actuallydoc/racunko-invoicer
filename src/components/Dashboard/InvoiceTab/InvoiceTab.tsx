@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useEffect } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Company, Partner } from '@prisma/client'
 import "flatpickr/dist/themes/material_green.css";
-
 import InvoiceCreateModal from './Modals/InvoiceCreateModal';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -167,8 +167,8 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                 {invoiceSelector?.map((invoice, index) => (
                                     <TableRow key={index} onClick={() => handleInvoiceClick(invoice)} className='hover:cursor-pointer'>
                                         <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
-                                        <TableCell>{invoice.Partner.name as string}</TableCell>
-                                        <TableCell>{invoice.Company.name as string}</TableCell>
+                                        <TableCell>{invoice.Partner.name}</TableCell>
+                                        <TableCell>{invoice.Company.name}</TableCell>
                                         <TableCell>{invoice.invoiceDate.toLocaleDateString().toString()}</TableCell>
                                         <TableCell>{invoice.dueDate.toLocaleDateString().toString()}</TableCell>
                                         <TableCell>{invoice.status}</TableCell>

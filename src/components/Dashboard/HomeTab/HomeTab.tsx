@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import React, { useEffect, useState } from 'react'
 import CompanyRevenue from '@/components/Dashboard/HomeTab/Charts/CompanyRevenue'
 import RecentInvoices from '@/components/Dashboard/HomeTab/RecentInvoices'
@@ -7,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/stores/invoiceSlice'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Company } from '@prisma/client'
+import { type Company } from '@prisma/client'
 
 
 export default function HomeTab({ Companies }: { Companies: Company[] }) {

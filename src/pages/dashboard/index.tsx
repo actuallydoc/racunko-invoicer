@@ -6,7 +6,7 @@ import InvoiceTab from '@/components/Dashboard/InvoiceTab/InvoiceTab'
 import CustomersTab from '@/components/Dashboard/CustomersTab/CustomersTab'
 import CompaniesTab from '@/components/Dashboard/CompaniesTab/CompaniesTab'
 // import ServicesTab from '@/components/Dashboard/ServicesTab/ServicesTab'
-import type { Company, Partner } from '@prisma/client'
+import type { Company, Partner, Service } from '@prisma/client'
 import { useDispatch } from 'react-redux'
 import { invoiceSlice } from '@/stores/invoiceSlice'
 const Items = [
@@ -52,9 +52,9 @@ export default function Index() {
                     {/* <HomeTab /> */}
                     {activeItem === "Home" ? <HomeTab Companies={getCompanies as Company[]} /> : null}
                     {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies as Company[]} Customers={getCustomers as Partner[]} /> : null}
-                    {activeItem === "Customers" ? <CustomersTab Customers={getCustomers as Partner[]} /> : null}
+                    {activeItem === "Customers" ? <CustomersTab /> : null}
                     {activeItem === "Companies" ? <CompaniesTab Companies={getCompanies as Company[]} /> : null}
-                    {activeItem === "Services" ? <ServicesTab Services={getServices} /> : null}
+                    {activeItem === "Services" ? <ServicesTab Services={getServices as Service[]} /> : null}
                 </div>
             </div >
         </div >

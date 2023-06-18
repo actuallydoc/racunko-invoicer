@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import CustomerCreateModal from './Modals/CustomerCreateModal';
-import { api } from '@/utils/api';
-import CustomerEditModal from './Modals/CustomerEditModal';
+
+
 import type { Partner } from '@prisma/client';
-import { useSession } from 'next-auth/react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TableBody, TableCell, TableCaption, TableHead, TableHeader, TableRow, Table } from '@/components/ui/table';
 import { useSelector } from 'react-redux';
 import { type RootState } from '@/stores/invoiceSlice';
-import { DialogHeader, DialogTrigger, Dialog, DialogContent } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+import { DialogTrigger, Dialog } from '@/components/ui/dialog';
+
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/use-toast';
+
 
 export default function CustomersTab() {
     const partnerSelector = useSelector((state: RootState) => state.partners);
