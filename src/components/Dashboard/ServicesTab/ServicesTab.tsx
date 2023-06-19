@@ -6,7 +6,6 @@ import { type Service } from '@prisma/client'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import ServiceCreateModal from './Modals/ServiceCreateModal'
 export default function CustomersTab({ Services }: { Services: Service[] }) {
-
     return (
         <div className="">
             <Card>
