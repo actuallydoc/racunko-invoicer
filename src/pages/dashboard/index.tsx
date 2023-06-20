@@ -9,19 +9,12 @@ import CompaniesTab from '@/components/Dashboard/CompaniesTab/CompaniesTab'
 import type { Company, Partner, Service } from '@prisma/client'
 import { useDispatch } from 'react-redux'
 import { invoiceSlice } from '@/stores/invoiceSlice'
-const Items = [
-    "Home",
-    "Invoices",
-    "Customers",
-    "Companies",
-    "Services",
-    "Storage",
-]
+
 import Navbar from '@/components/Dashboard/InvoiceTab/Navbar'
 import ServicesTab from '@/components/Dashboard/ServicesTab/ServicesTab'
 import { toast } from '@/components/ui/use-toast'
 export default function Index() {
-    const [activeItem, setActiveItem] = useState<string>(Items[0] as string);
+    const [activeItem, setActiveItem] = useState<string>("Dashboard");
     const { data: sessionData, status } = useSession({ required: true })
     const dispatch = useDispatch();
     const { data: getInvoices, isFetched } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
@@ -31,7 +24,7 @@ export default function Index() {
         enabled: status === 'authenticated'
     })
     useEffect(() => {
-        if (status !== 'authenticated') {
+        if (!sessionData) {
             toast({
                 variant: "destructive",
                 title: 'You are not logged in',
@@ -65,7 +58,7 @@ export default function Index() {
                 partners: getCustomers
             }));
         }
-    }, [isFetched, getInvoices, dispatch, getCustomers])
+    }, [isFetched, getInvoices, dispatch, getCustomers, sessionData])
 
     return (
         <div className=''>
@@ -75,7 +68,7 @@ export default function Index() {
             <div className='flex pt-10 middle-container'>
                 <div className=''>
                     {/* <HomeTab /> */}
-                    {activeItem === "Home" ? <HomeTab Companies={getCompanies as Company[]} /> : null}
+                    {activeItem === "Dashboard" ? <HomeTab Companies={getCompanies as Company[]} /> : null}
                     {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies as Company[]} Customers={getCustomers as Partner[]} /> : null}
                     {activeItem === "Customers" ? <CustomersTab /> : null}
                     {activeItem === "Companies" ? <CompaniesTab Companies={getCompanies as Company[]} /> : null}

@@ -27,10 +27,6 @@ type Item = {
 }
 const Items: Item[] = [
     {
-        title: "Racunko",
-        description: "Home page"
-    },
-    {
         title: "Home",
         description:
             "Summary dashboard page",

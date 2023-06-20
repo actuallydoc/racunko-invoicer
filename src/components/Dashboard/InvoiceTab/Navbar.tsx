@@ -22,13 +22,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { toast } from '@/components/ui/use-toast'
+import Link from 'next/link'
 type Item = {
     title: string;
     description: string;
 }
 const Items: Item[] = [
     {
-        title: "Home",
+        title: "Dashboard",
         description:
             "Summary dashboard page",
     },
@@ -94,6 +95,11 @@ export default function Navbar({ activeItemCallback }: { activeItemCallback: Rea
     return (
         <NavigationMenu className=''>
             <NavigationMenuList className='space-x-12 '>
+                <NavigationMenuItem>
+                    <Link href='/'>
+                        <p className='text-lg font-semibold'>Home page</p>
+                    </Link>
+                </NavigationMenuItem>
 
                 {Items.map((item) => (
                     <NavigationMenuItem key={item.title}>

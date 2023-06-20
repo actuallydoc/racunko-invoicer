@@ -2,9 +2,12 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Navbar from "@/components/Navbar";
 import FeaturesCard from "@/components/Cards/FeaturesCard";
+import PricingCard from "@/components/Cards/PricingCard";
+import DashboardCard from "@/components/Cards/DashboardCard";
 
 // Fix the design here
 const Home: NextPage = () => {
+
   return (
     <>
       <Head>
@@ -16,32 +19,33 @@ const Home: NextPage = () => {
         <div>
           <Navbar />
         </div>
-        <div>
+
+        <div className="z-10">
+          {/* Content that should appear above WhiteInvoice */}
           <div className="centered-container flex-col">
-            <div className="">
+            <div>
               <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
                 Racunko
               </h1>
             </div>
             <div>
-              <p className="">
+              <p className="mb-5">
                 Racunko is a simple and easy to use invoice management system.
               </p>
             </div>
-          </div>
-          <div className="flex space-x-5">
-            <div>
+            <div className="grid grid-cols-2 gap-10">
+              <DashboardCard />
               <FeaturesCard />
             </div>
+            <div>
+              <PricingCard />
+            </div>
           </div>
-
         </div>
 
       </div>
-
     </>
   );
 };
-
 
 export default Home;

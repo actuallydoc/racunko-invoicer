@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { toast } from '@/components/ui/use-toast'
+import { toast, useToast } from '@/components/ui/use-toast'
 import { api } from '@/utils/api'
 import { useSession } from 'next-auth/react'
 
@@ -40,13 +40,23 @@ const ValidationSchema = z.object({
 type ValidationSchema = z.infer<typeof ValidationSchema>
 
 export default function CustomerCreateModal() {
+    const { toast } = useToast()
     const { data: sessionData } = useSession();
     const customerCreate = api.partner.createPartner.useMutation();
     const { register, handleSubmit, reset, formState,
     } = useForm<ValidationSchema>({
         resolver: zodResolver(ValidationSchema),
     });
-    const onSubmit = async (data: FormData) => {
+    const onSubmit = async (data: z.infer<typeof FormData>) => {
+        // This is for debugging purposes
+        // toast({
+        //     title: "Creating Customer",
+        //     description: (
+        //         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+        //             <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        //         </pre>
+        //     )
+        // })
         try {
             await customerCreate.mutateAsync({
                 name: data.customerName,
@@ -70,6 +80,7 @@ export default function CustomerCreateModal() {
                     toast({
                         title: "Error",
                         description: error.message,
+                        variant: "destructive"
                     })
                 }
             });
@@ -77,6 +88,7 @@ export default function CustomerCreateModal() {
         catch (error) {
             toast({
                 title: "Error",
+                variant: "destructive",
                 description: "Something went wrong"
             })
         }
