@@ -27,6 +27,10 @@ type Item = {
 }
 const Items: Item[] = [
     {
+        title: "Racunko",
+        description: "Home page"
+    },
+    {
         title: "Home",
         description:
             "Summary dashboard page",
@@ -83,57 +87,59 @@ export default function Navbar() {
         })
     }
     return (
-        <NavigationMenu className='mt-3'>
-            <NavigationMenuList className='space-x-5'>
+        <div>
+            <NavigationMenu className='mt-3'>
+                <NavigationMenuList className='space-x-5'>
 
-                {Items.map((item) => (
-                    <NavigationMenuItem key={item.title}>
-                        <Button variant={"link"}>{item.title}</Button>
+                    {Items.map((item) => (
+                        <NavigationMenuItem key={item.title}>
+                            <Button variant={"link"}>{item.title}</Button>
+                        </NavigationMenuItem>
+                    ))}
+                    {sessionData?.user?.image && (
+                        <NavigationMenuItem className=''>
+                            <Link href={'/dashboard'}>
+                                <Button variant={"link"}>Dashboard</Button>
+                            </Link>
+                        </NavigationMenuItem>)}
+                    {sessionData?.user?.image ? (
+                        <NavigationMenuItem className=''>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                    <Avatar>
+                                        <AvatarImage src={sessionData?.user.image} />
+                                        <AvatarFallback>{sessionData?.user?.name}</AvatarFallback>
+                                    </Avatar>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                                    <DropdownMenuItem>Billing</DropdownMenuItem>
+                                    <DropdownMenuItem>Settings</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={handleSignout}>Logout</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </NavigationMenuItem>
+                    ) : (
+                        <NavigationMenuItem className=''>
+                            <Button onClick={handleSignIn} variant={"outline"}>Sign in</Button>
+                        </NavigationMenuItem>
+                    )}
+
+                    <NavigationMenuItem>
+                        <div onClick={handleTheme} className="flex items-center space-x-2 cursor-pointer">
+                            <Switch />
+                            <Label>
+
+                                {theme === "light" ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
+                            </Label>
+                        </div>
+
                     </NavigationMenuItem>
-                ))}
-                {sessionData?.user?.image && (
-                    <NavigationMenuItem className=''>
-                        <Link href={'/dashboard'}>
-                            <Button variant={"link"}>Dashboard</Button>
-                        </Link>
+                </NavigationMenuList >
 
-                    </NavigationMenuItem>)}
-                {sessionData?.user?.image ? (
-                    <NavigationMenuItem className=''>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger>
-                                <Avatar>
-                                    <AvatarImage src={sessionData?.user.image} />
-                                    <AvatarFallback>{sessionData?.user?.name}</AvatarFallback>
-                                </Avatar>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Profile</DropdownMenuItem>
-                                <DropdownMenuItem>Billing</DropdownMenuItem>
-                                <DropdownMenuItem>Settings</DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleSignout}>Logout</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </NavigationMenuItem>
-                ) : (
-                    <NavigationMenuItem className=''>
-                        <Button onClick={handleSignIn} variant={"outline"}>Sign in</Button>
-                    </NavigationMenuItem>
-                )}
+            </NavigationMenu >
+        </div>)
 
-                <NavigationMenuItem>
-                    <div onClick={handleTheme} className="flex items-center space-x-2 cursor-pointer">
-                        <Switch />
-                        <Label>
-
-                            {theme === "light" ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
-                        </Label>
-                    </div>
-
-                </NavigationMenuItem>
-            </NavigationMenuList >
-
-        </NavigationMenu >)
 }

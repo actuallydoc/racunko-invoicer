@@ -19,6 +19,7 @@ const Items = [
 ]
 import Navbar from '@/components/Dashboard/InvoiceTab/Navbar'
 import ServicesTab from '@/components/Dashboard/ServicesTab/ServicesTab'
+import { toast } from '@/components/ui/use-toast'
 export default function Index() {
     const [activeItem, setActiveItem] = useState<string>(Items[0] as string);
     const { data: sessionData, status } = useSession({ required: true })
@@ -30,6 +31,30 @@ export default function Index() {
         enabled: status === 'authenticated'
     })
     useEffect(() => {
+        if (status !== 'authenticated') {
+            toast({
+                variant: "destructive",
+                title: 'You are not logged in',
+                description: 'Please log in to continue',
+            })
+        } else {
+            toast({
+                title: 'Welcome back❤',
+                description: (
+                    <>
+                        <div className='flex space-x-1 text-lg' >
+                            <div>
+                                <p>You are logged in as </p>
+                            </div>
+                            <div>
+                                <p className='font-bold'>{sessionData?.user?.name}</p>
+                            </div>
+                        </div>
+
+                    </>
+                ),
+            })
+        }
         // Set the initial state of the invoices to the reducer with dispatching the action
         if (getInvoices) {
             dispatch(invoiceSlice.actions.initInvoices(getInvoices));
