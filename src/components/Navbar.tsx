@@ -124,10 +124,9 @@ export default function Navbar() {
                     )}
 
                     <NavigationMenuItem>
-                        <div onClick={handleTheme} className="flex items-center space-x-2 cursor-pointer">
-                            <Switch />
+                        <div className="flex items-center space-x-2 cursor-pointer">
+                            <Switch onClick={handleTheme} />
                             <Label>
-
                                 {theme === "light" ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
                             </Label>
                         </div>

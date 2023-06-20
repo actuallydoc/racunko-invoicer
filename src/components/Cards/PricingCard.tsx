@@ -54,13 +54,13 @@ export default function PricingCard() {
                     {Pricing.map((pricing, index) => {
                         return (
                             <Card key={index}>
-                                <CardHeader>
-                                    <CardTitle className="text-center">{pricing.title}</CardTitle>
-                                    <CardDescription className="text-center">{pricing.description}</CardDescription>
+                                <CardHeader className='text-center content-center justify-center'>
+                                    <CardTitle>{pricing.title}</CardTitle>
+                                    <CardDescription>{pricing.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className='space-x-10'>
-                                        <div className='grid grid-cols-2'>
+                                        <div className='grid grid-cols- text-center content-center justify-center'>
                                             {pricing.features.map((feature, index) => {
                                                 return (
                                                     <div key={index}>

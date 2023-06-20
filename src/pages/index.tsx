@@ -7,7 +7,6 @@ import DashboardCard from "@/components/Cards/DashboardCard";
 
 // Fix the design here
 const Home: NextPage = () => {
-
   return (
     <>
       <Head>
