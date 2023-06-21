@@ -4,8 +4,8 @@
 
 @import "tailwindcss/utilities";
 
-.next,
-.prev {
+.nextDark,
+.prevDark {
   top: calc(50% - 20px);
   position: absolute;
   background: white;
@@ -22,14 +22,42 @@
   z-index: 2;
 }
 
-.next {
+.nextDark {
   right: 10px;
 }
 
-.prev {
+.prevDark {
   left: 10px;
   transform: scale(-1);
 }
+
+.nextLight,
+.prevLight {
+  top: calc(50% - 20px);
+  position: absolute;
+  background: black;
+  border-radius: 30px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+  z-index: 2;
+}
+
+.nextLight {
+  right: 10px;
+}
+
+.prevLight {
+  left: 10px;
+  transform: scale(-1);
+}
+
 
 img {
   position: absolute;
@@ -53,7 +81,7 @@ img {
 
 .example-container {
   width: 50vw;
-  height: 100vh;
+  height: 70vh;
   position: relative;
   display: flex;
   justify-content: center;

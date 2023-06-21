@@ -63,6 +63,7 @@ export const ImageGallery = () => {
         setLightPage([0, 0]);
     }, [theme])
     if (theme === "dark") {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         const imageIndex = wrap(0, DarkImages.length, page) as number;
 
         const DarkPaginate = (newDirection: number) => {
@@ -98,15 +99,16 @@ export const ImageGallery = () => {
                         }}
                     />
                 </AnimatePresence>
-                <div className="next" onClick={() => DarkPaginate(1)}>
-                    {"‣"}
+                <div className="nextDark" onClick={() => DarkPaginate(1)}>
+                    <p className="text-black"> {"‣"}</p>
                 </div>
-                <div className="prev" onClick={() => DarkPaginate(-1)}>
-                    {"‣"}
+                <div className="prevDark" onClick={() => DarkPaginate(-1)}>
+                    <p className="text-black">{"‣"}</p>
                 </div>
             </>
         );
     } else if (theme === "light") {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         const imageIndex = wrap(0, LightImages.length, page2) as number;
 
         const LightPaginate = (newDirection: number) => {
@@ -142,11 +144,11 @@ export const ImageGallery = () => {
                         }}
                     />
                 </AnimatePresence>
-                <div className="next" onClick={() => LightPaginate(1)}>
-                    {"‣"}
+                <div className="nextLight" onClick={() => LightPaginate(1)}>
+                    <p className="text-white">{"‣"}</p>
                 </div>
-                <div className="prev" onClick={() => LightPaginate(-1)}>
-                    {"‣"}
+                <div className="prevLight" onClick={() => LightPaginate(-1)}>
+                    <p className="text-white">{"‣"}</p>
                 </div>
             </>
         );
