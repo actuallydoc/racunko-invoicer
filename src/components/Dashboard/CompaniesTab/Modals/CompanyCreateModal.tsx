@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { useToast } from '@/components/ui/use-toast';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
 const FormData = z.object({
     companyName: z.string(),
     companyAddress: z.string(),
@@ -93,129 +94,140 @@ export default function CompanyCreateModal() {
 
     return (
         <DialogContent className='w-fit'>
-            <DialogHeader>
-                <DialogTitle>Create Company</DialogTitle>
-                <DialogDescription>
-                    After pressing Create button you will create a new Company.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="grid">
-                <Card className='w-fit p-2'>
-                    <CardContent>
-                        <form className='flex-col' onSubmit={handleSubmit(onSubmit)}>
-                            <div className='flex-col space-y-5'>
-                                <div className='flex space-x-5'>
-                                    <div>
-                                        <Label className="text-sm font-bold " htmlFor="companyName">
-                                            Company Name
-                                        </Label>
-                                        <Input
-                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                            {...register('companyName')}
-                                            type="text"
-                                            placeholder="Company Name"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-bold mb-2" htmlFor="companyAddress">
-                                            Company Address
-                                        </Label>
-                                        <Input
-                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                            {...register('companyAddress')}
-                                            type="text"
-                                            placeholder="Company Address"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-bold mb-2" htmlFor="companyCity">
-                                            Company City
-                                        </Label>
-                                        <Input
-                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                            {...register('companyCity')}
-                                            type="text"
-                                            placeholder="Company City"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-bold mb-2" htmlFor="companyZip">
-                                            Company Zip
-                                        </Label>
-                                        <Input
-                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                            {...register('companyZip')}
-                                            type="text"
-                                            placeholder="Company Zip"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-bold mb-2" htmlFor="companyCountry">
-                                            Company Country
-                                        </Label>
-                                        <Input
-                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                            {...register('companyCountry')}
-                                            type="text"
-                                            placeholder="Company Country"
-                                        />
-                                    </div>
-                                </div>
-                                <div className='flex space-x-5'>
-                                    <div>
-                                        <Label className="text-sm font-bold mb-2" htmlFor="companyPhone">
-                                            Company Phone
-                                        </Label>
-                                        <Input
-                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                            {...register('companyPhone')}
-                                            type="text"
-                                            placeholder="Company Phone"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-bold mb-2" htmlFor="companyEmail">
-                                            Company Email
-                                        </Label>
-                                        <Input
-                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                            {...register('companyEmail')}
-                                            type="email"
-                                            placeholder="Company Email"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-bold mb-2" htmlFor="companyWebsite">
-                                            Company Website
-                                        </Label>
-                                        <Input
-                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                            {...register('companyWebsite')}
-                                            type="text"
-                                            placeholder="Company Website"
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-bold mb-2" htmlFor="companyVat">
-                                            Company VAT
-                                        </Label>
-                                        <Input
-                                            className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                            {...register('companyVat')}
-                                            type="text"
-                                            placeholder="Company VAT"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
+            <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
 
-                            <DialogFooter>
-                                <Button className='mr-auto mt-5' type="submit">Create</Button>
-                            </DialogFooter>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
+                transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20
+                }}
+            >
+                <DialogHeader>
+                    <DialogTitle>Create Company</DialogTitle>
+                    <DialogDescription>
+                        After pressing Create button you will create a new Company.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid">
+                    <Card className='w-fit p-2'>
+                        <CardContent>
+                            <form className='flex-col' onSubmit={handleSubmit(onSubmit)}>
+                                <div className='flex-col space-y-5'>
+                                    <div className='flex space-x-5'>
+                                        <div>
+                                            <Label className="text-sm font-bold " htmlFor="companyName">
+                                                Company Name
+                                            </Label>
+                                            <Input
+                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                                {...register('companyName')}
+                                                type="text"
+                                                placeholder="Company Name"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-bold mb-2" htmlFor="companyAddress">
+                                                Company Address
+                                            </Label>
+                                            <Input
+                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                                {...register('companyAddress')}
+                                                type="text"
+                                                placeholder="Company Address"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-bold mb-2" htmlFor="companyCity">
+                                                Company City
+                                            </Label>
+                                            <Input
+                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                                {...register('companyCity')}
+                                                type="text"
+                                                placeholder="Company City"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-bold mb-2" htmlFor="companyZip">
+                                                Company Zip
+                                            </Label>
+                                            <Input
+                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                                {...register('companyZip')}
+                                                type="text"
+                                                placeholder="Company Zip"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-bold mb-2" htmlFor="companyCountry">
+                                                Company Country
+                                            </Label>
+                                            <Input
+                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                                {...register('companyCountry')}
+                                                type="text"
+                                                placeholder="Company Country"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className='flex space-x-5'>
+                                        <div>
+                                            <Label className="text-sm font-bold mb-2" htmlFor="companyPhone">
+                                                Company Phone
+                                            </Label>
+                                            <Input
+                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                                {...register('companyPhone')}
+                                                type="text"
+                                                placeholder="Company Phone"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-bold mb-2" htmlFor="companyEmail">
+                                                Company Email
+                                            </Label>
+                                            <Input
+                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                                {...register('companyEmail')}
+                                                type="email"
+                                                placeholder="Company Email"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-bold mb-2" htmlFor="companyWebsite">
+                                                Company Website
+                                            </Label>
+                                            <Input
+                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                                {...register('companyWebsite')}
+                                                type="text"
+                                                placeholder="Company Website"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-bold mb-2" htmlFor="companyVat">
+                                                Company VAT
+                                            </Label>
+                                            <Input
+                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
+                                                {...register('companyVat')}
+                                                type="text"
+                                                placeholder="Company VAT"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <DialogFooter>
+                                    <Button className='mr-auto mt-5' type="submit">Create</Button>
+                                </DialogFooter>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+            </motion.div>
         </DialogContent >
 
     )

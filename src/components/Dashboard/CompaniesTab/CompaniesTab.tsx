@@ -2,8 +2,6 @@ import React from 'react'
 import CompanyCreateModal from './Modals/CompanyCreateModal';
 import type { Company } from '@prisma/client';
 import { CompanyEditModal } from './Modals/CompanyEditModal';
-import { api } from '@/utils/api';
-import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,21 +9,9 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 
 
 export default function CustomersTab({ Companies }: { Companies: Company[] | undefined }) {
-    const { data: sessionData } = useSession({ required: true });
-    const updateCompany = api.company.updateCompany.useMutation();
-    const deleteCompany = api.company.deleteCompany.useMutation();
     return (
         <div className="">
-
             <Card>
-                <Dialog>
-                    <DialogTrigger className='hover:cursor-pointer'>
-                        <Button variant={'outline'} className='flex space-x-5 '>
-                            Edit
-                        </Button>
-                    </DialogTrigger>
-                    <CompanyEditModal />
-                </Dialog>
                 <CardHeader>
                     <CardTitle>Company Management</CardTitle>
                     <CardDescription>Manage your companies</CardDescription>
@@ -39,6 +25,7 @@ export default function CustomersTab({ Companies }: { Companies: Company[] | und
                                     Create
                                 </Button>
                             </DialogTrigger>
+
                             <CompanyCreateModal />
                         </Dialog>
                     </div>
@@ -53,6 +40,7 @@ export default function CustomersTab({ Companies }: { Companies: Company[] | und
                                     <TableHead>Company Country</TableHead>
                                     <TableHead>Company VAT</TableHead>
                                     <TableHead>Company Phone</TableHead>
+                                    <TableHead>Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -64,6 +52,16 @@ export default function CustomersTab({ Companies }: { Companies: Company[] | und
                                         <TableCell>{company.country}</TableCell>
                                         <TableCell>{company.vat}</TableCell>
                                         <TableCell>{company.phone}</TableCell>
+                                        <TableCell>
+                                            <Dialog modal={true}>
+                                                <DialogTrigger className=''>
+                                                    <Button variant={'outline'} className='flex space-x-5 '>
+                                                        Edit
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <CompanyEditModal company={company} />
+                                            </Dialog>
+                                        </TableCell>
                                     </TableRow>
 
                                 ))}
