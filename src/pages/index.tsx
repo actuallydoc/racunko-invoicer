@@ -1,13 +1,21 @@
+'use client'
 import { type NextPage } from "next";
 import Head from "next/head";
 import Navbar from "@/components/Navbar";
 import FeaturesCard from "@/components/Cards/FeaturesCard";
 import PricingCard from "@/components/Cards/PricingCard";
-import DashboardCard from "@/components/Cards/DashboardCard";
+
 import { ImageGallery } from "@/components/Cards/ImageGallery";
+import GetStartedCard from "@/components/Cards/GetStartedCard";
+
+
+
+
 
 // Fix the design here
 const Home: NextPage = () => {
+
+
   return (
     <>
       <Head>
@@ -34,11 +42,13 @@ const Home: NextPage = () => {
               </p>
             </div>
             <div className="example-container">
-              {/* <DashboardCard /> */}
               <ImageGallery />
             </div>
-            <div>
+            <div className="grid grid-cols-2 gap-14">
+              <GetStartedCard />
               <FeaturesCard />
+            </div>
+            <div>
               <PricingCard />
             </div>
           </div>

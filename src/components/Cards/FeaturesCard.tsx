@@ -6,6 +6,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { motion } from "framer-motion"
 import { LineChartIcon, MoonIcon, Paperclip, PersonStanding, TruckIcon, User } from "lucide-react"
 import { BiDrink, BiMobile, BiPaperPlane } from "react-icons/bi"
 
@@ -90,40 +91,50 @@ const Features: Feature[] = [
 
 const FeaturesCard: React.FC = () => {
     return (
-        <Card className="">
-            <CardHeader>
-                <CardTitle className="text-center">Features</CardTitle>
-                <CardDescription className="text-center">Available Features!</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className='space-x-10'>
-                    <div className='grid grid-cols-2'>
-                        {Features.map((feature, index) => {
-                            return (
-                                <div key={index}>
-                                    <TooltipProvider >
-                                        <Tooltip>
-                                            <TooltipTrigger className="flex">
-                                                <span className="">{feature.icon}</span>
-                                                <span className="">{feature.title}</span>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p>{feature.description}</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider>
-                                </div>
+        <motion.div
+            className="box"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+                duration: 0.8,
+                delay: 0.5,
+                ease: [0, 0.71, 0.2, 1.01]
+            }}>
+            <Card className="">
+                <CardHeader>
+                    <CardTitle className="text-center">Features</CardTitle>
+                    <CardDescription className="text-center">Available Features!</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className='space-x-10'>
+                        <div className='grid grid-cols-2'>
+                            {Features.map((feature, index) => {
+                                return (
+                                    <div key={index}>
+                                        <TooltipProvider >
+                                            <Tooltip>
+                                                <TooltipTrigger className="flex">
+                                                    <span className="">{feature.icon}</span>
+                                                    <span className="">{feature.title}</span>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>{feature.description}</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
 
-                            )
-                        })}
+                                )
+                            })}
 
+                        </div>
                     </div>
-                </div>
-            </CardContent>
-            <CardFooter className="justify-center">
-                <p className="font-bold">More features are coming soon...</p>
-            </CardFooter>
-        </Card>
+                </CardContent>
+                <CardFooter className="justify-center">
+                    <p className="font-bold">More features are coming soon...</p>
+                </CardFooter>
+            </Card>
+        </motion.div>
     )
 }
 

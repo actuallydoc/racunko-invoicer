@@ -1,9 +1,10 @@
+'use client'
+
 import React from "react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { wrap } from "popmotion";
 import { useTheme } from "next-themes";
-
 
 const DarkImages: string[] = [
     "https://i.imgur.com/60JQ95p.png",

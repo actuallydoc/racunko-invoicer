@@ -2,6 +2,7 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 
 import { Button } from '@/components/ui/button'
+import { motion } from 'framer-motion'
 
 const Pricing = [
     {
@@ -38,13 +39,18 @@ const Pricing = [
         price: "€20 Monthly",
     },
 ]
-
-
-
-
 export default function PricingCard() {
     return (
-        <div className='mt-10 opacity-90'>
+
+        <motion.div
+            className="box mt-10 opacity-90"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+                duration: 0.8,
+                delay: 0.5,
+                ease: [0, 0.71, 0.2, 1.01]
+            }}>
             <Card>
                 <CardHeader>
                     <CardTitle className="text-center">Pricing</CardTitle>
@@ -84,6 +90,6 @@ export default function PricingCard() {
                     })}
                 </CardContent>
             </Card>
-        </div>
+        </motion.div>
     )
 }

@@ -2,7 +2,8 @@
 ## Description
 
 #### The app is currently in development and it is not working yet. I will update this README when the app is finished.
-#### The design is not final and it will be changed in the future(since its really ugly).
+#### The vercel link app doesn't have the database connected so it won't work because im using sqlite.
+
 
 ### __Data Management Features__
 - [x] Filter by name (only for now)

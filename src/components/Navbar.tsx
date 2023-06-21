@@ -24,32 +24,36 @@ import Link from 'next/link'
 type Item = {
     title: string;
     description: string;
+    ref: string;
 }
 const Items: Item[] = [
     {
         title: "Home",
         description:
             "Summary dashboard page",
+        ref: "#",
     },
     {
         title: "Guide",
+        ref: "#guide",
 
         description:
             "Invoice management page",
     },
     {
         title: "Pricing",
+        ref: "#pricing",
 
         description:
             "Customer management page",
     },
     {
         title: "Contact",
+        ref: "#contact",
 
         description: "Contact us",
     }
 ]
-
 export default function Navbar() {
     const { data: sessionData } = useSession();
     const { theme, setTheme } = useTheme()
@@ -82,6 +86,7 @@ export default function Navbar() {
             })
         })
     }
+
     return (
         <div>
             <NavigationMenu className='mt-3'>
@@ -122,7 +127,6 @@ export default function Navbar() {
                             <Button onClick={handleSignIn} variant={"outline"}>Sign in</Button>
                         </NavigationMenuItem>
                     )}
-
                     <NavigationMenuItem>
                         <div className="flex items-center space-x-2 cursor-pointer">
                             <Switch onClick={handleTheme} value={"dark"} checked={theme === "dark" ? true : false} />
