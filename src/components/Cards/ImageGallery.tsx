@@ -5,14 +5,14 @@ import { wrap } from "popmotion";
 import { useTheme } from "next-themes";
 
 
-const DarkImages = [
+const DarkImages: string[] = [
     "https://i.imgur.com/60JQ95p.png",
     "https://i.imgur.com/60JQ95p.png",
     "https://i.imgur.com/60JQ95p.png",
     "https://i.imgur.com/60JQ95p.png",
     "https://i.imgur.com/60JQ95p.png",
 ]
-const LightImages = [
+const LightImages: string[] = [
     "https://i.imgur.com/2WCBFP7.png",
     "https://i.imgur.com/2WCBFP7.png",
     "https://i.imgur.com/2WCBFP7.png",
@@ -57,14 +57,13 @@ export const ImageGallery = () => {
     // then wrap that within 0-2 to find our image ID in the array below. By passing an
     // absolute page index as the `motion` component's `key` prop, `AnimatePresence` will
     // detect it as an entirely new image. So you can infinitely paginate as few as 1 images.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     useEffect(() => {
         setDarkPage([0, 0]);
         setLightPage([0, 0]);
     }, [theme])
     if (theme === "dark") {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const imageIndex = wrap(0, DarkImages.length, page) as number;
+
+        const imageIndex = wrap(0, DarkImages.length, page);
 
         const DarkPaginate = (newDirection: number) => {
             setDarkPage([page + newDirection, newDirection]);
@@ -108,9 +107,7 @@ export const ImageGallery = () => {
             </>
         );
     } else if (theme === "light") {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const imageIndex = wrap(0, LightImages.length, page2) as number;
-
+        const imageIndex = wrap(0, LightImages.length, page2);
         const LightPaginate = (newDirection: number) => {
             setLightPage([page2 + newDirection, newDirection]);
         };
@@ -120,6 +117,7 @@ export const ImageGallery = () => {
                     <motion.img
                         className="box"
                         key={page2}
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                         src={LightImages[imageIndex]}
                         custom={direction2}
                         variants={variants}
