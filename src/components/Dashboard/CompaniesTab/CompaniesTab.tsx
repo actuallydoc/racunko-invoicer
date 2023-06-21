@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import CompanyCreateModal from './Modals/CompanyCreateModal';
-import CompanyEditModal from './Modals/CompanyEditModal';
 import type { Company } from '@prisma/client';
+import { CompanyEditModal } from './Modals/CompanyEditModal';
 import { api } from '@/utils/api';
-
 import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
@@ -13,12 +12,20 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 
 export default function CustomersTab({ Companies }: { Companies: Company[] | undefined }) {
     const { data: sessionData } = useSession({ required: true });
-    const createCompany = api.company.createCompany.useMutation();
     const updateCompany = api.company.updateCompany.useMutation();
     const deleteCompany = api.company.deleteCompany.useMutation();
     return (
         <div className="">
+
             <Card>
+                <Dialog>
+                    <DialogTrigger className='hover:cursor-pointer'>
+                        <Button variant={'outline'} className='flex space-x-5 '>
+                            Edit
+                        </Button>
+                    </DialogTrigger>
+                    <CompanyEditModal />
+                </Dialog>
                 <CardHeader>
                     <CardTitle>Company Management</CardTitle>
                     <CardDescription>Manage your companies</CardDescription>
@@ -50,6 +57,7 @@ export default function CustomersTab({ Companies }: { Companies: Company[] | und
                             </TableHeader>
                             <TableBody>
                                 {Companies?.map((company: Company, index) => (
+
                                     <TableRow key={index} className='hover:cursor-pointer'>
                                         <TableCell className="font-medium">{company.name}</TableCell>
                                         <TableCell>{company.address}</TableCell>
@@ -57,6 +65,7 @@ export default function CustomersTab({ Companies }: { Companies: Company[] | und
                                         <TableCell>{company.vat}</TableCell>
                                         <TableCell>{company.phone}</TableCell>
                                     </TableRow>
+
                                 ))}
                             </TableBody>
                         </Table>
