@@ -11,6 +11,7 @@ import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
+import { z } from 'zod'
 
 type ServiceForm = {
     serviceName: string;
@@ -18,6 +19,23 @@ type ServiceForm = {
     serviceQuantity: number;
     servicePrice: number;
 }
+
+const FormData = z.object({
+    serviceName: z.string(),
+    serviceDescription: z.string(),
+    serviceQuantity: z.number(),
+    servicePrice: z.number(),
+})
+
+
+const FormValidation = z.object({
+    serviceName: z.string().min(3, { message: 'Service Name must be at least 3 characters long' }),
+    serviceDescription: z.string().min(3, { message: 'Service Description must be at least 3 characters long' }),
+    serviceQuantity: z.number().min(1, { message: 'Service Quantity must be at least 1' }),
+    servicePrice: z.number().min(1, { message: 'Service Price must be at least 1' }),
+})
+
+
 export default function ServiceCreateModal() {
     const { data: sessionData } = useSession();
     const createService = api.service.create.useMutation();
