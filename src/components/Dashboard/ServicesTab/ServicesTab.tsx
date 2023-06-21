@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { type Service } from '@prisma/client'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import ServiceCreateModal from './Modals/ServiceCreateModal'
+import ServiceEditModal from './Modals/ServiceEditModal'
 export default function CustomersTab({ Services }: { Services: Service[] }) {
     return (
         <div className="">
@@ -33,7 +34,7 @@ export default function CustomersTab({ Services }: { Services: Service[] }) {
                                     <TableHead className="w-[100px]">Service Name</TableHead>
                                     <TableHead>Service Price</TableHead>
                                     <TableHead>Service Quantity</TableHead>
-
+                                    <TableHead>Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -42,6 +43,16 @@ export default function CustomersTab({ Services }: { Services: Service[] }) {
                                         <TableCell className="font-medium">{service.name}</TableCell>
                                         <TableCell>{service.price as unknown as string}</TableCell>
                                         <TableCell>{service.quantity as unknown as string}</TableCell>
+                                        <TableCell>
+                                            <Dialog modal={true}>
+                                                <DialogTrigger className=''>
+                                                    <Button variant={'outline'} className='flex space-x-5 '>
+                                                        Edit
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <ServiceEditModal service={service} />
+                                            </Dialog>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

@@ -11,6 +11,7 @@ import { type RootState } from '@/stores/invoiceSlice';
 import { DialogTrigger, Dialog } from '@/components/ui/dialog';
 
 import { Button } from '@/components/ui/button';
+import CustomerEditModal from './Modals/CustomerEditModal';
 
 
 export default function CustomersTab() {
@@ -41,6 +42,7 @@ export default function CustomersTab() {
                                     <TableHead>Customer Country</TableHead>
                                     <TableHead>Customer VAT</TableHead>
                                     <TableHead>Customer Phone</TableHead>
+                                    <TableHead>Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -51,6 +53,16 @@ export default function CustomersTab() {
                                         <TableCell>{partner.country}</TableCell>
                                         <TableCell>{partner.vat}</TableCell>
                                         <TableCell>{partner.phone}</TableCell>
+                                        <TableCell>
+                                            <Dialog modal={true}>
+                                                <DialogTrigger className=''>
+                                                    <Button variant={'outline'} className='flex space-x-5 '>
+                                                        Edit
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <CustomerEditModal partner={partner} />
+                                            </Dialog>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
