@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -29,7 +30,7 @@ export function CompanyEditModal() {
         resolver: zodResolver(FormSchema),
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
         toast({
             title: "You submitted the following values:",
             description: (
@@ -38,6 +39,10 @@ export function CompanyEditModal() {
                 </pre>
             ),
         })
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        form.reset()
+
     }
 
     return (
