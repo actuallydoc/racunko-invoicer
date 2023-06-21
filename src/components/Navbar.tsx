@@ -104,7 +104,7 @@ export default function Navbar() {
                                 <DropdownMenuTrigger>
                                     <Avatar>
                                         <AvatarImage src={sessionData?.user.image} />
-                                        <AvatarFallback>{sessionData?.user?.name}</AvatarFallback>
+                                        <AvatarFallback>{sessionData?.user?.name ? sessionData?.user?.name?.length > 5 ? `${sessionData?.user?.name?.slice(0, 3)}..` : sessionData?.user?.name : <h1>No name</h1>}</AvatarFallback>
                                     </Avatar>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>

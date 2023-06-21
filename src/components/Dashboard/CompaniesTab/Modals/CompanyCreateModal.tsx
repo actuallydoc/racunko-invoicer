@@ -48,7 +48,14 @@ export default function CompanyCreateModal() {
     const { toast } = useToast();
     const { data: sessionData } = useSession({ required: true });
     const onSubmit = async (data: FormData) => {
-
+        toast({
+            title: 'Creating company',
+            description: (
+                <div className='flex flex-col space-y-2'>
+                    <p>{JSON.stringify(data)}</p>
+                </div>
+            )
+        })
         try {
             await createCompany.mutateAsync({
                 address: data.companyAddress,

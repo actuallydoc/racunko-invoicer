@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import FeaturesCard from "@/components/Cards/FeaturesCard";
 import PricingCard from "@/components/Cards/PricingCard";
 import DashboardCard from "@/components/Cards/DashboardCard";
+import { ImageGallery } from "@/components/Cards/ImageGallery";
 
 // Fix the design here
 const Home: NextPage = () => {
@@ -32,11 +33,12 @@ const Home: NextPage = () => {
                 Racunko is a simple and easy to use invoice management system.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-10">
-              <DashboardCard />
-              <FeaturesCard />
+            <div className="example-container">
+              {/* <DashboardCard /> */}
+              <ImageGallery />
             </div>
             <div>
+              <FeaturesCard />
               <PricingCard />
             </div>
           </div>

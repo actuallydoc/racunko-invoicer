@@ -1,0 +1,154 @@
+import React from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { wrap } from "popmotion";
+import { useTheme } from "next-themes";
+
+
+const DarkImages = [
+    "https://i.imgur.com/60JQ95p.png",
+    "https://i.imgur.com/60JQ95p.png",
+    "https://i.imgur.com/60JQ95p.png",
+    "https://i.imgur.com/60JQ95p.png",
+    "https://i.imgur.com/60JQ95p.png",
+]
+const LightImages = [
+    "https://i.imgur.com/2WCBFP7.png",
+    "https://i.imgur.com/2WCBFP7.png",
+    "https://i.imgur.com/2WCBFP7.png",
+    "https://i.imgur.com/2WCBFP7.png",
+    "https://i.imgur.com/2WCBFP7.png",
+
+];
+
+const variants = {
+    enter: (direction: number) => {
+        return {
+            x: direction > 0 ? 1000 : -1000,
+            opacity: 0
+        };
+    },
+    center: {
+        zIndex: 1,
+        x: 0,
+        opacity: 1
+    },
+    exit: (direction: number) => {
+        return {
+            zIndex: 0,
+            x: direction < 0 ? 1000 : -1000,
+            opacity: 0
+        };
+    }
+};
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+    return Math.abs(offset) * velocity;
+};
+
+
+// TODO: Adapt this to the theme of the website (dark/light).
+
+export const ImageGallery = () => {
+    const [[page, direction], setDarkPage] = useState([0, 0]);
+    const [[page2, direction2], setLightPage] = useState([0, 0]);
+    const { theme } = useTheme()
+    // We only have 3 images, but we paginate them absolutely (ie 1, 2, 3, 4, 5...) and
+    // then wrap that within 0-2 to find our image ID in the array below. By passing an
+    // absolute page index as the `motion` component's `key` prop, `AnimatePresence` will
+    // detect it as an entirely new image. So you can infinitely paginate as few as 1 images.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    useEffect(() => {
+        setDarkPage([0, 0]);
+        setLightPage([0, 0]);
+    }, [theme])
+    if (theme === "dark") {
+        const imageIndex = wrap(0, DarkImages.length, page) as number;
+
+        const DarkPaginate = (newDirection: number) => {
+            setDarkPage([page + newDirection, newDirection]);
+        };
+        return (
+            <>
+                <AnimatePresence initial={true} custom={direction}>
+                    <motion.img
+                        className="box"
+                        key={page}
+                        src={DarkImages[imageIndex]}
+                        custom={direction}
+                        variants={variants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                            x: { type: "spring", stiffness: 300, damping: 30 },
+                            opacity: { duration: 0.2 }
+                        }}
+                        drag="x"
+                        dragConstraints={{ left: 0, right: 0 }}
+                        dragElastic={1}
+                        onDragEnd={(e, { offset, velocity }) => {
+                            const swipe = swipePower(offset.x, velocity.x);
+
+                            if (swipe < -swipeConfidenceThreshold) {
+                                DarkPaginate(1);
+                            } else if (swipe > swipeConfidenceThreshold) {
+                                DarkPaginate(-1);
+                            }
+                        }}
+                    />
+                </AnimatePresence>
+                <div className="next" onClick={() => DarkPaginate(1)}>
+                    {"‣"}
+                </div>
+                <div className="prev" onClick={() => DarkPaginate(-1)}>
+                    {"‣"}
+                </div>
+            </>
+        );
+    } else if (theme === "light") {
+        const imageIndex = wrap(0, LightImages.length, page2) as number;
+
+        const LightPaginate = (newDirection: number) => {
+            setLightPage([page2 + newDirection, newDirection]);
+        };
+        return (
+            <>
+                <AnimatePresence initial={false} custom={direction2}>
+                    <motion.img
+                        className="box"
+                        key={page2}
+                        src={LightImages[imageIndex]}
+                        custom={direction2}
+                        variants={variants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{
+                            x: { type: "spring", stiffness: 300, damping: 30 },
+                            opacity: { duration: 0.2 }
+                        }}
+                        drag="x"
+                        dragConstraints={{ left: 0, right: 0 }}
+                        dragElastic={1}
+                        onDragEnd={(e, { offset, velocity }) => {
+                            const swipe = swipePower(offset.x, velocity.x);
+
+                            if (swipe < -swipeConfidenceThreshold) {
+                                LightPaginate(1);
+                            } else if (swipe > swipeConfidenceThreshold) {
+                                LightPaginate(-1);
+                            }
+                        }}
+                    />
+                </AnimatePresence>
+                <div className="next" onClick={() => LightPaginate(1)}>
+                    {"‣"}
+                </div>
+                <div className="prev" onClick={() => LightPaginate(-1)}>
+                    {"‣"}
+                </div>
+            </>
+        );
+    }
+};
