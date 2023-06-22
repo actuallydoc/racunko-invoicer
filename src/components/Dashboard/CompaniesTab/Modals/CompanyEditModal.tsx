@@ -279,7 +279,6 @@ export function CompanyEditModal({ company }: { company: Company }) {
                         </Form>
                         <Button onClick={handleDelete} variant={"destructive"}>Delete</Button>
                     </CardContent>
-
                 </Card>
             </motion.div>
         </DialogContent>

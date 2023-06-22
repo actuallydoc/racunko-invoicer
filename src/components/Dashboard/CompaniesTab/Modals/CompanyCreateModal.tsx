@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { api } from '@/utils/api';
 import { useSession } from 'next-auth/react';
 import React from 'react'
@@ -12,43 +11,55 @@ import { useToast } from '@/components/ui/use-toast';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-const FormData = z.object({
-    companyName: z.string(),
-    companyAddress: z.string(),
-    companyCity: z.string(),
-    companyZip: z.string(),
-    companyCountry: z.string(),
-    companyEmail: z.string(),
-    companyPhone: z.string(),
-    companyVat: z.string(),
-    companyWebsite: z.string().nullable().optional(),
-})
-type FormData = z.infer<typeof FormData>
-const ValidationSchema = z.object({
-    companyName: z.string().nonempty({ message: 'Company name is required' }),
-    companyAddress: z.string().nonempty({ message: 'Company address is required' }),
-    companyCity: z.string().nonempty({ message: 'Company city is required' }),
-    companyZip: z.string().nonempty({ message: 'Company zip is required' }),
-    companyCountry: z.string().nonempty({ message: 'Company country is required' }),
-    companyEmail: z.string().nonempty({ message: 'Company email is required' }),
-    companyPhone: z.string().nonempty({ message: 'Company phone is required' }),
-    companyVat: z.string().nonempty({ message: 'Company vat is required' }),
-    companyWebsite: z.string().nullable().optional(),
-})
-type ValidationSchema = z.infer<typeof ValidationSchema>
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
+const FormSchema = z.object({
+    companyName: z.string().min(3, {
+        message: "Compay name must be at least 3 characters.",
+    }),
+    companyAddress: z.string().min(3, {
+        message: "Compay address must be at least 3 characters.",
+    }),
+    companyCity: z.string().min(3, {
+        message: "Compay city must be at least 3 characters.",
+    }),
+    companyZip: z.string().min(3, {
+        message: "Compay zip must be at least 3 characters.",
+    }),
+    companyCountry: z.string().min(3, {
+        message: "Compay country must be at least 3 characters.",
+    }),
+    companyPhone: z.string().min(3, {
+        message: "Compay phone must be at least 3 characters.",
+    }),
+    companyEmail: z.string().email({
+        message: "Invalid email address.",
+    }),
+    companyWebsite: z.string().url({
+        message: "Invalid website url.",
+    }).optional(),
+    companyVat: z.string().min(3, {
+        message: "Compay vat must be at least 3 characters.",
+    }),
+    companyId: z.string().min(3, {
+        message: "Compay id must be at least 3 characters.",
+    }),
+
+})
 
 
 
 
 export default function CompanyCreateModal() {
     const createCompany = api.company.createCompany.useMutation();
-    const { register, handleSubmit, reset } = useForm<ValidationSchema>({
-        resolver: zodResolver(ValidationSchema),
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema),
     });
     const { toast } = useToast();
     const { data: sessionData } = useSession({ required: true });
-    const onSubmit = async (data: FormData) => {
+
+
+    const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         toast({
             title: 'Creating company',
             description: (
@@ -75,7 +86,7 @@ export default function CompanyCreateModal() {
                         title: 'Company created',
                         description: 'Company has been created successfully',
                     })
-                    reset();
+                    form.reset();
                 },
                 onError: (error) => {
                     toast({
@@ -112,118 +123,140 @@ export default function CompanyCreateModal() {
                 </DialogHeader>
                 <div className="grid">
                     <Card className='w-fit p-2'>
-                        <CardContent>
-                            <form className='flex-col' onSubmit={handleSubmit(onSubmit)}>
-                                <div className='flex-col space-y-5'>
-                                    <div className='flex space-x-5'>
-                                        <div>
-                                            <Label className="text-sm font-bold " htmlFor="companyName">
-                                                Company Name
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('companyName')}
-                                                type="text"
-                                                placeholder="Company Name"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="companyAddress">
-                                                Company Address
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('companyAddress')}
-                                                type="text"
-                                                placeholder="Company Address"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="companyCity">
-                                                Company City
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('companyCity')}
-                                                type="text"
-                                                placeholder="Company City"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="companyZip">
-                                                Company Zip
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('companyZip')}
-                                                type="text"
-                                                placeholder="Company Zip"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="companyCountry">
-                                                Company Country
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('companyCountry')}
-                                                type="text"
-                                                placeholder="Company Country"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className='flex space-x-5'>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="companyPhone">
-                                                Company Phone
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('companyPhone')}
-                                                type="text"
-                                                placeholder="Company Phone"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="companyEmail">
-                                                Company Email
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('companyEmail')}
-                                                type="email"
-                                                placeholder="Company Email"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="companyWebsite">
-                                                Company Website
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('companyWebsite')}
-                                                type="text"
-                                                placeholder="Company Website"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="companyVat">
-                                                Company VAT
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('companyVat')}
-                                                type="text"
-                                                placeholder="Company VAT"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                        <CardContent className="space-y-5">
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3  space-y-6">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="companyName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Company Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Name" {...field} />
+                                                    </FormControl>
+                                                    {/* <FormDescription>
+                                    This is your public display name.
+                                </FormDescription> */}
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="companyAddress"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Company Address</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Address" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                                <DialogFooter>
-                                    <Button className='mr-auto mt-5' type="submit">Create</Button>
-                                </DialogFooter>
-                            </form>
+                                        <FormField
+                                            control={form.control}
+                                            name="companyCity"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Company City</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="City" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="companyZip"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Company Zip</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Zip" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="companyCountry"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Company Country</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Country" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="companyEmail"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Company Email</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Email" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="companyPhone"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Company Phone</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Phone" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="companyWebsite"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Company Website</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Website" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="companyVat"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Company Vat</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Vat" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <Button type="submit">Submit</Button>
+                                </form>
+                            </Form>
                         </CardContent>
                     </Card>
                 </div>
