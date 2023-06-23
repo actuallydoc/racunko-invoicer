@@ -1,106 +1,87 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { Card, CardContent } from '@/components/ui/card'
-import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { DialogContent } from '@/components/ui/dialog'
-import React, { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { toast, useToast } from '@/components/ui/use-toast'
-import { api } from '@/utils/api'
-import { useSession } from 'next-auth/react'
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { DialogHeader, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { api } from '@/utils/api';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { Partner } from '@prisma/client'
 import { motion } from 'framer-motion'
-
-
-const FormData = z.object({
-    customerName: z.string(),
-    customerAddress: z.string(),
-    customerCity: z.string(),
-    customerZip: z.string(),
-    customerCountry: z.string(),
-    customerEmail: z.string(),
-    customerPhone: z.string(),
-    customerVat: z.string().optional(),
+import { useSession } from 'next-auth/react';
+import React from 'react'
+import { useForm } from 'react-hook-form';
+import { z } from "zod"
+const FormSchema = z.object({
+    customerName: z.string().nonempty({ message: 'Name is required' }),
+    customerAddress: z.string().nonempty({ message: 'Address is required' }),
+    customerCity: z.string().nonempty({ message: 'City is required' }),
+    customerZip: z.string().nonempty({ message: 'Zip is required' }),
+    customerCountry: z.string().nonempty({ message: 'Country is required' }),
+    customerEmail: z.string().nonempty({ message: 'Email is required' }),
+    customerPhone: z.string().nonempty({ message: 'Phone is required' }),
     customerWebsite: z.string().optional(),
-})
-type FormData = z.infer<typeof FormData>
-const ValidationSchema = z.object({
-    customerName: z.string().min(3, { message: "Customer name has to be longer" }).max(255),
-    customerAddress: z.string().min(3, { message: "Customer Address has to be valid" }).max(255),
-    customerCity: z.string().min(1, { message: "Customer City is required" }).max(255),
-    customerZip: z.string().min(3, { message: "Customer Zip has to be valid" }).max(255),
-    customerCountry: z.string().min(3, { message: "Customer Country has to be valid" }).max(255),
-    customerEmail: z.string().email({ message: "Customer Email has to be valid" }),
-    customerPhone: z.string().min(6, { message: "Customer Phone has to be valid" }).max(255),
     customerVat: z.string().optional(),
-    customerWebsite: z.string().min(3).max(255).optional(),
-})
-type ValidationSchema = z.infer<typeof ValidationSchema>
+});
 
-export default function CustomerCreateModal() {
-    const { toast } = useToast()
-    const { data: sessionData } = useSession();
+
+
+const CustomerCreateModal: React.FC = () => {
     const customerCreate = api.partner.createPartner.useMutation();
-    const { register, handleSubmit, reset, formState,
-    } = useForm<ValidationSchema>({
-        resolver: zodResolver(ValidationSchema),
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema)
     });
-    const onSubmit = async (data: z.infer<typeof FormData>) => {
-        // This is for debugging purposes
-        // toast({
-        //     title: "Creating Customer",
-        //     description: (
-        //         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-        //             <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        //         </pre>
-        //     )
-        // })
+    const { toast } = useToast();
+    const { data: sessionData } = useSession({ required: true });
+
+
+    const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+        toast({
+            title: "You submitted the following values:",
+            description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+                </pre>
+            ),
+        })
         try {
             await customerCreate.mutateAsync({
-                name: data.customerName,
                 address: data.customerAddress,
                 city: data.customerCity,
-                zip: data.customerZip,
                 country: data.customerCountry,
                 email: data.customerEmail,
+                name: data.customerName,
                 phone: data.customerPhone,
                 vat: data.customerVat as string,
+                website: data.customerWebsite as string,
+                zip: data.customerZip,
                 user_id: sessionData?.user?.id as string,
-                website: data.customerWebsite,
             }, {
                 onSuccess: () => {
                     toast({
-                        title: "Customer Created",
-                        description: "Customer has been created successfully",
+                        title: 'Partner Edited',
+                        description: 'Partner has been edited successfully',
                     })
+
                 },
                 onError: (error) => {
                     toast({
-                        title: "Error",
+                        title: 'Error',
                         description: error.message,
-                        variant: "destructive"
                     })
                 }
             });
-        }
-        catch (error) {
+        } catch (error) {
             toast({
-                title: "Error",
-                variant: "destructive",
-                description: "Something went wrong"
+                title: 'Error',
+                description: 'Something went wrong',
             })
         }
     }
-    useEffect(() => {
-        if (formState.isSubmitSuccessful) {
-            reset();
-        }
-    }, [formState, reset]);
-    return (
 
+    return (
         <DialogContent className='w-fit'>
             <motion.div
                 initial={{ scale: 0 }}
@@ -115,129 +96,156 @@ export default function CustomerCreateModal() {
                 <DialogHeader>
                     <DialogTitle>Create Customer</DialogTitle>
                     <DialogDescription>
-                        After pressing Create button you will create a new Customer for your company.
+                        After pressing Create button you will create a new Customer.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid">
                     <Card className='w-fit p-2'>
-                        <CardContent>
-                            <form className='' onSubmit={handleSubmit(onSubmit)}>
-                                <div className='flex-col space-y-5'>
-                                    <div className='flex space-x-5'>
-                                        <div>
-                                            <Label className="text-sm font-bold " htmlFor="customerName">
-                                                Customer Name
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('customerName')}
-                                                type="text"
-                                                placeholder="Customer Name"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="customerAddress">
-                                                Customer Address
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('customerAddress')}
-                                                type="text"
-                                                placeholder="Customer Address"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="customerCity">
-                                                Customer City
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('customerCity')}
-                                                type="text"
-                                                placeholder="Customer City"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="customerZip">
-                                                Customer Zip
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('customerZip')}
-                                                type="text"
-                                                placeholder="Customer Zip"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="customerCountry">
-                                                Customer Country
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('customerCountry')}
-                                                type="text"
-                                                placeholder="Customer Country"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className='flex space-x-5'>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="customerPhone">
-                                                Customer Phone
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('customerPhone')}
-                                                type="text"
-                                                placeholder="Customer Phone"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="customerEmail">
-                                                Customer Email
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('customerEmail')}
-                                                type="email"
-                                                placeholder="Customer Email"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="customerWebsite">
-                                                Customer Website
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('customerWebsite')}
-                                                type="text"
-                                                placeholder="Customer Website"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="customerVat">
-                                                Customer VAT
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('customerVat')}
-                                                type="text"
-                                                placeholder="Customer VAT"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                        <CardContent className="space-y-5">
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3  space-y-6">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="customerName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Customer Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Name" {...field} />
+                                                    </FormControl>
+                                                    {/* <FormDescription>
+                                    This is your public display name.
+                                </FormDescription> */}
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="customerAddress"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Customer Address</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Address" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                                <Button type='submit' className='mt-5'>
-                                    Create
-                                </Button>
+                                        <FormField
+                                            control={form.control}
+                                            name="customerCity"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Customer City</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="City" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                            </form>
+                                        <FormField
+                                            control={form.control}
+                                            name="customerZip"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Customer Zip</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Zip" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="customerCountry"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Customer Country</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Country" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="customerEmail"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Customer Email</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Email" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="customerPhone"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Customer Phone</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Phone" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="customerWebsite"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Customer Website</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Website" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="customerVat"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Customer Vat</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Vat" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className='space-x-3'>
+                                        <Button type="submit">Create</Button>
+                                    </div>
+                                </form>
+                            </Form>
                         </CardContent>
                     </Card>
                 </div>
             </motion.div>
         </DialogContent >
+
     )
 }
 
+
+
+export default CustomerCreateModal;

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 
@@ -7,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -16,11 +14,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
 import { toast } from "@/components/ui/use-toast"
-import { DialogContent } from "@/components/ui/dialog"
+import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import { motion } from "framer-motion"
-import { Company } from "@prisma/client"
-import { useEffect } from "react"
+import type { Company } from "@prisma/client"
 import { api } from "@/utils/api"
 
 const FormSchema = z.object({
@@ -135,7 +132,12 @@ export function CompanyEditModal({ company }: { company: Company }) {
                     stiffness: 260,
                     damping: 20
                 }}
-            >
+            > <DialogHeader>
+                    <DialogTitle>Edit Company</DialogTitle>
+                    <DialogDescription>
+                        After pressing Edit button you will edit an existing Company.
+                    </DialogDescription>
+                </DialogHeader>
                 <Card className="p-2">
                     <CardDescription>
                         <h3 className="text-lg text-white  leading-6">Edit Company</h3>
