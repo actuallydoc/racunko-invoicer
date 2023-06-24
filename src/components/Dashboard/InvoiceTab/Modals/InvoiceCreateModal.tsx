@@ -32,6 +32,53 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { DialogClose } from '@radix-ui/react-dialog';
+import { Form, useForm } from 'react-hook-form';
+import { z } from "zod"
+import { zodResolver } from '@hookform/resolvers/zod';
+const InvoiceFormSchema = z.object({
+    invoiceDate: z.date({
+        required_error: "A date of birth is required.",
+    }),
+    dueDate: z.date({
+        required_error: "A date of birth is required.",
+    }),
+    serviceDate: z.date({
+        required_error: "A date of birth is required.",
+    }),
+    invoiceNumber: z.string().min(3, { message: 'Invoice Number must be at least 3 characters long' }),
+    company: z.object({
+        id: z.string(),
+        name: z.string(),
+        address: z.string(),
+        city: z.string(),
+        country: z.string(),
+        email: z.string(),
+        phone: z.string(),
+        postalCode: z.string(),
+        vatNumber: z.string(),
+    }),
+    customer: z.object({
+        id: z.string(),
+        name: z.string(),
+        address: z.string(),
+        city: z.string(),
+        country: z.string(),
+        email: z.string(),
+        phone: z.string(),
+        postalCode: z.string(),
+        vatNumber: z.string(),
+    }),
+    services: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        description: z.string(),
+        price: z.number(),
+        quantity: z.number(),
+    }))
+})
+
+
+
 export default function InvoiceCreateModal({ customers, companies }: { customers: Partner[], companies: Company[] }) {
     const createInvoice = api.invoice.createInvoice.useMutation();
     const { toast } = useToast()
@@ -45,6 +92,9 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
     const [customerValue, setCustomerValue] = React.useState<string>("")
     const { data: sessionData } = useSession();
+    const form = useForm<z.infer<typeof InvoiceFormSchema>>({
+        resolver: zodResolver(InvoiceFormSchema),
+    })
     const handleDueDate = (e: Date) => {
         createInvoiceDispatch(invoiceSlice.actions.updateCreateInvoiceDueDate({
             date: e
@@ -126,100 +176,101 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
             </DialogHeader>
             <Card className='pt-4'>
                 <CardContent>
-
-                    <form className='space-y-3 flex space-x-5'>
-                        <div className='flex-col'>
-                            <Label className="block text-sm font-bold mb-5" htmlFor="date">
-                                Invoice Date
-                            </Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-[280px] justify-start text-left font-normal",
-                                            !createInvoiceSelector.invoiceDate && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {createInvoiceSelector.invoiceDate ? format(createInvoiceSelector.invoiceDate, "PPP") : <span>Pick a date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="">
-                                    <Calendar
-                                        mode="single"
-                                        selected={createInvoiceSelector.invoiceDate}
-                                        onSelect={(e) => handleInvoiceDate(e as Date)}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-
-                        </div>
-
-                        <div className='flex-col'>
-                            <div>
-                                <Label className="block text-sm font-bold mb-2" htmlFor="date">
-                                    Invoice Service Date
+                    <Form {...form}>
+                        <form className='space-y-3 flex space-x-5'>
+                            <div className='flex-col'>
+                                <Label className="block text-sm font-bold mb-5" htmlFor="date">
+                                    Invoice Date
                                 </Label>
-                            </div>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-[280px] justify-start text-left font-normal",
-                                            !createInvoiceSelector.invoiceServiceDate && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {createInvoiceSelector.invoiceServiceDate ? format(createInvoiceSelector.invoiceServiceDate, "PPP") : <span>Pick a date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="">
-                                    <Calendar
-                                        mode="single"
-                                        selected={createInvoiceSelector.invoiceServiceDate}
-                                        onSelect={(e) => handleServiceDate(e as Date)}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                        <div className='flex-col mb-10'>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-[280px] justify-start text-left font-normal",
+                                                !createInvoiceSelector.invoiceDate && "text-muted-foreground"
+                                            )}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {createInvoiceSelector.invoiceDate ? format(createInvoiceSelector.invoiceDate, "PPP") : <span>Pick a date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="">
+                                        <Calendar
+                                            mode="single"
+                                            selected={createInvoiceSelector.invoiceDate}
+                                            onSelect={(e) => handleInvoiceDate(e as Date)}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
 
-                            <div>
-                                <Label className="block text-sm font-bold mb-2" htmlFor="date">
-                                    Invoice Due Date
-                                </Label>
                             </div>
 
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-[250px] justify-start text-left font-normal",
-                                            !createInvoiceSelector.dueDate && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {createInvoiceSelector.dueDate ? format(createInvoiceSelector.dueDate, "PPP") : <span>Pick a date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="">
-                                    <Calendar
-                                        mode="single"
-                                        selected={createInvoiceSelector.dueDate}
-                                        onSelect={(e) => handleDueDate(e as Date)}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
+                            <div className='flex-col'>
+                                <div>
+                                    <Label className="block text-sm font-bold mb-2" htmlFor="date">
+                                        Invoice Service Date
+                                    </Label>
+                                </div>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-[280px] justify-start text-left font-normal",
+                                                !createInvoiceSelector.invoiceServiceDate && "text-muted-foreground"
+                                            )}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {createInvoiceSelector.invoiceServiceDate ? format(createInvoiceSelector.invoiceServiceDate, "PPP") : <span>Pick a date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="">
+                                        <Calendar
+                                            mode="single"
+                                            selected={createInvoiceSelector.invoiceServiceDate}
+                                            onSelect={(e) => handleServiceDate(e as Date)}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            <div className='flex-col mb-10'>
 
-                        </div>
+                                <div>
+                                    <Label className="block text-sm font-bold mb-2" htmlFor="date">
+                                        Invoice Due Date
+                                    </Label>
+                                </div>
 
-                    </form>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-[250px] justify-start text-left font-normal",
+                                                !createInvoiceSelector.dueDate && "text-muted-foreground"
+                                            )}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {createInvoiceSelector.dueDate ? format(createInvoiceSelector.dueDate, "PPP") : <span>Pick a date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="">
+                                        <Calendar
+                                            mode="single"
+                                            selected={createInvoiceSelector.dueDate}
+                                            onSelect={(e) => handleDueDate(e as Date)}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+
+                            </div>
+
+                        </form>
+                    </Form>
                     <div>
                         <div className='flex-col mb-5'>
                             <Label className="text-sm font-bold mb-2" htmlFor="invoiceNumber">

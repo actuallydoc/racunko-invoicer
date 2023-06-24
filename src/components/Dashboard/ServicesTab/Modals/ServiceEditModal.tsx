@@ -3,7 +3,6 @@ import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { DialogContent } from '@/components/ui/dialog'
 import { toast } from '@/components/ui/use-toast'
 import { api } from '@/utils/api'
@@ -62,6 +61,12 @@ export default function ServiceEditModal({ service }: { service: Service }) {
                         title: "Service Updated",
                         description: "Service has been updated successfully"
                     })
+                },
+                onError: (error) => {
+                    toast({
+                        title: 'Error',
+                        description: error.message,
+                    })
                 }
             })
         }
@@ -88,7 +93,7 @@ export default function ServiceEditModal({ service }: { service: Service }) {
                 </DialogHeader>
                 <div className="grid">
                     <Card className='w-fit p-2'>
-                        <CardContent>
+                        <CardContent className='space-y-5'>
                             <Form {...form} >
                                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3  space-y-6">
                                     <div className="grid grid-cols-2 gap-3">

@@ -232,9 +232,9 @@ const CustomerCreateModal: React.FC = () => {
                                             )}
                                         />
                                     </div>
-                                    <div className='space-x-3'>
-                                        <Button type="submit">Create</Button>
-                                    </div>
+
+                                    <Button type="submit">Create</Button>
+
                                 </form>
                             </Form>
                         </CardContent>

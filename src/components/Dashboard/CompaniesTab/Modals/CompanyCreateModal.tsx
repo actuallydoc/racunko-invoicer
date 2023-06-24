@@ -255,7 +255,7 @@ export default function CompanyCreateModal() {
                                         )}
                                     />
                                 </div>
-                                <Button type="submit">Submit</Button>
+                                <Button onClick={form.handleSubmit(onSubmit)} type="submit">Submit</Button>
                             </form>
                         </Form>
                     </CardContent>
