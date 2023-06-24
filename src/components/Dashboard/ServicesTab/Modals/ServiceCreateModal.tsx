@@ -8,25 +8,13 @@ import { DialogContent } from '@/components/ui/dialog'
 import { toast } from '@/components/ui/use-toast'
 import { api } from '@/utils/api'
 import { useSession } from 'next-auth/react'
-import { useForm } from 'react-hook-form'
+import { Form, useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { z } from 'zod'
-
-type ServiceForm = {
-    serviceName: string;
-    serviceDescription: string;
-    serviceQuantity: number;
-    servicePrice: number;
-}
-
-const FormData = z.object({
-    serviceName: z.string(),
-    serviceDescription: z.string(),
-    serviceQuantity: z.number(),
-    servicePrice: z.number(),
-})
-
+import { zodResolver } from '@hookform/resolvers/zod'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Textarea } from '@/components/ui/textarea'
 
 const FormValidation = z.object({
     serviceName: z.string().min(3, { message: 'Service Name must be at least 3 characters long' }),
@@ -39,9 +27,10 @@ const FormValidation = z.object({
 export default function ServiceCreateModal() {
     const { data: sessionData } = useSession();
     const createService = api.service.create.useMutation();
-    const { register, handleSubmit, reset,
-    } = useForm<ServiceForm>();
-    const onSubmit = async (data: ServiceForm) => {
+    const form = useForm<z.infer<typeof FormValidation>>({
+        resolver: zodResolver(FormValidation),
+    });
+    const onSubmit = async (data: z.infer<typeof FormValidation>) => {
         try {
             console.log(data);
             await createService.mutateAsync({
@@ -56,7 +45,7 @@ export default function ServiceCreateModal() {
                         title: "Service Created",
                         description: "Service has been created successfully",
                     })
-                    reset();
+                    form.reset();
                 },
                 onError: (error) => {
                     toast({
@@ -92,61 +81,73 @@ export default function ServiceCreateModal() {
                 <div className="grid">
                     <Card className='w-fit p-2'>
                         <CardContent>
-                            <form className='' onSubmit={handleSubmit(onSubmit)}>
-                                <div className='flex-col space-y-5'>
-                                    <div className='flex space-x-5'>
-                                        <div>
-                                            <Label className="text-sm font-bold " htmlFor="serviceName">
-                                                Service Name
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('serviceName')}
-                                                type="text"
-                                                placeholder="Service Name"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="serviceDescription">
-                                                Service Description
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('serviceDescription')}
-                                                type="text"
-                                                placeholder="Service Description"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="serviceQuantity">
-                                                Service Quantity
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('serviceQuantity')}
-                                                type="number"
-                                                placeholder="Service Quantity"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-bold mb-2" htmlFor="servicePrice">
-                                                Service Price
-                                            </Label>
-                                            <Input
-                                                className="shadow appearance-none border rounded  py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                                                {...register('servicePrice')}
-                                                type="number"
-                                                placeholder="Service Price"
-                                            />
-                                        </div>
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3  space-y-6">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="serviceName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Service Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Name" {...field} />
+                                                    </FormControl>
+                                                    {/* <FormDescription>
+                                    This is your public display name.
+                                </FormDescription> */}
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="serviceDescription"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Description</FormLabel>
+                                                    <FormControl>
+                                                        <Textarea placeholder="Description" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="serviceQuantity"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Service Quantity</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Quantity" type='number' min={1} {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="servicePrice"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Service Price</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Price" type='number' min={0} {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <Button type='submit' className='mt-5'>
+                                            Create
+                                        </Button>
 
                                     </div>
-                                </div>
-                                <Button type='submit' className='mt-5'>
-                                    Create
-                                </Button>
-
-                            </form>
+                                </form>
+                            </Form>
                         </CardContent>
                     </Card>
                 </div>

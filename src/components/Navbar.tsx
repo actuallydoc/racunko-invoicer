@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { toast } from './ui/use-toast'
 import Link from 'next/link'
+import { ThemeToggle } from './ui/ThemeToggle'
 type Item = {
     title: string;
     description: string;
@@ -56,14 +57,7 @@ const Items: Item[] = [
 ]
 export default function Navbar() {
     const { data: sessionData } = useSession();
-    const { theme, setTheme } = useTheme()
-    const handleTheme = () => {
-        if (theme === "dark") {
-            setTheme("light")
-        } else {
-            setTheme("dark")
-        }
-    }
+
     const handleSignout = () => {
         signOut().then(() => {
             toast({
@@ -127,14 +121,16 @@ export default function Navbar() {
                             <Button onClick={handleSignIn} variant={"outline"}>Sign in</Button>
                         </NavigationMenuItem>
                     )}
-                    <NavigationMenuItem>
+                    {/* <NavigationMenuItem>
                         <div className="flex items-center space-x-2 cursor-pointer">
                             <Switch onClick={handleTheme} value={"dark"} checked={theme === "dark" ? true : false} />
                             <Label>
                                 {theme === "light" ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
                             </Label>
                         </div>
-
+                    </NavigationMenuItem> */}
+                    <NavigationMenuItem>
+                        <ThemeToggle />
                     </NavigationMenuItem>
                 </NavigationMenuList >
 

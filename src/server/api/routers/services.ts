@@ -45,5 +45,33 @@ export const serviceRouter = createTRPCRouter({
             }
         })
         return service;
-    })
+    }),
+    update: protectedProcedure.input(z.object({
+        id: z.string(),
+        serviceId: z.string(),
+        name: z.string(),
+        description: z.string(),
+        price: z.number(),
+        quantity: z.number(),
+    })).mutation(async ({ ctx, input }) => {
+        const user = await ctx.prisma.user.findUnique({
+            where: {
+                id: input.id
+            }
+        })
+        if (!user) throw new Error("User not found");
+        const service = await ctx.prisma.service.update({
+            where: {
+                id: input.serviceId
+            },
+            data: {
+                name: input.name,
+                description: input.description,
+                price: input.price,
+                quantity: input.quantity,
+            }
+        })
+        return service;
+    }
+    ),
 });

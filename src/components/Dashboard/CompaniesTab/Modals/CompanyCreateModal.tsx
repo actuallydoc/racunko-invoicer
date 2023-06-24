@@ -71,39 +71,39 @@ export default function CompanyCreateModal() {
                 </div>
             )
         })
-        // try {
-        //     await createCompany.mutateAsync({
-        //         address: data.companyAddress,
-        //         city: data.companyCity,
-        //         name: data.companyName,
-        //         zip: data.companyZip,
-        //         country: data.companyCountry,
-        //         email: data.companyEmail,
-        //         phone: data.companyPhone,
-        //         vat: data.companyVat,
-        //         website: data.companyWebsite as string,
-        //         user_id: sessionData?.user?.id as string
-        //     }, {
-        //         onSuccess: () => {
-        //             toast({
-        //                 title: 'Company created',
-        //                 description: 'Company has been created successfully',
-        //             })
-        //             form.reset();
-        //         },
-        //         onError: (error) => {
-        //             toast({
-        //                 title: 'Error',
-        //                 description: error.message,
-        //             })
-        //         }
-        //     });
-        // } catch (error) {
-        //     toast({
-        //         title: 'Error',
-        //         description: 'Something went wrong',
-        //     })
-        // }
+        try {
+            await createCompany.mutateAsync({
+                address: data.companyAddress,
+                city: data.companyCity,
+                name: data.companyName,
+                zip: data.companyZip,
+                country: data.companyCountry,
+                email: data.companyEmail,
+                phone: data.companyPhone,
+                vat: data.companyVat,
+                website: data.companyWebsite as string,
+                user_id: sessionData?.user?.id as string
+            }, {
+                onSuccess: () => {
+                    toast({
+                        title: 'Company created',
+                        description: 'Company has been created successfully',
+                    })
+                    form.reset();
+                },
+                onError: (error) => {
+                    toast({
+                        title: 'Error',
+                        description: error.message,
+                    })
+                }
+            });
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description: 'Something went wrong',
+            })
+        }
     }
 
     return (
