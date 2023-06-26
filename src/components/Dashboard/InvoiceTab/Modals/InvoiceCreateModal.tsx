@@ -286,7 +286,6 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                             />
                         </div>
                     </div>
-
                     <div className='flex space-x-10'>
                         <div className='flex-col'>
                             <Popover open={openCompanyPopover} onOpenChange={setOpenCompanyPopover}>
