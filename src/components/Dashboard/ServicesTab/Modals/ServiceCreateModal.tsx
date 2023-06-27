@@ -23,7 +23,6 @@ const FormValidation = z.object({
     servicePrice: z.number().min(1, { message: 'Service Price must be at least 1' }),
 })
 
-// TODO: Fix this component some kind of useForm problem # react_hook_form__WEBPACK_IMPORTED_MODULE_4__.useFormContext)(...
 export default function ServiceCreateModal() {
     const { data: sessionData } = useSession();
     const createService = api.service.create.useMutation();

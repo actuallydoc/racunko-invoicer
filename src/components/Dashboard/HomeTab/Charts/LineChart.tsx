@@ -22,7 +22,6 @@ ChartJS.register(
     Tooltip,
     Legend
 );
-
 export const options = {
     responsive: true,
     plugins: {
@@ -35,9 +34,7 @@ export const options = {
         },
     },
 };
-
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
 export const data = {
     labels,
     datasets: [

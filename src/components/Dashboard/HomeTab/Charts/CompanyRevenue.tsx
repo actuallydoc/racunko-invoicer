@@ -2,17 +2,13 @@ import { type RootState } from '@/stores/invoiceSlice';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-
 interface MonthlyData {
     name: string;
     total: number;
 }
-
 export default function CompanyRevenue() {
-    // TODO: Maybe only get the invoices from the current year and perform the calculations on them
     const invoiceSelector = useSelector((state: RootState) => state.items);
     const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
-
     useEffect(() => {
         const calculateMonthlyData = () => {
             const monthlyData: MonthlyData[] = invoiceSelector.reduce(
@@ -48,8 +44,6 @@ export default function CompanyRevenue() {
 
             return monthlyData;
         };
-
-        // Function to get the month name from the month number
         const getMonthName = (month: number): string => {
             const monthNames: string[] = [
                 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -61,7 +55,6 @@ export default function CompanyRevenue() {
         const updatedMonthlyData = calculateMonthlyData();
         setMonthlyData(updatedMonthlyData);
     }, [invoiceSelector]);
-
     return (
         <ResponsiveContainer className="w-auto h-auto" height={500}>
             {monthlyData.length === 0 ? (

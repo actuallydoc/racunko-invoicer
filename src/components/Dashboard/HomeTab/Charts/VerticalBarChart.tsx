@@ -10,7 +10,6 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { fakerDE as faker } from '@faker-js/faker';
-
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -19,7 +18,6 @@ ChartJS.register(
     Tooltip,
     Legend
 );
-
 export const options = {
     responsive: true,
     plugins: {
@@ -32,9 +30,7 @@ export const options = {
         },
     },
 };
-
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', "November", "December"];
-
 export const data = {
     labels,
     datasets: [

@@ -10,7 +10,6 @@ import type { RootState } from '@/stores/invoiceSlice'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { type Company } from '@prisma/client'
 
-
 export default function HomeTab({ Companies }: { Companies: Company[] }) {
     const invoiceSelector = useSelector((state: RootState) => state.items);
     const [totalRevenueThisMonth, setTotalRevenueThisMonth] = useState<number>(0);
@@ -24,23 +23,19 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
             const calculateInvoicesThisMonth = () => {
                 const currentDate = new Date();
                 const currentMonth = currentDate.getMonth();
-
                 const invoicesThisMonth = invoiceSelector.filter(invoice => {
                     const invoiceDate = new Date(invoice.invoiceDate);
                     const invoiceMonth = invoiceDate.getMonth();
                     return invoiceMonth === currentMonth;
                 });
-
                 return invoicesThisMonth.length;
             };
             setTotalInvoicesThisMonth(calculateInvoicesThisMonth());
-            // Calculate the percentage of invoices created this month compared to the total invoices
             const calculateInvoicePercentage = () => {
                 const totalInvoicesThisMonth = calculateInvoicesThisMonth();
                 const totalInvoices = invoiceSelector.length;
 
                 if (totalInvoices === 0) {
-                    // Handle division by zero case
                     return 0;
                 }
 
@@ -50,7 +45,6 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
 
             const percentageInvoicesThisMonth = calculateInvoicePercentage();
             setPercentageInvoicesThisMonth(percentageInvoicesThisMonth);
-
             const calculateTotalRevenue = () => {
                 const totalRevenue = invoiceSelector.reduce((acc, invoice) => {
                     const invoiceTotal = invoice.Services.reduce(
@@ -65,7 +59,6 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
                 const currentDate = new Date();
                 const currentYear = currentDate.getFullYear();
                 const currentMonth = currentDate.getMonth();
-
                 const totalRevenue = invoiceSelector.reduce((acc, invoice) => {
                     const invoiceDate = new Date(invoice.invoiceDate);
                     const invoiceYear = invoiceDate.getFullYear();
@@ -85,21 +78,17 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
 
                 return totalRevenue;
             };
-            // Calculate total revenue for the previous month
             const calculateTotalRevenueLastMonth = () => {
                 const currentDate = new Date();
                 const currentYear = currentDate.getFullYear();
                 const currentMonth = currentDate.getMonth();
-
                 const lastMonthDate = new Date(currentYear, currentMonth - 1);
                 const lastMonthYear = lastMonthDate.getFullYear();
                 const lastMonthMonth = lastMonthDate.getMonth();
-
                 const totalRevenue = invoiceSelector.reduce((acc, invoice) => {
                     const invoiceDate = new Date(invoice.invoiceDate);
                     const invoiceYear = invoiceDate.getFullYear();
                     const invoiceMonth = invoiceDate.getMonth();
-
                     if (invoiceYear === lastMonthYear && invoiceMonth === lastMonthMonth) {
                         const invoiceTotal = invoice.Services.reduce(
                             (acc, service) => acc + service.price * service.quantity,
@@ -107,41 +96,30 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
                         );
                         return acc + invoiceTotal;
                     }
-
                     return acc;
                 }, 0);
-
                 return totalRevenue;
             };
-
-            // Calculate the percentage difference between current month and previous month revenue
             const calculateRevenueDifferencePercentage = () => {
                 const currentMonthRevenue = calculateTotalRevenueThisMonth();
                 const lastMonthRevenue = calculateTotalRevenueLastMonth();
                 if (lastMonthRevenue === 0) {
-                    // Handle division by zero case
                     return 0;
                 }
                 const difference = currentMonthRevenue - lastMonthRevenue;
                 const percentageDifference = (difference / lastMonthRevenue) * 100;
-
                 return percentageDifference;
             };
-
             const totalRevenue = calculateTotalRevenueThisMonth();
             setTotalRevenueThisMonth(totalRevenue);
-
             const differencePercentage = calculateRevenueDifferencePercentage();
             setRevenueDifferencePercentage(differencePercentage);
             setTotalRevenueThisMonth(calculateTotalRevenueThisMonth());
             setTotalRevenue(calculateTotalRevenue());
         } else {
-            // Filter invoices by the selected company name
             const filteredInvoices = invoiceSelector.filter(
                 (invoice) => invoice.Company.name === selectedCompanyName
             );
-
-            // Calculate total invoices this month for the selected company
             const calculateInvoicesThisMonth = () => {
                 const currentDate = new Date();
                 const currentMonth = currentDate.getMonth();
@@ -154,10 +132,7 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
 
                 return invoicesThisMonth.length;
             };
-
             setTotalInvoicesThisMonth(calculateInvoicesThisMonth());
-
-            // Calculate the percentage of invoices created this month compared to the total invoices for the selected company
             const calculateInvoicePercentage = () => {
                 const totalInvoicesThisMonth = calculateInvoicesThisMonth();
                 const totalInvoices = filteredInvoices.length;
@@ -170,11 +145,8 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
                 const percentage = (totalInvoicesThisMonth / totalInvoices) * 100;
                 return percentage;
             };
-
             const percentageInvoicesThisMonth = calculateInvoicePercentage();
             setPercentageInvoicesThisMonth(percentageInvoicesThisMonth);
-
-            // Calculate total revenue for the selected company
             const calculateTotalRevenue = () => {
                 const totalRevenue = filteredInvoices.reduce((acc, invoice) => {
                     const invoiceTotal = invoice.Services.reduce(
@@ -185,17 +157,14 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
                 }, 0);
                 return totalRevenue;
             };
-
             const calculateTotalRevenueThisMonth = () => {
                 const currentDate = new Date();
                 const currentYear = currentDate.getFullYear();
                 const currentMonth = currentDate.getMonth();
-
                 const totalRevenue = filteredInvoices.reduce((acc, invoice) => {
                     const invoiceDate = new Date(invoice.invoiceDate);
                     const invoiceYear = invoiceDate.getFullYear();
                     const invoiceMonth = invoiceDate.getMonth();
-
                     if (invoiceYear === currentYear && invoiceMonth === currentMonth) {
                         const invoiceTotal = invoice.Services.reduce(
                             (acc, service) => acc + service.price * service.quantity,
@@ -203,28 +172,21 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
                         );
                         return acc + invoiceTotal;
                     }
-
                     return acc;
                 }, 0);
-
                 return totalRevenue;
             };
-
-            // Calculate total revenue for the previous month for the selected company
             const calculateTotalRevenueLastMonth = () => {
                 const currentDate = new Date();
                 const currentYear = currentDate.getFullYear();
                 const currentMonth = currentDate.getMonth();
-
                 const lastMonthDate = new Date(currentYear, currentMonth - 1);
                 const lastMonthYear = lastMonthDate.getFullYear();
                 const lastMonthMonth = lastMonthDate.getMonth();
-
                 const totalRevenue = filteredInvoices.reduce((acc, invoice) => {
                     const invoiceDate = new Date(invoice.invoiceDate);
                     const invoiceYear = invoiceDate.getFullYear();
                     const invoiceMonth = invoiceDate.getMonth();
-
                     if (invoiceYear === lastMonthYear && invoiceMonth === lastMonthMonth) {
                         const invoiceTotal = invoice.Services.reduce(
                             (acc, service) => acc + service.price * service.quantity,
@@ -232,43 +194,30 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
                         );
                         return acc + invoiceTotal;
                     }
-
                     return acc;
                 }, 0);
-
                 return totalRevenue;
             };
-
-            // Calculate the percentage difference between current month and previous month revenue for the selected company
             const calculateRevenueDifferencePercentage = () => {
                 const currentMonthRevenue = calculateTotalRevenueThisMonth();
                 const lastMonthRevenue = calculateTotalRevenueLastMonth();
-
                 if (lastMonthRevenue === 0) {
-                    // Handle division by zero case
                     return 0;
                 }
-
                 const difference = currentMonthRevenue - lastMonthRevenue;
                 const percentageDifference = (difference / lastMonthRevenue) * 100;
-
                 return percentageDifference;
             };
-
             const totalRevenue = calculateTotalRevenueThisMonth();
             setTotalRevenueThisMonth(totalRevenue);
-
             const differencePercentage = calculateRevenueDifferencePercentage();
             setRevenueDifferencePercentage(differencePercentage);
-
             setTotalRevenueThisMonth(calculateTotalRevenueThisMonth());
             setTotalRevenue(calculateTotalRevenue());
         }
     }, [invoiceSelector, totalRevenueThisMonth, selectedCompanyName]);
     return (
-
         <Tabs defaultValue="overview" className="space-y-3">
-
             <TabsList className='space-x-3'>
                 <Select onValueChange={(e) => setSelectedCompanyName(e)}>
                     <SelectTrigger className="w-[180px]">
