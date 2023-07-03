@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { Company, Partner } from '@prisma/client'
+import type { Company, Invoice, Partner } from '@prisma/client'
 import "flatpickr/dist/themes/material_green.css";
 import InvoiceCreateModal from './Modals/InvoiceCreateModal';
 import { Button } from '@/components/ui/button';
@@ -16,22 +16,44 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 // import InvoiceEditModal from './Modals/InvoiceEditModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import { type Service, type InvoiceSerialized } from 'types';
 import { InvoiceActionsButton } from './Modals/InvoiceActionsButton';
+import { api } from '@/utils/api';
+import { toast } from '@/components/ui/use-toast';
+import InvoiceEditModal from './Modals/InvoiceEditModal';
 
 interface InvoiceTabProps {
     Companies: Company[];
     Customers: Partner[];
 }
+type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled" | "Draft"
+
+const statusConsts: Status[] = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancelled", "Draft"]
 export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
     const [fromDate, setFromDate] = React.useState<Date>(new Date());
     const [toDate, setToDate] = React.useState<Date>(new Date());
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
     const invoiceSelector = useSelector((state: RootState) => state.items);
+    const [selected, setSelected] = React.useState<InvoiceSerialized>();
     useEffect(() => {
         console.log(invoiceSelector)
     }, [invoiceSelector])
@@ -41,6 +63,46 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
             item: invoice,
         }))
     }
+    const deleteInvoice = api.invoice.deleteInvoice.useMutation();
+    const changeInvoiceStatus = api.invoice.editInvoice.useMutation();
+
+    const [edit, setEdit] = useState(false);
+
+
+    const changeStatus = (status: Status, invoice: Invoice) => {
+        changeInvoiceStatus.mutate({
+            ...invoice,
+            status: status,
+
+        }, {
+            onSuccess: () => {
+                toast({
+                    title: "Invoice Status Changed",
+                    description: "Invoice status has been changed successfully",
+                })
+            },
+        })
+
+    }
+    const handleDelete = (id: string) => {
+        deleteInvoice.mutate({
+            id
+        }, {
+            onSuccess: () => {
+                toast({
+                    title: "Invoice Deleted",
+                    description: "Invoice has been deleted successfully",
+                })
+            },
+            onError: () => {
+                toast({
+                    title: "Invoice Not Deleted",
+                    description: "Invoice has not been deleted successfully",
+                })
+            }
+        })
+    }
+
     return (
         <div className="">
             <Card>
@@ -49,6 +111,10 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                     <CardDescription>Manage your invoices here.</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-6 w-full">
+                    <Dialog open={edit} >
+
+                        <InvoiceEditModal invoice={selected} />
+                    </Dialog>
                     <div className='flex space-x-2'>
                         <Popover>
                             <PopoverTrigger asChild >
@@ -183,7 +249,81 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                             }, 0)} $
                                             {/* TODO: Get the currency you have to implement it in schema for the invoice , service */}
                                         </TableCell>
-                                        <InvoiceActionsButton invoice={invoice} />
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger className="mt-2">
+                                                <Button variant="outline">Open</Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="w-56">
+                                                <DropdownMenuLabel>Invoice Actions</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+
+                                                <DropdownMenuGroup>
+                                                    <DropdownMenuItem>View</DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={() => {
+                                                        setSelected(invoice)
+                                                        setEdit(true)
+                                                    }}>
+                                                        Edit
+                                                    </DropdownMenuItem>
+
+                                                    {/* <DropdownMenuShortcut>⇧+del</DropdownMenuShortcut> */}
+                                                    <DropdownMenuGroup>
+                                                        <DropdownMenuSub>
+                                                            <DropdownMenuSubTrigger>Export as </DropdownMenuSubTrigger>
+                                                            <DropdownMenuPortal>
+                                                                <DropdownMenuSubContent>
+                                                                    <DropdownMenuItem>PDF</DropdownMenuItem>
+                                                                    <DropdownMenuItem>CSV</DropdownMenuItem>
+                                                                    <DropdownMenuSeparator />
+                                                                    <DropdownMenuItem>More...</DropdownMenuItem>
+                                                                </DropdownMenuSubContent>
+                                                            </DropdownMenuPortal>
+                                                        </DropdownMenuSub>
+                                                    </DropdownMenuGroup>
+                                                    <DropdownMenuGroup>
+                                                        <DropdownMenuSub>
+                                                            <DropdownMenuSubTrigger>Mark as </DropdownMenuSubTrigger>
+                                                            <DropdownMenuPortal>
+                                                                <DropdownMenuSubContent>
+                                                                    {statusConsts.map(item => (
+                                                                        // You should change the status of the invoice in the database here when the user clicks on the item
+                                                                        <DropdownMenuCheckboxItem key={item} checked={invoice.status === status ? true : false} onClick={() => {
+
+                                                                            changeStatus(item, invoice)
+                                                                        }}>
+                                                                            {item}
+                                                                        </DropdownMenuCheckboxItem>
+                                                                    ))}
+                                                                </DropdownMenuSubContent>
+                                                            </DropdownMenuPortal>
+                                                        </DropdownMenuSub>
+                                                    </DropdownMenuGroup>
+                                                    <DropdownMenuItem onClick={() => handleDelete(invoice.id)}>
+                                                        Delete
+                                                        <DropdownMenuShortcut>⇧+del</DropdownMenuShortcut>
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuGroup>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuGroup>
+                                                    <DropdownMenuItem>Team</DropdownMenuItem>
+                                                    <DropdownMenuSub>
+                                                        <DropdownMenuSubTrigger>Send via </DropdownMenuSubTrigger>
+                                                        <DropdownMenuPortal>
+                                                            <DropdownMenuSubContent>
+                                                                <DropdownMenuItem>Email</DropdownMenuItem>
+                                                                <DropdownMenuItem>Message</DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem>More...</DropdownMenuItem>
+                                                            </DropdownMenuSubContent>
+                                                        </DropdownMenuPortal>
+                                                    </DropdownMenuSub>
+
+                                                </DropdownMenuGroup>
+
+
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </TableRow>
                                 ))}
                             </TableBody>

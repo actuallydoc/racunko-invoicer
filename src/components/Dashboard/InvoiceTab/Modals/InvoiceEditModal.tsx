@@ -33,7 +33,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useSession } from 'next-auth/react';
 
 
-export default function InvoiceEditModal() {
+export default function InvoiceEditModal({ invoice }: { invoice: Invoice }) {
     useEffect(() => { console.log("InvoiceEditModal") }, [])
     const { data: sessionData } = useSession()
     const { data: companies } = api.company.getAll.useQuery({
@@ -60,24 +60,31 @@ export default function InvoiceEditModal() {
         // window.open(blob, "_blank")
     }
     const handleEditInvoice = () => {
-        editInvoice.mutate({
-            ...invoiceSelector,
+        // editInvoice.mutate({
+        //     ...invoiceSelector,
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            companyId: invoiceSelector.Company?.id as string,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            partnerId: invoiceSelector.Partner?.id as string,
-            services: JSON.stringify(invoiceSelector.Services as unknown as string),
-        }, {
-            onSuccess: () => {
-                invoiceDispatch(invoiceSlice.actions.reset)
-                toast({
-                    title: "Invoice edited",
-                    description: "Invoice was edited successfully",
-                })
+        //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        //     companyId: invoiceSelector.Company?.id as string,
+        //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        //     partnerId: invoiceSelector.Partner?.id as string,
+        //     services: JSON.stringify(invoiceSelector.Services as unknown as string),
+        //     status: invoiceSelector.Status as unknown as string,
+        //     invoiceDate: invoiceSelector.InvoiceDate as unknown as string,
+        //     serviceDate: invoiceSelector.ServiceDate as unknown as string,
+        //     dueDate: invoiceSelector.DueDate as unknown as string,
+        //     invoiceNumber: invoiceSelector.InvoiceNumber as unknown as string,
+        //     id: invoiceSelector.id as unknown as string,
+        //     invoiceServiceDate: invoiceSelector.InvoiceServiceDate as unknown as string,
+        // }, {
+        //     onSuccess: () => {
+        //         invoiceDispatch(invoiceSlice.actions.reset)
+        //         toast({
+        //             title: "Invoice edited",
+        //             description: "Invoice was edited successfully",
+        //         })
 
-            }
-        });
+        //     }
+        // });
     }
     const handleInvoiceNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
         invoiceDispatch(invoiceSlice.actions.updateInvoiceNumber({
