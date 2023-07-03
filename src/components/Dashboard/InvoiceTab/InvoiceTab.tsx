@@ -193,6 +193,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                 </CardContent>
 
             </Card>
+
         </div >
 
     )

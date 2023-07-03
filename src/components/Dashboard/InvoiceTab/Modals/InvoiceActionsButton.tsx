@@ -21,14 +21,14 @@ import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu"
 
 type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled"
 
-const status = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancelled"]
+const statusConsts: Status[] = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancelled"]
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 export function InvoiceActionsButton() {
     // Get this from the invoice
 
     const [status, setStatus] = useState<Status>("Unpaid")
-    const [showActivityBar, setShowActivityBar] = useState<Checked>(false)
-
+    const [showPaid, setShowPaid] = useState<Checked>(false)
+    const [edit, setEdit] = useState(false)
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="mt-2">
@@ -38,35 +38,25 @@ export function InvoiceActionsButton() {
                 <DropdownMenuLabel>Invoice Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <div>
-                        <Dialog modal={true}>
-                            <DialogTrigger asChild>
-                                <DropdownMenuItem>
-                                    Edit
-                                </DropdownMenuItem>
-                            </DialogTrigger>
-                            <InvoiceEditModal />
-                        </Dialog>
-                    </div>
-
-
+                    <DropdownMenuItem onClick={() => setEdit(true)}>
+                        Edit
+                    </DropdownMenuItem>
                     {/* <DropdownMenuShortcut>⇧+del</DropdownMenuShortcut> */}
-
                     <DropdownMenuItem>
                         Export as PDF
                     </DropdownMenuItem>
                     <DropdownMenuGroup>
-                        {/* Add  */}
                         <DropdownMenuSub>
                             <DropdownMenuSubTrigger>Mark as </DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
                                 <DropdownMenuSubContent>
-                                    <DropdownMenuCheckboxItem
-                                        checked={showActivityBar}
-                                        onCheckedChange={setShowActivityBar}
-                                    >
-                                        Paid
-                                    </DropdownMenuCheckboxItem>
+                                    {statusConsts.map(item => (
+                                        // You should change the status of the invoice in the database here when the user clicks on the item
+                                        <DropdownMenuCheckboxItem key={item} checked={status === item} onClick={() => setStatus(item)}>
+                                            {item}
+                                        </DropdownMenuCheckboxItem>
+                                    ))}
+
                                 </DropdownMenuSubContent>
                             </DropdownMenuPortal>
                         </DropdownMenuSub>
