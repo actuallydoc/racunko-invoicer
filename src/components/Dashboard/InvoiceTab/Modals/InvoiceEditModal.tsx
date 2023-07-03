@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import "flatpickr/dist/themes/material_green.css";
 import type { Company, Partner } from '@prisma/client';
@@ -30,11 +30,18 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import ServiceCreateItem from './ServiceCreateItem';
 import { Card, CardContent } from '@/components/ui/card';
+import { useSession } from 'next-auth/react';
 
 
-export default function InvoiceEditModal({ Customers, Companies }: {
-    Customers: Partner[], Companies: Company[]
-}) {
+export default function InvoiceEditModal() {
+    useEffect(() => { console.log("InvoiceEditModal") }, [])
+    const { data: sessionData } = useSession()
+    const { data: companies } = api.company.getAll.useQuery({
+        id: sessionData?.user?.id as string
+    })
+    const { data: customers } = api.partner.getAll.useQuery({
+        id: sessionData?.user?.id as string
+    })
     const { toast } = useToast();
     const invoiceDispatch = useDispatch();
     const invoiceSelector = useSelector((state: RootState) => state.editItem);
@@ -268,7 +275,7 @@ export default function InvoiceEditModal({ Customers, Companies }: {
                                         className="w-[200px] justify-between"
                                     >
                                         {companyValue
-                                            ? Companies.find((company) => company.name === companyValue)?.name
+                                            ? companies?.find((company) => company.name === companyValue)?.name
                                             : "Select company..."}
                                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                     </Button>
@@ -278,7 +285,7 @@ export default function InvoiceEditModal({ Customers, Companies }: {
                                         <CommandInput placeholder="Search companies..." />
                                         <CommandEmpty>No companies found.</CommandEmpty>
                                         <CommandGroup>
-                                            {Companies?.map((company) => (
+                                            {companies?.map((company: Company) => (
                                                 <CommandItem
                                                     key={company.id}
                                                     onSelect={(currentValue) => {
@@ -315,7 +322,7 @@ export default function InvoiceEditModal({ Customers, Companies }: {
                                             className="w-[200px] justify-between"
                                         >
                                             {customerValue
-                                                ? Customers.find((customer) => customer.name === customerValue)?.name
+                                                ? customers?.find((customer) => customer.name === customerValue)?.name
                                                 : "Select customer..."}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
@@ -326,7 +333,7 @@ export default function InvoiceEditModal({ Customers, Companies }: {
                                             <CommandEmpty>No customers found.</CommandEmpty>
                                             <CommandGroup>
                                                 {/* TODO: The name of the partner and company in the popover is not fully shown because of the width */}
-                                                {Customers?.map((customer) => (
+                                                {customers?.map((customer: Partner) => (
                                                     <CommandItem
                                                         key={customer.id}
                                                         onSelect={(currentValue: string) => {
