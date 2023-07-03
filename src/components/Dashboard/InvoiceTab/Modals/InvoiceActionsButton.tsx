@@ -30,12 +30,11 @@ export function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
     // Get this from the invoice
     const deleteInvoice = api.invoice.deleteInvoice.useMutation();
     const changeInvoiceStatus = api.invoice.editInvoice.useMutation();
-    const [status, setStatus] = useState<Status>(invoice.status as Status);
+    const [entryStatus, setEntryStatus] = useState<Status>(invoice.status as Status);
 
-    const [showPaid, setShowPaid] = useState<Checked>(false);
     const [edit, setEdit] = useState(false);
 
-    const changeStatus = () => {
+    const changeStatus = (status: Status) => {
         changeInvoiceStatus.mutate({
             ...invoice,
             status: status,
@@ -68,12 +67,8 @@ export function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
             }
         })
     }
-    useEffect(() => {
-        setStatus(invoice.status as Status)
-    }, [invoice])
-    useEffect(() => {
-        changeStatus()
-    }, [status])
+
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="mt-2">
@@ -97,7 +92,10 @@ export function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
                                 <DropdownMenuSubContent>
                                     {statusConsts.map(item => (
                                         // You should change the status of the invoice in the database here when the user clicks on the item
-                                        <DropdownMenuCheckboxItem key={item} checked={status === item} onClick={() => setStatus(item)}>
+                                        <DropdownMenuCheckboxItem key={item} checked={entryStatus === item} onClick={() => {
+                                            setEntryStatus(item)
+                                            changeStatus(item)
+                                        }}>
                                             {item}
                                         </DropdownMenuCheckboxItem>
                                     ))}

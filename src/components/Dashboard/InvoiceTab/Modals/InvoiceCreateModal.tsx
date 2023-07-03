@@ -151,7 +151,7 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
             invoiceServiceDate: createInvoiceSelector.invoiceServiceDate,
             services: JSON.stringify(createInvoiceSelector.Services),
             id: sessionData?.user?.id as string,
-            status: "DRAFT",
+            status: "Draft",
         }, {
             onSuccess: () => {
                 toast({
