@@ -6,7 +6,6 @@ import {
 } from "@/server/api/trpc";
 
 
-
 const invoice = z.object({
     id: z.string(),
     invoiceNumber: z.string(),
@@ -16,7 +15,7 @@ const invoice = z.object({
     invoiceDate: z.date(),
     invoiceServiceDate: z.date(),
     dueDate: z.date(),
-    status: z.string(),
+    status: z.enum(["Draft", "Sent", "Paid", "Overdue", "Unpaid", "Refunded", "Cancelled"]),
 });
 export const invoiceRouter = createTRPCRouter({
     getAll: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
@@ -51,7 +50,7 @@ export const invoiceRouter = createTRPCRouter({
         if (!createdInvoice) throw new Error("Invoice not created"); //Handle invoice not created
         return createdInvoice;
     }),
-    editInvoice: protectedProcedure.input(z.object({ id: z.string(), invoiceNumber: z.string(), partnerId: z.string(), companyId: z.string(), services: z.string(), invoiceDate: z.date(), invoiceServiceDate: z.date(), dueDate: z.date(), })).mutation(async ({ ctx, input }) => {
+    editInvoice: protectedProcedure.input(z.object({ status: z.enum(["Draft", "Paid", "Unpaid", "Refunded", "Cancelled", "Overdue"]), id: z.string(), invoiceNumber: z.string(), partnerId: z.string(), companyId: z.string(), services: z.string(), invoiceDate: z.date(), invoiceServiceDate: z.date(), dueDate: z.date(), })).mutation(async ({ ctx, input }) => {
 
         const updatedInvoice = await ctx.prisma.invoice.update({
             where: {
@@ -65,6 +64,7 @@ export const invoiceRouter = createTRPCRouter({
                 invoiceServiceDate: input.invoiceServiceDate,
                 partnerId: input.partnerId,
                 companyId: input.companyId,
+                status: input.status
             },
         })
         return updatedInvoice;

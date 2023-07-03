@@ -16,19 +16,45 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import InvoiceEditModal from "./InvoiceEditModal"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu"
+import { Invoice } from "@prisma/client"
+import { api } from "@/utils/api"
+import { toast } from "@/components/ui/use-toast"
 
-type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled"
+type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled" | "Draft"
 
-const statusConsts: Status[] = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancelled"]
+const statusConsts: Status[] = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancelled", "Draft"]
 type Checked = DropdownMenuCheckboxItemProps["checked"]
-export function InvoiceActionsButton() {
+export function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
     // Get this from the invoice
+    const changeInvoiceStatus = api.invoice.editInvoice.useMutation();
+    const [status, setStatus] = useState<Status>(invoice.status as Status);
+    const [showPaid, setShowPaid] = useState<Checked>(false);
+    const [edit, setEdit] = useState(false);
 
-    const [status, setStatus] = useState<Status>("Unpaid")
-    const [showPaid, setShowPaid] = useState<Checked>(false)
-    const [edit, setEdit] = useState(false)
+    const changeStatus = () => {
+        changeInvoiceStatus.mutate({
+            ...invoice,
+            status: status,
+
+        }, {
+            onSuccess: () => {
+                toast({
+                    title: "Invoice Status Changed",
+                    description: "Invoice status has been changed successfully",
+                })
+            },
+        })
+
+    }
+
+    useEffect(() => {
+        setStatus(invoice.status as Status)
+    }, [invoice])
+    useEffect(() => {
+        changeStatus()
+    }, [status])
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="mt-2">
@@ -56,7 +82,6 @@ export function InvoiceActionsButton() {
                                             {item}
                                         </DropdownMenuCheckboxItem>
                                     ))}
-
                                 </DropdownMenuSubContent>
                             </DropdownMenuPortal>
                         </DropdownMenuSub>

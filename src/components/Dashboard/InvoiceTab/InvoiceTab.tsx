@@ -183,7 +183,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                             }, 0)} $
                                             {/* TODO: Get the currency you have to implement it in schema for the invoice , service */}
                                         </TableCell>
-                                        <InvoiceActionsButton />
+                                        <InvoiceActionsButton invoice={invoice} />
                                     </TableRow>
                                 ))}
                             </TableBody>
