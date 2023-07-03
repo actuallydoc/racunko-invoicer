@@ -28,8 +28,10 @@ const statusConsts: Status[] = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancel
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 export function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
     // Get this from the invoice
+    const deleteInvoice = api.invoice.deleteInvoice.useMutation();
     const changeInvoiceStatus = api.invoice.editInvoice.useMutation();
     const [status, setStatus] = useState<Status>(invoice.status as Status);
+
     const [showPaid, setShowPaid] = useState<Checked>(false);
     const [edit, setEdit] = useState(false);
 
@@ -48,7 +50,24 @@ export function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
         })
 
     }
-
+    const handleDelete = () => {
+        deleteInvoice.mutate({
+            id: invoice.id
+        }, {
+            onSuccess: () => {
+                toast({
+                    title: "Invoice Deleted",
+                    description: "Invoice has been deleted successfully",
+                })
+            },
+            onError: () => {
+                toast({
+                    title: "Invoice Not Deleted",
+                    description: "Invoice has not been deleted successfully",
+                })
+            }
+        })
+    }
     useEffect(() => {
         setStatus(invoice.status as Status)
     }, [invoice])
@@ -86,7 +105,7 @@ export function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
                             </DropdownMenuPortal>
                         </DropdownMenuSub>
                     </DropdownMenuGroup>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleDelete}>
                         Delete
                         <DropdownMenuShortcut>⇧+del</DropdownMenuShortcut>
                     </DropdownMenuItem>
