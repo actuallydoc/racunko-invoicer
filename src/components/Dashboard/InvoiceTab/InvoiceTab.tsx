@@ -16,29 +16,14 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
 // import InvoiceEditModal from './Modals/InvoiceEditModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import { type Service, type InvoiceSerialized } from 'types';
-import { InvoiceActionsButton } from './Modals/InvoiceActionsButton';
+import InvoiceActionsButton from './Modals/InvoiceActionButton';
 import { api } from '@/utils/api';
 import { toast } from '@/components/ui/use-toast';
-import InvoiceEditModal from './Modals/InvoiceEditModal';
 
 interface InvoiceTabProps {
     Companies: Company[];
@@ -111,10 +96,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                     <CardDescription>Manage your invoices here.</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-6 w-full">
-                    <Dialog open={edit} >
 
-                        <InvoiceEditModal invoice={selected} />
-                    </Dialog>
                     <div className='flex space-x-2'>
                         <Popover>
                             <PopoverTrigger asChild >
@@ -249,81 +231,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                             }, 0)} $
                                             {/* TODO: Get the currency you have to implement it in schema for the invoice , service */}
                                         </TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger className="mt-2">
-                                                <Button variant="outline">Open</Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="w-56">
-                                                <DropdownMenuLabel>Invoice Actions</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-
-                                                <DropdownMenuGroup>
-                                                    <DropdownMenuItem>View</DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={() => {
-                                                        setSelected(invoice)
-                                                        setEdit(true)
-                                                    }}>
-                                                        Edit
-                                                    </DropdownMenuItem>
-
-                                                    {/* <DropdownMenuShortcut>⇧+del</DropdownMenuShortcut> */}
-                                                    <DropdownMenuGroup>
-                                                        <DropdownMenuSub>
-                                                            <DropdownMenuSubTrigger>Export as </DropdownMenuSubTrigger>
-                                                            <DropdownMenuPortal>
-                                                                <DropdownMenuSubContent>
-                                                                    <DropdownMenuItem>PDF</DropdownMenuItem>
-                                                                    <DropdownMenuItem>CSV</DropdownMenuItem>
-                                                                    <DropdownMenuSeparator />
-                                                                    <DropdownMenuItem>More...</DropdownMenuItem>
-                                                                </DropdownMenuSubContent>
-                                                            </DropdownMenuPortal>
-                                                        </DropdownMenuSub>
-                                                    </DropdownMenuGroup>
-                                                    <DropdownMenuGroup>
-                                                        <DropdownMenuSub>
-                                                            <DropdownMenuSubTrigger>Mark as </DropdownMenuSubTrigger>
-                                                            <DropdownMenuPortal>
-                                                                <DropdownMenuSubContent>
-                                                                    {statusConsts.map(item => (
-                                                                        // You should change the status of the invoice in the database here when the user clicks on the item
-                                                                        <DropdownMenuCheckboxItem key={item} checked={invoice.status === status ? true : false} onClick={() => {
-
-                                                                            changeStatus(item, invoice)
-                                                                        }}>
-                                                                            {item}
-                                                                        </DropdownMenuCheckboxItem>
-                                                                    ))}
-                                                                </DropdownMenuSubContent>
-                                                            </DropdownMenuPortal>
-                                                        </DropdownMenuSub>
-                                                    </DropdownMenuGroup>
-                                                    <DropdownMenuItem onClick={() => handleDelete(invoice.id)}>
-                                                        Delete
-                                                        <DropdownMenuShortcut>⇧+del</DropdownMenuShortcut>
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuGroup>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuGroup>
-                                                    <DropdownMenuItem>Team</DropdownMenuItem>
-                                                    <DropdownMenuSub>
-                                                        <DropdownMenuSubTrigger>Send via </DropdownMenuSubTrigger>
-                                                        <DropdownMenuPortal>
-                                                            <DropdownMenuSubContent>
-                                                                <DropdownMenuItem>Email</DropdownMenuItem>
-                                                                <DropdownMenuItem>Message</DropdownMenuItem>
-                                                                <DropdownMenuSeparator />
-                                                                <DropdownMenuItem>More...</DropdownMenuItem>
-                                                            </DropdownMenuSubContent>
-                                                        </DropdownMenuPortal>
-                                                    </DropdownMenuSub>
-
-                                                </DropdownMenuGroup>
-
-
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <InvoiceActionsButton invoice={invoice} />
                                     </TableRow>
                                 ))}
                             </TableBody>
