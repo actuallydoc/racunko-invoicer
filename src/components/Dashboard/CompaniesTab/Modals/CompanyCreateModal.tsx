@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -19,7 +19,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { api } from "@/utils/api"
 import { useSession } from "next-auth/react"
-
 const FormSchema = z.object({
     companyName: z.string().min(3, {
         message: "Compay name must be at least 3 characters.",
@@ -47,18 +46,14 @@ const FormSchema = z.object({
     }).optional(),
     companyVat: z.string().min(3, {
         message: "Compay vat must be at least 3 characters.",
-    }),
-    companyId: z.string().min(3, {
-        message: "Compay id must be at least 3 characters.",
-    }),
-
+    })
 })
 
 
 export default function CompanyCreateModal() {
     const createCompany = api.company.createCompany.useMutation();
     const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+        resolver: zodResolver(FormSchema)
     });
     const { toast } = useToast();
     const { data: sessionData } = useSession({ required: true });
@@ -106,6 +101,8 @@ export default function CompanyCreateModal() {
         }
     }
 
+    // !THIS IS GOOD FOR DEBUGGING
+    // const onInvalid = (errors) => console.error(errors)
     return (
         <DialogContent>
             <motion.div
@@ -247,7 +244,7 @@ export default function CompanyCreateModal() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Company Vat</FormLabel>
-                                                <FormControl>
+                                                <FormControl >
                                                     <Input placeholder="Vat" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
@@ -255,9 +252,10 @@ export default function CompanyCreateModal() {
                                         )}
                                     />
                                 </div>
-                                <Button onClick={form.handleSubmit(onSubmit)} type="submit">Submit</Button>
+                                <Button type="submit">Create</Button>
                             </form>
                         </Form>
+
                     </CardContent>
                 </Card>
             </motion.div>

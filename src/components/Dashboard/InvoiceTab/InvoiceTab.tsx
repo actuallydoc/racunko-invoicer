@@ -20,6 +20,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '
 import { useDispatch, useSelector } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import { type Service, type InvoiceSerialized } from 'types';
+import { InvoiceActionsButton } from './Modals/InvoiceActionsButton';
 
 interface InvoiceTabProps {
     Companies: Company[];
@@ -161,6 +162,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                     <TableHead>Due Date</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Amount</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -181,6 +183,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                             }, 0)} $
                                             {/* TODO: Get the currency you have to implement it in schema for the invoice , service */}
                                         </TableCell>
+                                        <InvoiceActionsButton />
                                     </TableRow>
                                 ))}
                             </TableBody>

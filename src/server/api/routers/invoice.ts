@@ -20,16 +20,6 @@ const invoice = z.object({
 });
 export const invoiceRouter = createTRPCRouter({
     getAll: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-        const user = await ctx.prisma.user.findUnique({
-            where: {
-                id: input.id,
-            },
-            include: {
-                invoices: true,
-            },
-        })
-        if (!user) throw new Error("User not found"); //Handle user not found
-
         // If user exist fetch its invoices from database
         const invoices = await ctx.prisma.invoice.findMany({
             where: {
@@ -40,6 +30,7 @@ export const invoiceRouter = createTRPCRouter({
                 Partner: true,
             },
         });
+        console.log(invoices);
         if (!invoices) throw new Error("Invoices not found"); //Handle invoices not found
         return invoices;
     }),
