@@ -42,13 +42,6 @@ const Items: Item[] = [
             "Invoice management page",
     },
     {
-        title: "Pricing",
-        ref: "#pricing",
-
-        description:
-            "Customer management page",
-    },
-    {
         title: "Contact",
         ref: "#contact",
 
