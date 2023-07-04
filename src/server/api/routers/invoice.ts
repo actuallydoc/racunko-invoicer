@@ -50,6 +50,18 @@ export const invoiceRouter = createTRPCRouter({
         if (!createdInvoice) throw new Error("Invoice not created"); //Handle invoice not created
         return createdInvoice;
     }),
+    updateStatus: protectedProcedure.input(z.object({ status: z.enum(["Draft", "Paid", "Unpaid", "Refunded", "Cancelled", "Overdue"]), id: z.string() })).mutation(async ({ ctx, input }) => {
+        const updatedInvoice = await ctx.prisma.invoice.update({
+            where: {
+                id: input.id,
+            },
+            data: {
+                status: input.status
+            },
+        })
+        return updatedInvoice;
+    },
+    ),
     editInvoice: protectedProcedure.input(z.object({ status: z.enum(["Draft", "Paid", "Unpaid", "Refunded", "Cancelled", "Overdue"]), id: z.string(), invoiceNumber: z.string(), partnerId: z.string(), companyId: z.string(), services: z.string(), invoiceDate: z.date(), invoiceServiceDate: z.date(), dueDate: z.date(), })).mutation(async ({ ctx, input }) => {
 
         const updatedInvoice = await ctx.prisma.invoice.update({
