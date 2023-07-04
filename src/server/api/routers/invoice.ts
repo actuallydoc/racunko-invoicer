@@ -15,7 +15,7 @@ const invoice = z.object({
     invoiceDate: z.date(),
     invoiceServiceDate: z.date(),
     dueDate: z.date(),
-    status: z.enum(["Draft", "Sent", "Paid", "Overdue", "Unpaid", "Refunded", "Cancelled"]),
+    status: z.enum(["Draft", "Paid", "Overdue", "Unpaid", "Refunded", "Cancelled"]),
 });
 export const invoiceRouter = createTRPCRouter({
     getAll: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
