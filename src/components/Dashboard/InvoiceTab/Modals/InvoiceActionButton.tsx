@@ -120,7 +120,7 @@ export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) 
                                         {statusConsts.map(item => (
                                             // You should change the status of the invoice in the database here when the user clicks on the item
                                             <DropdownMenuCheckboxItem key={item} checked={invoice.status === status ? true : false} onClick={() => {
-
+                                                //TODO: Change the status of the invoice in the database
                                             }}>
                                                 {item}
                                             </DropdownMenuCheckboxItem>

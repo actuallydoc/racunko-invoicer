@@ -38,6 +38,7 @@
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
     "date-fns": "^2.30.0",
+    "eslint-config-next": "^13.4.8",
     "framer-motion": "^10.12.16",
     "jsonwebtoken": "^9.0.0",
     "jspdf": "^2.5.1",

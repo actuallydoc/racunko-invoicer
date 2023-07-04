@@ -17,8 +17,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { useSelector, useDispatch } from 'react-redux';
-import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import { DialogHeader, DialogContent, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
@@ -33,9 +31,9 @@ import { format } from 'date-fns';
 import { cn, generateRandomId } from '@/lib/utils';
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { InvoiceSerialized, InvoiceStatus } from 'types';
+import type { InvoiceSerialized, InvoiceStatus } from 'types';
 import { Textarea } from '@/components/ui/textarea';
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 const InvoiceFormSchema = z.object({
     invoiceDate: z.date({
         required_error: "A date of birth is required.",
@@ -332,7 +330,7 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
                                                         setInvoiceStatus(status)
                                                         setEditInvoice({
                                                             ...editInvoice,
-                                                            status: status as InvoiceStatus
+                                                            status: status
                                                         })
                                                     }}
                                                 >
