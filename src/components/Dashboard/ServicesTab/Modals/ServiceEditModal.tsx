@@ -18,13 +18,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { api } from "@/utils/api"
 import { useSession } from "next-auth/react"
-import { Service } from "@prisma/client"
+import type { Service } from "@prisma/client"
 
 const FormValidation = z.object({
     serviceName: z.string().min(3, { message: 'Service Name must be at least 3 characters long' }),
     serviceDescription: z.string().min(3, { message: 'Service Description must be at least 3 characters long' }),
-    serviceQuantity: z.number().min(1, { message: 'Service Quantity must be at least 1' }),
-    servicePrice: z.number().min(1, { message: 'Service Price must be at least 1' }),
+    serviceQuantity: z.string().min(1, { message: 'Service Quantity must be at least 1' }),
+    servicePrice: z.string().min(1, { message: 'Service Price must be at least 1' }),
 })
 
 
@@ -37,8 +37,8 @@ export default function ServiceEditModal({ service }: { service: Service }) {
         defaultValues: {
             serviceName: service.name,
             serviceDescription: service.description as string,
-            serviceQuantity: service.quantity,
-            servicePrice: service.price,
+            serviceQuantity: service.quantity.toString(),
+            servicePrice: service.price.toString(),
         }
     })
     // const updateService = api.service.update.useMutation();
@@ -58,8 +58,8 @@ export default function ServiceEditModal({ service }: { service: Service }) {
                 id: sessionData?.user?.id as string,
                 name: data.serviceName,
                 description: data.serviceDescription,
-                quantity: data.serviceQuantity,
-                price: data.servicePrice,
+                quantity: parseInt(data.serviceQuantity),
+                price: parseInt(data.servicePrice),
             }, {
                 onSuccess: () => {
                     toast({
