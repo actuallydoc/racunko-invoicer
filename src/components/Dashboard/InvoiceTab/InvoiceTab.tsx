@@ -29,60 +29,14 @@ interface InvoiceTabProps {
     Customers: Partner[];
 }
 type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled" | "Draft"
-
-const statusConsts: Status[] = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancelled", "Draft"]
-export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
+export default function InvoiceTab({ Companies }: InvoiceTabProps) {
     const [fromDate, setFromDate] = React.useState<Date>(new Date());
     const [toDate, setToDate] = React.useState<Date>(new Date());
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
     const invoiceSelector = useSelector((state: RootState) => state.items);
-    const [selected, setSelected] = React.useState<InvoiceSerialized>();
-    useEffect(() => {
-        console.log(invoiceSelector)
-    }, [invoiceSelector])
+
     const invoiceDispatch = useDispatch();
-    const handleInvoiceClick = (invoice: InvoiceSerialized) => {
-        invoiceDispatch(invoiceSlice.actions.editInvoice({
-            item: invoice,
-        }))
-    }
-    const deleteInvoice = api.invoice.deleteInvoice.useMutation();
-    const changeInvoiceStatus = api.invoice.editInvoice.useMutation();
-
-    const changeStatus = (status: Status, invoice: Invoice) => {
-        changeInvoiceStatus.mutate({
-            ...invoice,
-            status: status,
-
-        }, {
-            onSuccess: () => {
-                toast({
-                    title: "Invoice Status Changed",
-                    description: "Invoice status has been changed successfully",
-                })
-            },
-        })
-
-    }
-    const handleDelete = (id: string) => {
-        deleteInvoice.mutate({
-            id
-        }, {
-            onSuccess: () => {
-                toast({
-                    title: "Invoice Deleted",
-                    description: "Invoice has been deleted successfully",
-                })
-            },
-            onError: () => {
-                toast({
-                    title: "Invoice Not Deleted",
-                    description: "Invoice has not been deleted successfully",
-                })
-            }
-        })
-    }
 
     return (
         <div className="">
@@ -211,7 +165,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                             </TableHeader>
                             <TableBody>
                                 {invoiceSelector?.map((invoice, index) => (
-                                    <TableRow key={index} onClick={() => handleInvoiceClick(invoice)} className='hover:cursor-pointer'>
+                                    <TableRow key={index} className='hover:cursor-pointer'>
                                         <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
                                         <TableCell>{invoice.Partner.name}</TableCell>
                                         <TableCell>{invoice.Company.name}</TableCell>
@@ -225,7 +179,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                                 }
                                                 return total;
                                             }, 0)} $
-                                            {/* TODO: Get the currency you have to implement it in schema for the invoice , service */}
+
                                         </TableCell>
                                         <InvoiceActionsButton invoice={invoice} />
                                     </TableRow>

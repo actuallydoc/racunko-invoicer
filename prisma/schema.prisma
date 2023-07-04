@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -78,6 +78,15 @@ model Invoice {
   Partner            Partner  @relation(fields: [partnerId], references: [id])
   Company            Company  @relation(fields: [companyId], references: [id])
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum InvoiceStatus {
+  DRAFT
+  UNPAID
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
 }
 
 model Company {

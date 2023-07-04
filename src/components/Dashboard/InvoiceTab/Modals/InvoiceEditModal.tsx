@@ -30,11 +30,12 @@ import { Form, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn, generateRandomId } from '@/lib/utils';
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import ServiceEditCreateItem from './ServiceEditCreateItem';
-import { InvoiceSerialized } from 'types';
+import { InvoiceSerialized, InvoiceStatus } from 'types';
+import { Textarea } from '@/components/ui/textarea';
 const InvoiceFormSchema = z.object({
     invoiceDate: z.date({
         required_error: "A date of birth is required.",
@@ -79,13 +80,14 @@ const InvoiceFormSchema = z.object({
 
 export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoice, setEdit: React.Dispatch<React.SetStateAction<boolean>> }) {
     const [selectedCustomer, setSelectedCustomer] = React.useState<Partner>();
-    // const [emptyServices, setEmptyServices] = React.useState<Service[]>([]);
     const [selectedCompany, setSelectedCompany] = React.useState<Company>();
     const [openCompanyPopover, setOpenCompanyPopover] = React.useState(false)
     const [companyValue, setCompanyValue] = React.useState<string>("")
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
     const [customerValue, setCustomerValue] = React.useState<string>("")
+    const [editInvoice, setEditInvoice] = React.useState<InvoiceSerialized>(invoice as InvoiceSerialized)
     const { data: sessionData } = useSession()
+    const updateInvoice = api.invoice.editInvoice.useMutation()
     const { data: companies } = api.company.getAll.useQuery({
         id: sessionData?.user?.id as string
     })
@@ -95,10 +97,7 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
     const { toast } = useToast();
     const form = useForm<z.infer<typeof InvoiceFormSchema>>({
         resolver: zodResolver(InvoiceFormSchema),
-    })
-
-    const editInvoiceSelector = useSelector((state: RootState) => state.editItem);
-    const editInvoiceDispatch = useDispatch();
+    });
     const handleGenerateInvoice = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         //Create a Blob and open it in a new window
         // TODO This is curently not working the template is broken
@@ -108,54 +107,106 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
         // window.open(blob, "_blank")
     }
     const handleDueDate = (e: Date) => {
-        editInvoiceDispatch(invoiceSlice.actions.updateInvoiceDueDate({
-            date: e
-        }))
+        setEditInvoice({
+            ...editInvoice,
+            dueDate: e
+        })
     }
     const handleInvoiceDate = (e: Date) => {
-        editInvoiceDispatch(invoiceSlice.actions.updateInvoiceDate({
-            date: e
-        }))
+        setEditInvoice({
+            ...editInvoice,
+            invoiceDate: e
+        })
+
     }
     const handleServiceDate = (e: Date) => {
-        console.log("Service date is: ", e);
-        editInvoiceDispatch(invoiceSlice.actions.updateServiceDate({
-            date: e
-        }))
+        setEditInvoice({
+            ...editInvoice,
+            invoiceServiceDate: e
+        })
+
     }
     const handleInvoiceNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
-        editInvoiceDispatch(invoiceSlice.actions.updateInvoiceNumber({
+        setEditInvoice({
+            ...editInvoice,
             invoiceNumber: e.target.value
-        }))
+        })
     }
+    useEffect(() => {
+        console.log("Invoice is: ", editInvoice);
+    }, [editInvoice])
     const handleAddService = () => {
-        editInvoiceDispatch(invoiceSlice.actions.addService(
-            {
-                service: {
-                    id: Math.random().toString(36).substr(2, 9),
-                    description: "",
-                    name: "",
-                    price: 0,
-                    quantity: 1,
-                }
-            }
-        ))
+        setEditInvoice({
+            ...editInvoice,
+            Services: [...editInvoice.Services, {
+                id: generateRandomId(8),
+                name: "",
+                description: "",
+                price: 0,
+                quantity: 0,
+            }]
+        })
     }
+    const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+        const { name, value } = e.target
+        setEditInvoice({
+            ...editInvoice,
+            Services: editInvoice.Services.map((service, i) => {
+                if (i === index) {
+                    return {
+                        ...service,
+                        [name]: value
+                    }
+                }
+                return service
+            })
+        })
+
+    };
     const handleCompanySelect = (company: Company) => {
-        console.log("Company is: ", company);
-        editInvoiceDispatch(invoiceSlice.actions.updateInvoiceCompany({
-            company: company
-        }))
+        setEditInvoice({
+            ...editInvoice,
+            Company: company
+        })
         setOpenCompanyPopover(false)
     }
     const handleCustomerSelect = (customer: Partner) => {
-        editInvoiceDispatch(invoiceSlice.actions.updateInvoicePartner({
-            partner: customer
-        }))
+        setEditInvoice({
+            ...editInvoice,
+            Partner: customer
+        })
         setOpenCustomerPopover(false)
     }
+    const handleDeleteService = (id: string) => {
+        setEditInvoice({
+            ...editInvoice,
+            Services: editInvoice.Services.filter(service => service.id !== id)
+        })
+    }
+
     const handleInvoiceEdit = () => {
-        editInvoiceDispatch(invoiceSlice.actions.reset);
+        console.log("Invoice is: ", editInvoice);
+        updateInvoice.mutate({
+            companyId: editInvoice.Company.id,
+            partnerId: editInvoice.Partner.id,
+            invoiceDate: editInvoice.invoiceDate,
+            invoiceNumber: editInvoice.invoiceNumber,
+            invoiceServiceDate: editInvoice.invoiceServiceDate,
+            dueDate: editInvoice.dueDate,
+            services: JSON.stringify(editInvoice.Services),
+            id: editInvoice.id,
+            status: editInvoice.status as InvoiceStatus,
+
+        }, {
+            onSuccess: () => {
+                toast({
+                    title: "Invoice edited",
+                    description: "Invoice was successfully edited",
+                    duration: 5000,
+                })
+                setEdit(false)
+            },
+        });
         setEdit(false);
     }
     return (
@@ -180,17 +231,17 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
                                             variant={"outline"}
                                             className={cn(
                                                 "w-[280px] justify-start text-left font-normal",
-                                                !editInvoiceSelector.invoiceDate && "text-muted-foreground"
+                                                !editInvoice.invoiceDate && "text-muted-foreground"
                                             )}
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {editInvoiceSelector.invoiceDate ? format(editInvoiceSelector.invoiceDate, "PPP") : <span>Pick a date</span>}
+                                            {editInvoice.invoiceDate ? format(editInvoice.invoiceDate, "PPP") : <span>Pick a date</span>}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="">
                                         <Calendar
                                             mode="single"
-                                            selected={editInvoiceSelector.invoiceDate}
+                                            selected={editInvoice.invoiceDate}
                                             onSelect={(e) => handleInvoiceDate(e as Date)}
                                             initialFocus
                                         />
@@ -211,17 +262,17 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
                                             variant={"outline"}
                                             className={cn(
                                                 "w-[280px] justify-start text-left font-normal",
-                                                !editInvoiceSelector.invoiceServiceDate && "text-muted-foreground"
+                                                !editInvoice.invoiceServiceDate && "text-muted-foreground"
                                             )}
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {editInvoiceSelector.invoiceServiceDate ? format(editInvoiceSelector.invoiceServiceDate, "PPP") : <span>Pick a date</span>}
+                                            {editInvoice.invoiceServiceDate ? format(editInvoice.invoiceServiceDate, "PPP") : <span>Pick a date</span>}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="">
                                         <Calendar
                                             mode="single"
-                                            selected={editInvoiceSelector.invoiceServiceDate}
+                                            selected={editInvoice.invoiceServiceDate}
                                             onSelect={(e) => handleServiceDate(e as Date)}
                                             initialFocus
                                         />
@@ -242,17 +293,17 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
                                             variant={"outline"}
                                             className={cn(
                                                 "w-[250px] justify-start text-left font-normal",
-                                                !editInvoiceSelector.dueDate && "text-muted-foreground"
+                                                !editInvoice.dueDate && "text-muted-foreground"
                                             )}
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {editInvoiceSelector.dueDate ? format(editInvoiceSelector.dueDate, "PPP") : <span>Pick a date</span>}
+                                            {editInvoice.dueDate ? format(editInvoice.dueDate, "PPP") : <span>Pick a date</span>}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="">
                                         <Calendar
                                             mode="single"
-                                            selected={editInvoiceSelector.dueDate}
+                                            selected={editInvoice.dueDate}
                                             onSelect={(e) => handleDueDate(e as Date)}
                                             initialFocus
                                         />
@@ -274,7 +325,7 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
                                 id="invoiceNumber"
                                 type="name"
                                 placeholder="Invoice Number"
-                                defaultValue={editInvoiceSelector?.invoiceNumber}
+                                defaultValue={editInvoice?.invoiceNumber}
                             />
                         </div>
                     </div>
@@ -376,10 +427,45 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
                     <div className='pb-10'>
                         {/* Pretty fascinating that u can do that so easily(scroll) */}
                         <div className='max-h-[200px] overflow-y-scroll'>
-                            {editInvoiceSelector.Services?.map((service, index) => (
+                            {editInvoice.Services?.map((service, index) => (
                                 <div key={index} className="flex items-center">
                                     <div className="mb-6">
-                                        <ServiceEditCreateItem service={service} />
+                                        <div>
+                                            <hr className=" my-2 border-2 mt-3 mb-3" />
+                                            <div className="grid grid-cols-5 gap-4">
+                                                <div>
+                                                    <Label htmlFor="description">Description</Label>
+                                                    <Textarea placeholder='Description' name='description' onChange={(e) => {
+                                                        handleServiceChange(e, index);
+
+                                                    }} defaultValue={service.description} />
+                                                </div>
+                                                <div>
+                                                    <div className='flex-col'>
+                                                        <div>
+                                                            <Label htmlFor="quantity" >Quantity</Label>
+                                                        </div>
+                                                        <Input onChange={(e) => {
+                                                            handleServiceChange(e, index);
+                                                        }} type="number" name='quantity' min={1} defaultValue={service.quantity} />
+                                                    </div>
+                                                </div>
+                                                <div className='flex-col'>
+                                                    <div>
+                                                        <Label htmlFor="price" >Price</Label>
+                                                    </div>
+                                                    <div className=''>
+                                                        <Input onChange={(e) => {
+                                                            handleServiceChange(e, index);
+                                                        }} type="number" name='price' defaultValue={service.price} />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <Button className='mt-6' variant={"destructive"} onClick={() => handleDeleteService(service.id)}>Delete</Button>
+                                                </div>
+
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

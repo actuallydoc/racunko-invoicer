@@ -44,7 +44,7 @@ export const invoiceRouter = createTRPCRouter({
                 invoiceServiceDate: input.invoiceServiceDate,
                 partnerId: input.partnerId,
                 companyId: input.companyId,
-                status: "Draft",
+                status: input.status,
             },
         })
         if (!createdInvoice) throw new Error("Invoice not created"); //Handle invoice not created

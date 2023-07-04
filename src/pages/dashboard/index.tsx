@@ -17,12 +17,23 @@ export default function Index() {
     const [activeItem, setActiveItem] = useState<string>("Dashboard");
     const { data: sessionData, status } = useSession({ required: true })
     const dispatch = useDispatch();
-    const { data: getInvoices, isFetched } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
-    const { data: getCustomers } = api.partner.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
-    const { data: getCompanies } = api.company.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, { enabled: status === 'authenticated' })
-    const { data: getServices } = api.service.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, {
-        enabled: status === 'authenticated'
+    const { data: getInvoices, isFetched } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, {
+        enabled: status === 'authenticated',
+        refetchOnWindowFocus: false
     })
+    const { data: getCustomers } = api.partner.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, {
+        enabled: status === 'authenticated',
+        refetchOnWindowFocus: false
+    })
+    const { data: getCompanies } = api.company.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, {
+        enabled: status === 'authenticated',
+        refetchOnWindowFocus: false
+    })
+    const { data: getServices } = api.service.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string, }, {
+        enabled: status === 'authenticated',
+        refetchOnWindowFocus: false,
+
+    },)
     useEffect(() => {
         if (!sessionData) {
             toast({

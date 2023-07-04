@@ -23,3 +23,4 @@ interface InvoiceSerialized extends Invoice {
     Services: Service[];
 }
 
+export type InvoiceStatus = "Draft" | "Paid" | "Overdue" | "Unpaid" | "Refunded" | "Cancelled"

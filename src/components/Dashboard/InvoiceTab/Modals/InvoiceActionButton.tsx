@@ -29,26 +29,23 @@ type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled" | "Draft"
 const statusConsts: Status[] = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancelled", "Draft"]
 // TODO: Add all the functionality to this component
 export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
-    const [selected, setSelected] = useState<InvoiceSerialized>();
-
     const deleteInvoice = api.invoice.deleteInvoice.useMutation();
     const changeInvoiceStatus = api.invoice.editInvoice.useMutation();
     const editInvoiceDispatch = useDispatch();
     const [edit, setEdit] = useState(false);
 
-    useEffect(() => {
-        if (edit) {
-            console.log("Invoice is: ", invoice);
-            editInvoiceDispatch(invoiceSlice.actions.editInvoice({
-                item: invoice as InvoiceSerialized
-            }))
-        }
-    }, [edit, editInvoiceDispatch, invoice])
-
-    const changeStatus = (status: Status, invoice: Invoice) => {
+    const changeStatus = (status: Status, invoice: InvoiceSerialized) => {
         changeInvoiceStatus.mutate({
             ...invoice,
             status: status,
+            companyId: invoice.companyId,
+            dueDate: invoice.dueDate,
+            id: invoice.id,
+            invoiceDate: invoice.invoiceDate,
+            invoiceNumber: invoice.invoiceNumber,
+            invoiceServiceDate: invoice.invoiceServiceDate,
+            partnerId: invoice.partnerId,
+            services: JSON.parse(invoice.services as string) as string,
 
         }, {
             onSuccess: () => {
@@ -123,7 +120,6 @@ export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) 
                                         {statusConsts.map(item => (
                                             // You should change the status of the invoice in the database here when the user clicks on the item
                                             <DropdownMenuCheckboxItem key={item} checked={invoice.status === status ? true : false} onClick={() => {
-
                                                 changeStatus(item, invoice)
                                             }}>
                                                 {item}
