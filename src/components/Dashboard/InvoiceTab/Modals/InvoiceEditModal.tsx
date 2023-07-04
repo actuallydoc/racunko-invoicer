@@ -187,8 +187,8 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
     const handleInvoiceEdit = () => {
         console.log("Invoice is: ", editInvoice);
         updateInvoice.mutate({
-            companyId: editInvoice.Company.id,
-            partnerId: editInvoice.Partner.id,
+            companyId: editInvoice.companyId,
+            partnerId: editInvoice.partnerId,
             invoiceDate: editInvoice.invoiceDate,
             invoiceNumber: editInvoice.invoiceNumber,
             invoiceServiceDate: editInvoice.invoiceServiceDate,
