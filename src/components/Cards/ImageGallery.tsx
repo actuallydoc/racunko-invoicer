@@ -7,16 +7,19 @@ import { wrap } from "popmotion";
 import { useTheme } from "next-themes";
 
 const DarkImages: string[] = [
-    "https://i.imgur.com/uQ9DO12.png",
-    "https://i.imgur.com/KlZH4va.png",
-    "https://i.imgur.com/e0b9fAF.png",
     "https://i.imgur.com/60JQ95p.png",
+
+    "https://i.imgur.com/KlZH4va.png",
+    "https://i.imgur.com/IpKBIwM.png",
+    "https://i.imgur.com/e0b9fAF.png",
+
 ]
 const LightImages: string[] = [
+    "https://i.imgur.com/2WCBFP7.png",
     "https://i.imgur.com/hDJCzDo.png",
     "https://i.imgur.com/zpivzZQ.png",
     "https://i.imgur.com/OXdtxxZ.png",
-    "https://i.imgur.com/2WCBFP7.png",
+
 
 ];
 
@@ -51,7 +54,7 @@ const swipePower = (offset: number, velocity: number) => {
 export const ImageGallery = () => {
     const [[page, direction], setDarkPage] = useState([0, 0]);
     const [[page2, direction2], setLightPage] = useState([0, 0]);
-    const { theme } = useTheme()
+    const { theme, resolvedTheme } = useTheme()
     // We only have 3 images, but we paginate them absolutely (ie 1, 2, 3, 4, 5...) and
     // then wrap that within 0-2 to find our image ID in the array below. By passing an
     // absolute page index as the `motion` component's `key` prop, `AnimatePresence` will
@@ -59,9 +62,8 @@ export const ImageGallery = () => {
     useEffect(() => {
         setDarkPage([0, 0]);
         setLightPage([0, 0]);
-    }, [theme])
-    if (theme === "dark") {
-
+    }, [theme, resolvedTheme])
+    if (theme === "dark" || resolvedTheme === "dark") {
         const imageIndex = wrap(0, DarkImages.length, page);
 
         const DarkPaginate = (newDirection: number) => {
@@ -105,7 +107,7 @@ export const ImageGallery = () => {
                 </div>
             </>
         );
-    } else if (theme === "light") {
+    } else if (theme === "light" || resolvedTheme === "light") {
         const imageIndex = wrap(0, LightImages.length, page2);
         const LightPaginate = (newDirection: number) => {
             setLightPage([page2 + newDirection, newDirection]);
