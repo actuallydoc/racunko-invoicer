@@ -33,7 +33,6 @@ import { format } from 'date-fns';
 import { cn, generateRandomId } from '@/lib/utils';
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import ServiceEditCreateItem from './ServiceEditCreateItem';
 import { InvoiceSerialized, InvoiceStatus } from 'types';
 import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
