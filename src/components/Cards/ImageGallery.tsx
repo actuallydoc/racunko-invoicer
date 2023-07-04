@@ -7,17 +7,15 @@ import { wrap } from "popmotion";
 import { useTheme } from "next-themes";
 
 const DarkImages: string[] = [
-    "https://i.imgur.com/60JQ95p.png",
-    "https://i.imgur.com/60JQ95p.png",
-    "https://i.imgur.com/60JQ95p.png",
-    "https://i.imgur.com/60JQ95p.png",
+    "https://i.imgur.com/uQ9DO12.png",
+    "https://i.imgur.com/KlZH4va.png",
+    "https://i.imgur.com/e0b9fAF.png",
     "https://i.imgur.com/60JQ95p.png",
 ]
 const LightImages: string[] = [
-    "https://i.imgur.com/2WCBFP7.png",
-    "https://i.imgur.com/2WCBFP7.png",
-    "https://i.imgur.com/2WCBFP7.png",
-    "https://i.imgur.com/2WCBFP7.png",
+    "https://i.imgur.com/hDJCzDo.png",
+    "https://i.imgur.com/zpivzZQ.png",
+    "https://i.imgur.com/OXdtxxZ.png",
     "https://i.imgur.com/2WCBFP7.png",
 
 ];

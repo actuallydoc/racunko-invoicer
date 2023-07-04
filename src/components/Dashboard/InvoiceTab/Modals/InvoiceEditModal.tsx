@@ -36,6 +36,7 @@ import { Input } from '@/components/ui/input';
 import ServiceEditCreateItem from './ServiceEditCreateItem';
 import { InvoiceSerialized, InvoiceStatus } from 'types';
 import { Textarea } from '@/components/ui/textarea';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 const InvoiceFormSchema = z.object({
     invoiceDate: z.date({
         required_error: "A date of birth is required.",
@@ -86,6 +87,7 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
     const [customerValue, setCustomerValue] = React.useState<string>("")
     const [editInvoice, setEditInvoice] = React.useState<InvoiceSerialized>(invoice as InvoiceSerialized)
+    const [invoiceStatus, setInvoiceStatus] = React.useState<InvoiceStatus>(invoice.status as InvoiceStatus)
     const { data: sessionData } = useSession()
     const updateInvoice = api.invoice.editInvoice.useMutation()
     const { data: companies } = api.company.getAll.useQuery({
@@ -183,6 +185,7 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
             Services: editInvoice.Services.filter(service => service.id !== id)
         })
     }
+    const InvoiceConst: InvoiceStatus[] = ["Draft", "Paid", "Overdue", "Cancelled", "Refunded"]
 
     const handleInvoiceEdit = () => {
         console.log("Invoice is: ", editInvoice);
@@ -311,7 +314,37 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
                                 </Popover>
 
                             </div>
+                            <div className='flex-col mb-10'>
+                                <div>
+                                    <Label className="block text-sm font-bold mb-2" htmlFor="date">
+                                        Invoice Status
+                                    </Label>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline">{invoiceStatus}</Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-56">
+                                            <DropdownMenuLabel>Options</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            {Object.values(InvoiceConst).map((status) => (
+                                                <DropdownMenuItem
+                                                    key={status}
+                                                    onSelect={() => {
+                                                        setInvoiceStatus(status)
+                                                        setEditInvoice({
+                                                            ...editInvoice,
+                                                            status: status as InvoiceStatus
+                                                        })
+                                                    }}
+                                                >
+                                                    {status}
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
 
+                            </div>
                         </form>
                     </Form>
                     <div>

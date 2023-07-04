@@ -1,6 +1,6 @@
 import type { Partner, Company } from "@prisma/client";
 import { createSlice, configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import type { InvoiceSerialized, InvoiceType, Service } from "types";
+import type { InvoiceSerialized, InvoiceStatus, InvoiceType, Service } from "types";
 
 export const invoiceSlice = createSlice({
     name: "invoiceSlice",
@@ -26,6 +26,10 @@ export const invoiceSlice = createSlice({
                 return invoiceSerialized;
             });
             state.items = invoicesSerialized as unknown as InvoiceSerialized[];
+        },
+        updateCreateStatus(state, action: { payload: { status: InvoiceStatus } }) {
+            const { status } = action.payload;
+            state.createItem.status = status;
         },
         addCreateService(state, action: { payload: { service: Service } }) {
             const { service } = action.payload;
@@ -106,4 +110,4 @@ const invoice = configureStore({
 
 export type RootState = ReturnType<typeof invoice.getState>;
 export default invoice;
-export const { initInvoices, addCreateService, removeCreateService, resetCreate, updateCreateCompany, updateCreateInvoiceDate, updateCreateInvoiceDueDate, updateCreateInvoiceNumber, updateCreatePartner, updateCreateService, updateCreateServiceDate, updatePartner, addPartner, initPartners, removePartner } = invoiceSlice.actions;
+export const { initInvoices, addCreateService, updateCreateStatus, removeCreateService, resetCreate, updateCreateCompany, updateCreateInvoiceDate, updateCreateInvoiceDueDate, updateCreateInvoiceNumber, updateCreatePartner, updateCreateService, updateCreateServiceDate, updatePartner, addPartner, initPartners, removePartner } = invoiceSlice.actions;

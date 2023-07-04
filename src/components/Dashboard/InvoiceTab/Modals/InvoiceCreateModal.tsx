@@ -35,6 +35,8 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { Form, useForm } from 'react-hook-form';
 import { z } from "zod"
 import { zodResolver } from '@hookform/resolvers/zod';
+import { InvoiceStatus } from 'types';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 const InvoiceFormSchema = z.object({
     invoiceDate: z.date({
         required_error: "A date of birth is required.",
@@ -77,7 +79,7 @@ const InvoiceFormSchema = z.object({
     }))
 })
 
-
+const InvoiceConst: InvoiceStatus[] = ["Draft", "Paid", "Overdue", "Cancelled", "Refunded"]
 
 export default function InvoiceCreateModal() {
     const { data: sessionData } = useSession();
@@ -98,7 +100,7 @@ export default function InvoiceCreateModal() {
     const [companyValue, setCompanyValue] = React.useState<string>("")
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
     const [customerValue, setCustomerValue] = React.useState<string>("")
-
+    const [invoiceStatus, setInvoiceStatus] = React.useState<InvoiceStatus>("Draft")
     const form = useForm<z.infer<typeof InvoiceFormSchema>>({
         resolver: zodResolver(InvoiceFormSchema),
     })
@@ -158,7 +160,7 @@ export default function InvoiceCreateModal() {
             invoiceServiceDate: createInvoiceSelector.invoiceServiceDate,
             services: JSON.stringify(createInvoiceSelector.Services),
             id: sessionData?.user?.id as string,
-            status: "Draft",
+            status: invoiceStatus,
         }, {
             onSuccess: () => {
                 toast({
@@ -275,7 +277,36 @@ export default function InvoiceCreateModal() {
                                 </Popover>
 
                             </div>
+                            <div className='flex-col mb-10'>
+                                <div>
+                                    <Label className="block text-sm font-bold mb-2" htmlFor="date">
+                                        Invoice Status
+                                    </Label>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline">{invoiceStatus}</Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-56">
+                                            <DropdownMenuLabel>Options</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            {Object.values(InvoiceConst).map((status) => (
+                                                <DropdownMenuItem
+                                                    key={status}
+                                                    onSelect={() => {
+                                                        setInvoiceStatus(status)
+                                                        createInvoiceDispatch(invoiceSlice.actions.updateCreateStatus({
+                                                            status: status
+                                                        }))
+                                                    }}
+                                                >
+                                                    {status}
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
 
+                            </div>
                         </form>
                     </Form>
                     <div>
@@ -304,7 +335,7 @@ export default function InvoiceCreateModal() {
                                         className="w-[200px] justify-between"
                                     >
                                         {companyValue
-                                            ? companies.find((company) => company.name === companyValue)?.name
+                                            ? companies?.find((company) => company.name === companyValue)?.name
                                             : "Select company..."}
                                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                     </Button>
@@ -351,7 +382,7 @@ export default function InvoiceCreateModal() {
                                             className="w-[200px] justify-between"
                                         >
                                             {customerValue
-                                                ? customers.find((customer) => customer.name === customerValue)?.name
+                                                ? customers?.find((customer) => customer.name === customerValue)?.name
                                                 : "Select customer..."}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
