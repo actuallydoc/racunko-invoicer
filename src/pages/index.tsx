@@ -39,6 +39,10 @@ const Home: NextPage = () => {
             <div>
               <p className="mb-5">
                 Racunko is a simple and easy to use invoice management system.
+
+              </p>
+              <p className="text-center font-medium text-lg">
+                Open source and free to use.
               </p>
             </div>
             <div className="example-container">
@@ -49,7 +53,6 @@ const Home: NextPage = () => {
               <FeaturesCard />
             </div>
             <div>
-              <PricingCard />
             </div>
           </div>
         </div>

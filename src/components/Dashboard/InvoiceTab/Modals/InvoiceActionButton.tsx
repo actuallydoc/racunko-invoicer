@@ -41,6 +41,7 @@ export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) 
     })
 
     const generateInvoicePDF = (invoice: InvoiceSerialized) => {
+        // TODO: Also get the language from the user settings , and pass it to the generatePDFInvoice function as the second argument and use it to generate the invoice in the language the user wants
         const blob = generatePDFInvoice(invoice);
         console.log("Blob is: ",);
         window.open(blob, "_blank")

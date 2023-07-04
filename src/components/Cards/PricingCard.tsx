@@ -6,38 +6,17 @@ import { motion } from 'framer-motion'
 
 const Pricing = [
     {
-        title: "Basic",
+        title: "Free",
         description: "Basic plan for smaller businesses",
         features: [
             {
                 title: "All the features",
-                description: "Up to 25 invoices per month",
+                description: "Free and open source",
             },
         ],
         price: "Free",
     },
-    {
-        title: "Standard",
-        description: "Standard plan for medium sized businesses",
-        features: [
-            {
-                title: "All the features",
-                description: "Up to 100 invoices per month",
-            },
-        ],
-        price: "€10 Monthly",
-    },
-    {
-        title: "Premium",
-        description: "Premium plan for larger businesses",
-        features: [
-            {
-                title: "All the features",
-                description: "Unlimited invoices per month",
-            },
-        ],
-        price: "€20 Monthly",
-    },
+
 ]
 export default function PricingCard() {
     return (
