@@ -1,43 +1,8 @@
 # Racunko Invoicer based of Shadcn UI components
-## Description
-
-#### The app is currently in development and it is not working yet. I will update this README when the app is finished.
-#### The vercel link app doesn't have the database connected so it won't work because im using sqlite.
-
-
-### __Data Management Features__
-- [x] Filter by name (only for now)
-- [x] Authentication
-- [x] Create, Read, Update, Delete invoices
-- [x] Create, Read, Update, Delete clients
-- [x] Create, Read, Update, Delete products
-- [x] Create, Read, Update, Delete users
-- [x] Create, Read, Update, Delete companies
-- [ ] Create, Read, Update, Delete taxes
-- [ ] Create, Read, Update, Delete payment methods
-- [ ] Create, Read, Update, Delete invoice statuses
-- [ ] Create, Read, Update, Delete invoice items
-- [ ] Create, Read, Update, Delete invoice payments
-- [ ] Create, Read, Update, Delete invoice notes
-- [ ] Create, Read, Update, Delete invoice attachments
-- [ ] Create, Read, Update, Delete invoice reminders
-- [ ] Create, Read, Update, Delete invoice recurring
-- [ ] Scrollable table for all tables
-
-### Tab Navigation Features
-- [x] Home(The page is done but the statistic data is made with package Faker and charts and layout look really ugly)
-- [x] Invoices
-- [x] Customers
-- [x] Services
-- [x] Companies
-
-### __PDF Document Generation (This will be implemented in the future after the base app is finished)__
-- [ ] Generate PDF document from invoice
-- [ ] Export to different formats (PDF, HTML, CSV, JSON, XML)
-- [ ] Send PDF document to client via email or other method's
-
-### __Invoice Templates (This will be implemented in the future after the base app is finished)__
-- [ ] Create, Read, Update, Delete invoice templates
+- Open source invoicing app based on Shadcn UI components
+- You can contribute to this project by creating a pull request
+- You can also create an issue if you find a bug or have a feature request
+- Live demo link: [racunko.vercel.app](https://racunko-invoicer.vercel.app/)
 
 ## Technologies
 - Next.js
@@ -48,8 +13,5 @@
 - PostgreSQL
 - NextAuth.js
 - TRPC
+- Supabase
 - Shadcn UI (Components)
-## Upcoming Technologies
-- jsPdf (for PDF generation and template creation)
-- ReactPDF (for displaying PDF documents and templates in the browser) 
-![alt text](https://i.imgur.com/Neheqsz.png "Dashboard") ![alt text](https://i.imgur.com/4UTMnd4.png "Create invoice")
