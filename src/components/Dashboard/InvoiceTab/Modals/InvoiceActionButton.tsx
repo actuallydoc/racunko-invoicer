@@ -23,6 +23,7 @@ import { Dialog } from '@/components/ui/dialog';
 import InvoiceEditModal from './InvoiceEditModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { invoiceSlice, RootState } from '@/stores/invoiceSlice';
+import generatePDFInvoice from '@/utils/invoicer';
 
 type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled" | "Draft"
 
@@ -33,6 +34,13 @@ export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) 
     const changeInvoiceStatus = api.invoice.editInvoice.useMutation();
     const editInvoiceDispatch = useDispatch();
     const [edit, setEdit] = useState(false);
+
+
+    const generateInvoicePDF = (invoice: InvoiceSerialized) => {
+        const blob = generatePDFInvoice(invoice);
+        console.log("Blob is: ",);
+        window.open(blob, "_blank")
+    }
 
     const changeStatus = (status: Status, invoice: InvoiceSerialized) => {
         changeInvoiceStatus.mutate({
@@ -104,7 +112,7 @@ export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) 
                                 <DropdownMenuSubTrigger>Export as </DropdownMenuSubTrigger>
                                 <DropdownMenuPortal>
                                     <DropdownMenuSubContent>
-                                        <DropdownMenuItem>PDF</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => generateInvoicePDF(invoice)}>PDF</DropdownMenuItem>
                                         <DropdownMenuItem>CSV</DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem>More...</DropdownMenuItem>

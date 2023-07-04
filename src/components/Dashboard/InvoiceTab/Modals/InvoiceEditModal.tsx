@@ -97,14 +97,6 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
     const form = useForm<z.infer<typeof InvoiceFormSchema>>({
         resolver: zodResolver(InvoiceFormSchema),
     });
-    const handleGenerateInvoice = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        //Create a Blob and open it in a new window
-        // TODO This is curently not working the template is broken
-        e.preventDefault();
-        // const blob = generatePDFInvoice(invoiceSelector);
-        // console.log("Blob is: ",);
-        // window.open(blob, "_blank")
-    }
     const handleDueDate = (e: Date) => {
         setEditInvoice({
             ...editInvoice,
