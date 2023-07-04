@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/dialog"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 
-// import InvoiceEditModal from './Modals/InvoiceEditModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
 import { type Service, type InvoiceSerialized } from 'types';
@@ -50,9 +49,6 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
     }
     const deleteInvoice = api.invoice.deleteInvoice.useMutation();
     const changeInvoiceStatus = api.invoice.editInvoice.useMutation();
-
-    const [edit, setEdit] = useState(false);
-
 
     const changeStatus = (status: Status, invoice: Invoice) => {
         changeInvoiceStatus.mutate({

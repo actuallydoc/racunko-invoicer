@@ -1,5 +1,5 @@
 import type { Partner, Company } from "@prisma/client";
-import { createSlice, configureStore } from "@reduxjs/toolkit";
+import { createSlice, configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import type { InvoiceSerialized, InvoiceType, Service } from "types";
 
 export const invoiceSlice = createSlice({
@@ -208,6 +208,9 @@ export const invoiceSlice = createSlice({
 
 const invoice = configureStore({
     reducer: invoiceSlice.reducer,
+    middleware: getDefaultMiddleware({
+        serializableCheck: false,
+    }),
 })
 
 export type RootState = ReturnType<typeof invoice.getState>;

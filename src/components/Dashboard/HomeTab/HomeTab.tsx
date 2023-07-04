@@ -63,13 +63,13 @@ export default function HomeTab({ Companies }: { Companies: Company[] }) {
                     const invoiceDate = new Date(invoice.invoiceDate);
                     const invoiceYear = invoiceDate.getFullYear();
                     const invoiceMonth = invoiceDate.getMonth();
-                    console.log(invoice)
+
                     if (invoiceYear === currentYear && invoiceMonth === currentMonth) {
                         const invoiceTotal = invoice.Services.reduce(
                             (acc, service) => acc + service.price * service.quantity,
                             0
                         )
-                        console.log(invoiceTotal)
+
                         return acc + invoiceTotal;
                     }
 

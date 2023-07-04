@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -21,6 +21,8 @@ import { Invoice } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import InvoiceEditModal from './InvoiceEditModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { invoiceSlice, RootState } from '@/stores/invoiceSlice';
 
 type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled" | "Draft"
 
@@ -31,12 +33,18 @@ export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) 
 
     const deleteInvoice = api.invoice.deleteInvoice.useMutation();
     const changeInvoiceStatus = api.invoice.editInvoice.useMutation();
-
+    const editInvoiceDispatch = useDispatch();
     const [edit, setEdit] = useState(false);
 
-    const closeEdit = () => {
-        setEdit(false)
-    }
+    useEffect(() => {
+        if (edit) {
+            console.log("Invoice is: ", invoice);
+            editInvoiceDispatch(invoiceSlice.actions.editInvoice({
+                item: invoice as InvoiceSerialized
+            }))
+        }
+    }, [edit, editInvoiceDispatch, invoice])
+
     const changeStatus = (status: Status, invoice: Invoice) => {
         changeInvoiceStatus.mutate({
             ...invoice,
