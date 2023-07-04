@@ -153,7 +153,7 @@ export default function InvoiceTab({ Companies, Customers }: InvoiceTabProps) {
                                     Create
                                 </Button>
                             </DialogTrigger>
-                            <InvoiceCreateModal companies={Companies} customers={Customers} />
+                            <InvoiceCreateModal />
                         </Dialog>
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>

@@ -79,7 +79,14 @@ const InvoiceFormSchema = z.object({
 
 
 
-export default function InvoiceCreateModal({ customers, companies }: { customers: Partner[], companies: Company[] }) {
+export default function InvoiceCreateModal() {
+    const { data: sessionData } = useSession();
+    const { data: companies } = api.company.getAll.useQuery({
+        id: sessionData?.user?.id as string
+    })
+    const { data: customers } = api.partner.getAll.useQuery({
+        id: sessionData?.user?.id as string
+    })
     const createInvoice = api.invoice.createInvoice.useMutation();
     const { toast } = useToast()
     const createInvoiceSelector = useSelector((state: RootState) => state.createItem);
@@ -91,7 +98,7 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
     const [companyValue, setCompanyValue] = React.useState<string>("")
     const [openCustomerPopover, setOpenCustomerPopover] = React.useState(false)
     const [customerValue, setCustomerValue] = React.useState<string>("")
-    const { data: sessionData } = useSession();
+
     const form = useForm<z.infer<typeof InvoiceFormSchema>>({
         resolver: zodResolver(InvoiceFormSchema),
     })
@@ -354,7 +361,6 @@ export default function InvoiceCreateModal({ customers, companies }: { customers
                                             <CommandInput placeholder="Search customers..." />
                                             <CommandEmpty>No customers found.</CommandEmpty>
                                             <CommandGroup>
-                                                {/* TODO: The name of the partner and company in the popover is not fully shown because of the width */}
                                                 {customers?.map((customer) => (
                                                     <CommandItem
                                                         key={customer.id}

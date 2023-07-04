@@ -25,6 +25,7 @@ import InvoiceEditModal from './InvoiceEditModal';
 type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled" | "Draft"
 
 const statusConsts: Status[] = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancelled", "Draft"]
+// TODO: Add all the functionality to this component
 export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
     const [selected, setSelected] = useState<InvoiceSerialized>();
 

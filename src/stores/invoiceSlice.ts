@@ -33,53 +33,118 @@ export const invoiceSlice = createSlice({
             state.editItem = item;
         },
         reset(state) {
-            state.editItem = {} as InvoiceSerialized;
+            state.editItem = {
+                Services: [] as Service[],
+            } as InvoiceSerialized;
         },
         addService(state, action: { payload: { service: Service } }) {
             const { service } = action.payload;
-            state.editItem.Services.push(service);
+            return {
+                ...state,
+                editItem: {
+                    ...state.editItem,
+                    Services: [...state.editItem.Services, service]
+                }
+            };
         },
+
         removeService(state, action: { payload: { service: Service } }) {
             const { service } = action.payload;
-            state.editItem.Services = state.editItem.Services.filter((s) => s.id !== service.id);
+            return {
+                ...state,
+                editItem: {
+                    ...state.editItem,
+                    Services: state.editItem.Services.filter((s) => s.id !== service.id)
+                }
+            };
         },
+
         updateService(state, action: { payload: { service: Service } }) {
             const { service } = action.payload;
             const index = state.editItem.Services.findIndex((s) => s.id === service.id);
-            state.editItem.Services[index] = service;
-        },
-        updateInvoiceDate(state, action: { payload: { date: Date } }) {
-            const { date } = action.payload;
-            state.editItem.invoiceDate = date;
-        },
-        updateServiceDate(state, action: { payload: { date: Date } }) {
-            const { date } = action.payload;
-            state.editItem.invoiceServiceDate = date;
+            const updatedServices = [...state.editItem.Services];
+            updatedServices[index] = service;
+            return {
+                ...state,
+                editItem: {
+                    ...state.editItem,
+                    Services: updatedServices
+                }
+            };
         },
 
+        updateInvoiceDate(state, action: { payload: { date: Date } }) {
+            const { date } = action.payload;
+            return {
+                ...state,
+                editItem: {
+                    ...state.editItem,
+                    invoiceDate: date
+                }
+            };
+        },
+
+        updateServiceDate(state, action: { payload: { date: Date } }) {
+            const { date } = action.payload;
+            return {
+                ...state,
+                editItem: {
+                    ...state.editItem,
+                    invoiceServiceDate: date
+                }
+            };
+        }
+        ,
         updateInvoiceDueDate(state, action: { payload: { date: Date } }) {
             const { date } = action.payload;
-            state.editItem.dueDate = date;
+            return {
+                ...state,
+                editItem: {
+                    ...state.editItem,
+                    dueDate: date
+                }
+            };
         },
         updateInvoiceCompany(state, action: { payload: { company: Company } }) {
             const { company } = action.payload;
-            state.editItem.Company = company;
             console.log(company);
-            console.log(state.editItem.Company)
+            return {
+                ...state,
+                editItem: {
+                    ...state.editItem,
+                    Company: company
+                }
+            };
         },
         updateInvoicePartner(state, action: { payload: { partner: Partner } }) {
             const { partner } = action.payload;
-            state.editItem.Partner = partner;
+            return {
+                ...state,
+                editItem: {
+                    ...state.editItem,
+                    Partner: partner
+                }
+            };
         },
         updateInvoiceNumber(state, action: { payload: { invoiceNumber: string } }) {
             const { invoiceNumber } = action.payload;
-            state.editItem.invoiceNumber = invoiceNumber;
+            return {
+                ...state,
+                editItem: {
+                    ...state.editItem,
+                    invoiceNumber: invoiceNumber
+                }
+            };
         },
         addCreateService(state, action: { payload: { service: Service } }) {
             const { service } = action.payload;
-            // FIXME: Apprarently push is not a function??
-
-            state.createItem.Services.push(service);
+            return {
+                ...state,
+                createItem: {
+                    ...state.createItem,
+                    Services: [...state.createItem.Services, service]
+                }
+            };
         },
         removeCreateService(state, action: { payload: { service: Service } }) {
             const { service } = action.payload;
