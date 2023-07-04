@@ -112,7 +112,7 @@ export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) 
                                 <DropdownMenuSubTrigger>Export as </DropdownMenuSubTrigger>
                                 <DropdownMenuPortal>
                                     <DropdownMenuSubContent>
-                                        <DropdownMenuItem onClick={() => generateInvoicePDF(invoice)}>PDF</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => generateInvoicePDF(invoice as InvoiceSerialized)}>PDF</DropdownMenuItem>
                                         <DropdownMenuItem>CSV</DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem>More...</DropdownMenuItem>
