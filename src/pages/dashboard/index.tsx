@@ -15,7 +15,15 @@ import ServicesTab from '@/components/Dashboard/ServicesTab/ServicesTab'
 import { toast } from '@/components/ui/use-toast'
 export default function Index() {
     const [activeItem, setActiveItem] = useState<string>("Dashboard");
-    const { data: sessionData, status } = useSession({ required: true })
+    const { data: sessionData, status } = useSession({
+        required: true, onUnauthenticated() {
+            toast({
+                variant: "destructive",
+                title: 'You are not logged in',
+                description: 'Please log in to continue',
+            })
+        },
+    })
     const dispatch = useDispatch();
     const { data: getInvoices, isFetched } = api.invoice.getAll.useQuery({ id: sessionData?.user?.id?.toString() as string }, {
         enabled: status === 'authenticated',
@@ -35,41 +43,35 @@ export default function Index() {
 
     },)
     useEffect(() => {
-        if (!sessionData) {
-            toast({
-                variant: "destructive",
-                title: 'You are not logged in',
-                description: 'Please log in to continue',
-            })
-        } else {
-            toast({
-                title: 'Welcome back❤',
-                description: (
-                    <>
-                        <div className='flex space-x-1 text-lg' >
-                            <div>
-                                <p>You are logged in as </p>
-                            </div>
-                            <div>
-                                <p className='font-bold'>{sessionData?.user?.name}</p>
-                            </div>
+        toast({
+            title: 'Welcome back❤',
+            description: (
+                <>
+                    <div className='flex space-x-1 text-lg' >
+                        <div>
+                            <p>You are logged in as </p>
                         </div>
+                        <div>
+                            <p className='font-bold'>{sessionData?.user?.name}</p>
+                        </div>
+                    </div>
 
-                    </>
-                ),
-            })
-        }
+                </>
+            ),
+        })
         // Set the initial state of the invoices to the reducer with dispatching the action
         if (getInvoices) {
             dispatch(invoiceSlice.actions.initInvoices(getInvoices));
         }
         if (getCustomers) {
-
             dispatch(invoiceSlice.actions.initPartners({
                 partners: getCustomers
             }));
         }
-    }, [isFetched, getInvoices, dispatch, getCustomers, sessionData])
+        if (getCompanies) {
+            dispatch(invoiceSlice.actions.initCompanies(getCompanies))
+        }
+    }, [isFetched, getInvoices, dispatch, getCustomers, sessionData, getCompanies])
 
     return (
         <div className=''>
@@ -82,7 +84,7 @@ export default function Index() {
                     {activeItem === "Dashboard" ? <HomeTab Companies={getCompanies as Company[]} /> : null}
                     {activeItem === "Invoices" ? <InvoiceTab Companies={getCompanies as Company[]} Customers={getCustomers as Partner[]} /> : null}
                     {activeItem === "Customers" ? <CustomersTab /> : null}
-                    {activeItem === "Companies" ? <CompaniesTab Companies={getCompanies as Company[]} /> : null}
+                    {activeItem === "Companies" ? <CompaniesTab /> : null}
                     {activeItem === "Services" ? <ServicesTab Services={getServices as Service[]} /> : null}
                 </div>
             </div >

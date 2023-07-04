@@ -19,6 +19,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { api } from "@/utils/api"
 import { useSession } from "next-auth/react"
+import { useDispatch } from "react-redux"
+import { invoiceSlice } from "@/stores/invoiceSlice"
+import { Company } from "@prisma/client"
 const FormSchema = z.object({
     companyName: z.string().min(3, {
         message: "Compay name must be at least 3 characters.",
@@ -57,6 +60,10 @@ export default function CompanyCreateModal() {
     });
     const { toast } = useToast();
     const { data: sessionData } = useSession({ required: true });
+    const { data: companyData, refetch: refetchCompanies } = api.company.getAll.useQuery({
+        id: sessionData?.user?.id as string
+    })
+    const companyDispatch = useDispatch()
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         toast({
             title: 'Creating company',
@@ -85,6 +92,15 @@ export default function CompanyCreateModal() {
                         description: 'Company has been created successfully',
                     })
                     form.reset();
+                    refetchCompanies().then(() => {
+                        companyDispatch(invoiceSlice.actions.initCompanies(companyData as Company[]))
+                    }).catch(() => {
+                        toast({
+                            title: 'Error',
+                            description: "Something went wrong"
+                        })
+                        // FIXME: MODAL DOESNT CLOSE
+                    })
                 },
                 onError: (error) => {
                     toast({

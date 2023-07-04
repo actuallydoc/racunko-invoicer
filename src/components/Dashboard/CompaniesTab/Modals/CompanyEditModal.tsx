@@ -19,6 +19,9 @@ import { Card, CardContent, CardDescription } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import type { Company } from "@prisma/client"
 import { api } from "@/utils/api"
+import { useSession } from "next-auth/react"
+import { useDispatch } from "react-redux"
+import { invoiceSlice } from "@/stores/invoiceSlice"
 
 const FormSchema = z.object({
     companyName: z.string().min(3, {
@@ -57,6 +60,11 @@ const FormSchema = z.object({
 export function CompanyEditModal({ company }: { company: Company }) {
     const updateCompany = api.company.updateCompany.useMutation()
     const deleteCompany = api.company.deleteCompany.useMutation()
+    const { data: sessionData } = useSession();
+    const { data: companyData, refetch: refetchCompanies } = api.company.getAll.useQuery({
+        id: sessionData?.user?.id as string
+    })
+    const companyDispatch = useDispatch();
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -95,6 +103,23 @@ export function CompanyEditModal({ company }: { company: Company }) {
                 email: data.companyEmail,
                 website: data.companyWebsite as string,
                 vat: data.companyVat,
+            }, {
+                onSuccess: () => {
+                    toast({
+                        title: "Success",
+                        description: "Company updated.",
+                    })
+                    form.reset()
+                    refetchCompanies().then(() => {
+                        companyDispatch(invoiceSlice.actions.initCompanies(companyData as Company[]))
+                    }).catch(() => {
+                        toast({
+                            title: "Error",
+                            description: "Something went wrong.",
+                            variant: "destructive"
+                        })
+                    })
+                }
             })
         } catch (error) {
             toast({
@@ -109,10 +134,24 @@ export function CompanyEditModal({ company }: { company: Company }) {
         try {
             await deleteCompany.mutateAsync({
                 id: company.id
-            })
-            toast({
-                title: "Success",
-                description: "Company deleted.",
+            }, {
+                onSuccess: () => {
+                    toast({
+                        title: "Success",
+                        description: "Company deleted.",
+                    })
+                    form.reset()
+                    refetchCompanies().then(() => {
+                        companyDispatch(invoiceSlice.actions.initCompanies(companyData as Company[]))
+                    }).catch(() => {
+                        toast({
+                            title: "Error",
+                            description: "Something went wrong.",
+                            variant: "destructive"
+                        })
+                    }
+                    )
+                }
             })
         } catch (error) {
             toast({

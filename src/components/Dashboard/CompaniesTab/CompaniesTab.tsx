@@ -7,8 +7,13 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+import { useSelector } from 'react-redux';
+import { type RootState } from '@/stores/invoiceSlice';
 
-export default function CustomersTab({ Companies }: { Companies: Company[] | undefined }) {
+
+export default function CustomersTab() {
+
+    const companySelector = useSelector((state: RootState) => state.companies);
     return (
         <div className="">
             <Card>
@@ -44,7 +49,7 @@ export default function CustomersTab({ Companies }: { Companies: Company[] | und
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {Companies?.map((company: Company, index) => (
+                                {companySelector?.map((company: Company, index) => (
 
                                     <TableRow key={index} className='hover:cursor-pointer'>
                                         <TableCell className="font-medium">{company.name}</TableCell>

@@ -6,6 +6,7 @@ import { DialogHeader, DialogContent, DialogTitle, DialogDescription } from '@/c
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { invoiceSlice } from '@/stores/invoiceSlice';
 import { api } from '@/utils/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Partner } from '@prisma/client'
@@ -13,6 +14,7 @@ import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react';
 import React from 'react'
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { z } from "zod"
 const FormSchema = z.object({
     customerName: z.string().nonempty({ message: 'Name is required' }),
@@ -35,7 +37,8 @@ const CustomerCreateModal: React.FC = () => {
     });
     const { toast } = useToast();
     const { data: sessionData } = useSession({ required: true });
-
+    const customerDispatch = useDispatch();
+    const { data: customerData, refetch: refetchCustomers } = api.partner.getAll.useQuery({ id: sessionData?.user?.id as string })
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         toast({
@@ -64,12 +67,23 @@ const CustomerCreateModal: React.FC = () => {
                         title: 'Partner Edited',
                         description: 'Partner has been edited successfully',
                     })
+                    refetchCustomers().then(() => {
+                        customerDispatch(invoiceSlice.actions.initPartners({
+                            partners: customerData as Partner[]
+                        }))
+                    }).catch(() => {
+                        toast({
+                            title: 'Error',
+                            description: 'Something went wrong',
+                        })
+                    }
+                    )
 
                 },
-                onError: (error) => {
+                onError: () => {
                     toast({
                         title: 'Error',
-                        description: error.message,
+                        description: "Error while creating partner",
                     })
                 }
             });

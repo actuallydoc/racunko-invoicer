@@ -14,6 +14,10 @@ export const invoiceSlice = createSlice({
         companies: [] as Company[],
     },
     reducers: {
+        initCompanies(state, action: { payload: Company[] }) {
+
+            state.companies = action.payload;
+        },
         initInvoices(state, action: { payload: InvoiceType[]; }) {
 
             const invoicesSerialized = action.payload.map((invoice: InvoiceType) => {

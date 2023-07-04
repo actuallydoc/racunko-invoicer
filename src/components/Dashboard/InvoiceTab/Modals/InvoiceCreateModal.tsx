@@ -35,7 +35,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { Form, useForm } from 'react-hook-form';
 import { z } from "zod"
 import { zodResolver } from '@hookform/resolvers/zod';
-import { InvoiceStatus } from 'types';
+import { InvoiceStatus, InvoiceType } from 'types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 const InvoiceFormSchema = z.object({
     invoiceDate: z.date({
@@ -94,6 +94,10 @@ export default function InvoiceCreateModal() {
     const createInvoiceSelector = useSelector((state: RootState) => state.createItem);
     const createInvoiceDispatch = useDispatch();
     const [selectedCustomer, setSelectedCustomer] = React.useState<Partner>();
+    const { data: invoiceData, refetch: refetchInvoices } = api.invoice.getAll.useQuery({
+        id: sessionData?.user?.id as string
+    });
+    const invoiceDispatch = useDispatch();
     // const [emptyServices, setEmptyServices] = React.useState<Service[]>([]);
     const [selectedCompany, setSelectedCompany] = React.useState<Company>();
     const [openCompanyPopover, setOpenCompanyPopover] = React.useState(false)
@@ -168,6 +172,12 @@ export default function InvoiceCreateModal() {
                     description: "Invoice created successfully",
                 })
                 createInvoiceDispatch(invoiceSlice.actions.resetCreate())
+                refetchInvoices().then(() => {
+                    invoiceDispatch(invoiceSlice.actions.initInvoices(invoiceData as InvoiceType[]))
+                }).catch((err) => {
+                    console.log(err)
+                })
+
             },
         })
 

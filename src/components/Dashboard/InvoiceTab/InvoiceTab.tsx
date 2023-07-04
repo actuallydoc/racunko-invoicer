@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { Company, Invoice, Partner } from '@prisma/client'
+import type { Company, Partner } from '@prisma/client'
 import "flatpickr/dist/themes/material_green.css";
 import InvoiceCreateModal from './Modals/InvoiceCreateModal';
 import { Button } from '@/components/ui/button';
@@ -17,26 +17,21 @@ import {
 } from "@/components/ui/dialog"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { invoiceSlice, type RootState } from '@/stores/invoiceSlice';
-import { type Service, type InvoiceSerialized } from 'types';
+import { useSelector } from 'react-redux';
+import { type RootState } from '@/stores/invoiceSlice';
+import { type Service } from 'types';
 import InvoiceActionsButton from './Modals/InvoiceActionButton';
-import { api } from '@/utils/api';
-import { toast } from '@/components/ui/use-toast';
 
 interface InvoiceTabProps {
     Companies: Company[];
     Customers: Partner[];
 }
-type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled" | "Draft"
 export default function InvoiceTab({ Companies }: InvoiceTabProps) {
     const [fromDate, setFromDate] = React.useState<Date>(new Date());
     const [toDate, setToDate] = React.useState<Date>(new Date());
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
     const invoiceSelector = useSelector((state: RootState) => state.items);
-
-    const invoiceDispatch = useDispatch();
 
     return (
         <div className="">

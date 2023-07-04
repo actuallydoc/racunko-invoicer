@@ -31,9 +31,11 @@ import { format } from 'date-fns';
 import { cn, generateRandomId } from '@/lib/utils';
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import type { InvoiceSerialized, InvoiceStatus } from 'types';
+import type { InvoiceSerialized, InvoiceStatus, InvoiceType } from 'types';
 import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useDispatch } from 'react-redux';
+import { invoiceSlice } from '@/stores/invoiceSlice';
 const InvoiceFormSchema = z.object({
     invoiceDate: z.date({
         required_error: "A date of birth is required.",
@@ -90,6 +92,10 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
     const { data: companies } = api.company.getAll.useQuery({
         id: sessionData?.user?.id as string
     })
+    const { data: invoiceData, refetch: refetchInvoice } = api.invoice.getAll.useQuery({
+        id: sessionData?.user?.id as string,
+    })
+    const invoiceDispatch = useDispatch()
     const { data: customers } = api.partner.getAll.useQuery({
         id: sessionData?.user?.id as string
     })
@@ -123,9 +129,6 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
             invoiceNumber: e.target.value
         })
     }
-    useEffect(() => {
-        console.log("Invoice is: ", editInvoice);
-    }, [editInvoice])
     const handleAddService = () => {
         setEditInvoice({
             ...editInvoice,
@@ -195,6 +198,11 @@ export default function InvoiceEditModal({ invoice, setEdit }: { invoice: Invoic
                     title: "Invoice edited",
                     description: "Invoice was successfully edited",
                     duration: 5000,
+                })
+                refetchInvoice().then(() => {
+                    invoiceDispatch(invoiceSlice.actions.initInvoices(invoiceData as InvoiceType[]))
+                }).catch(err => {
+                    console.log(err);
                 })
                 setEdit(false)
             },

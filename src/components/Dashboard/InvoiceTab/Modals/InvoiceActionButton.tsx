@@ -15,15 +15,16 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { api } from '@/utils/api';
-import { InvoiceSerialized } from 'types';
+import type { InvoiceSerialized, InvoiceType } from 'types';
 import { toast } from '@/components/ui/use-toast';
-import { Invoice } from '@prisma/client';
+import type { Invoice } from '@prisma/client';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import InvoiceEditModal from './InvoiceEditModal';
-import { useDispatch, useSelector } from 'react-redux';
-import { invoiceSlice, RootState } from '@/stores/invoiceSlice';
+import { useDispatch } from 'react-redux';
+import { invoiceSlice } from '@/stores/invoiceSlice';
 import generatePDFInvoice from '@/utils/invoicer';
+import { useSession } from 'next-auth/react';
 
 type Status = "Unpaid" | "Paid" | "Overdue" | "Refunded" | "Cancelled" | "Draft"
 
@@ -32,8 +33,12 @@ const statusConsts: Status[] = ["Unpaid", "Paid", "Overdue", "Refunded", "Cancel
 export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) {
     const deleteInvoice = api.invoice.deleteInvoice.useMutation();
     const changeInvoiceStatus = api.invoice.updateStatus.useMutation();
+    const { data: sessionData } = useSession({ required: true });
     const [edit, setEdit] = useState(false);
-
+    const invoiceDispatch = useDispatch();
+    const { data: invoiceData, refetch: refetchInvoices } = api.invoice.getAll.useQuery({
+        id: sessionData?.user?.id as string
+    })
 
     const generateInvoicePDF = (invoice: InvoiceSerialized) => {
         const blob = generatePDFInvoice(invoice);
@@ -52,6 +57,11 @@ export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) 
                     title: "Invoice Status Changed",
                     description: "Invoice status has been changed successfully",
                 })
+                refetchInvoices().then(() => {
+                    invoiceDispatch(invoiceSlice.actions.initInvoices(invoiceData as InvoiceType[]))
+                }).catch((err) => {
+                    console.log("Error in refetching invoices: ", err);
+                })
             },
         })
 
@@ -64,6 +74,11 @@ export default function InvoiceActionsButton({ invoice }: { invoice: Invoice }) 
                 toast({
                     title: "Invoice Deleted",
                     description: "Invoice has been deleted successfully",
+                })
+                refetchInvoices().then(() => {
+                    invoiceDispatch(invoiceSlice.actions.initInvoices(invoiceData as InvoiceType[]))
+                }).catch((err) => {
+                    console.log("Error in refetching invoices: ", err);
                 })
             },
             onError: () => {
