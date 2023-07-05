@@ -96,7 +96,7 @@ const renderPartner = (doc: jsPDF, customer: Partner) => {
 
 }
 const renderHeader = (doc: jsPDF, company: Company, invoice: InvoiceSerialized) => {
-    doc.setFontSize(9).setFont("DejaVu", "normal");
+    // doc.setFontSize(9).setFont("DejaVu", "normal");
     doc.text("Datum izdaje: Boštanj, " + invoice.invoiceDate?.toISOString().split("T")[0]?.toString(), 15, 23);
     doc.text("Datum opr. storitve: " + invoice?.invoiceServiceDate?.toISOString().split("T")[0]?.toString(), 15, 27);
     doc.text("Rok plačila: " + invoice.dueDate?.toISOString().split("T")[0]?.toString(), 15, 31);
